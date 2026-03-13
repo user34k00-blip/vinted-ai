@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VintedAI — Générateur d'annonces</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --border: #2a2a3a;
+    --accent: #09f9b0;
+    --accent2: #7b5ef8;
+    --accent3: #ff6b6b;
+    --text: #f0f0f8;
+    --muted: #6a6a8a;
+    --teal-glow: rgba(9,249,176,0.15);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 600px 400px at 10% 20%, rgba(123,94,248,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 500px 350px at 90% 80%, rgba(9,249,176,0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+  header { text-align: center; margin-bottom: 56px; }
+  .logo-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .logo-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
+  h1 { font-family: 'Syne', sans-serif; font-size: clamp(2.2rem,5vw,3.2rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 14px; }
+  h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  header p { color: var(--muted); font-size: 1rem; font-weight: 300; max-width: 480px; margin: 0 auto; line-height: 1.6; }
+
+  .steps { display: flex; align-items: center; justify-content: center; margin-bottom: 40px; }
+  .step { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: var(--muted); transition: color 0.3s; }
+  .step.active { color: var(--text); }
+  .step.done { color: var(--accent); }
+  .step-num { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-family: 'Syne', sans-serif; font-weight: 700; transition: all 0.3s; flex-shrink: 0; }
+  .step.active .step-num { border-color: var(--accent); background: var(--teal-glow); color: var(--accent); }
+  .step.done .step-num { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  .step-line { width: 40px; height: 1px; background: var(--border); margin: 0 8px; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 32px; margin-bottom: 20px; transition: border-color 0.3s; }
+  .card:hover { border-color: rgba(123,94,248,0.3); }
+  .card-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; color: var(--text); }
+  .card-title .icon { width: 32px; height: 32px; border-radius: 8px; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+
+  .upload-zone { border: 2px dashed var(--border); border-radius: 14px; padding: 40px 24px; text-align: center; cursor: pointer; transition: all 0.3s; background: var(--surface2); position: relative; overflow: hidden; }
+  .upload-zone:hover, .upload-zone.dragover { border-color: var(--accent); background: rgba(9,249,176,0.04); }
+  .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .upload-icon { font-size: 2.5rem; margin-bottom: 12px; display: block; }
+  .upload-zone p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+  .upload-zone strong { color: var(--text); font-weight: 500; }
+
+  .preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 16px; }
+  .preview-item { aspect-ratio: 1; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); position: relative; background: var(--surface2); }
+  .preview-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .preview-item .remove-btn { position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; border-radius: 50%; background: rgba(255,107,107,0.9); border: none; color: white; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; line-height: 1; }
+  .preview-item:hover .remove-btn { opacity: 1; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-group label { font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .form-group input, .form-group select, .form-group textarea { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s; resize: none; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent2); }
+  .form-group select option { background: var(--surface2); }
+  .form-group.full { grid-column: 1 / -1; }
+
+  .btn-generate { width: 100%; padding: 16px 24px; background: linear-gradient(135deg, var(--accent), #06d4a0); border: none; border-radius: 12px; color: var(--bg); font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; letter-spacing: 0.02em; }
+  .btn-generate:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(9,249,176,0.3); }
+  .btn-generate:active { transform: translateY(0); }
+  .btn-generate:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .spinner { width: 18px; height: 18px; border: 2px solid rgba(10,10,15,0.3); border-top-color: var(--bg); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .result-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; margin-bottom: 20px; display: none; }
+  .result-card.visible { display: block; animation: slideUp 0.4s ease; }
+  @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  .result-header { padding: 20px 28px; background: linear-gradient(135deg, rgba(9,249,176,0.08), rgba(123,94,248,0.08)); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .result-header h2 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+  .result-header h2::before { content: '✦'; color: var(--accent); font-size: 14px; }
+  .result-body { padding: 24px 28px; }
+
+  .result-field { margin-bottom: 24px; }
+  .result-field-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .result-field-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+  .copy-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; color: var(--muted); font-size: 11px; cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .copy-btn.copied { border-color: var(--accent); color: var(--accent); background: var(--teal-glow); }
+
+  .result-content { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; font-size: 14px; line-height: 1.7; color: var(--text); white-space: pre-wrap; word-break: break-word; }
+  .result-title-big { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; }
+
+  .tags-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .tag { background: rgba(9,249,176,0.08); border: 1px solid rgba(9,249,176,0.2); border-radius: 100px; padding: 4px 12px; font-size: 12px; color: var(--accent); }
+
+  .checklist { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
+  @media (max-width: 600px) { .checklist { grid-template-columns: 1fr; } }
+  .check-item { display: flex; align-items: flex-start; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; cursor: pointer; transition: all 0.2s; user-select: none; }
+  .check-item:hover { border-color: rgba(9,249,176,0.3); }
+  .check-item.checked { background: rgba(9,249,176,0.05); border-color: rgba(9,249,176,0.4); }
+  .check-box { width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 5px; flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 11px; }
+  .check-item.checked .check-box { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  .check-text { font-size: 13px; line-height: 1.4; color: var(--muted); transition: color 0.2s; }
+  .check-item.checked .check-text { color: var(--text); }
+
+  .progress-wrapper { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .progress-bar { flex: 1; height: 4px; background: var(--surface2); border-radius: 100px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 100px; transition: width 0.4s ease; width: 0%; }
+  .progress-label { font-size: 12px; color: var(--muted); min-width: 60px; text-align: right; }
+
+  .price-badge { display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, rgba(9,249,176,0.1), rgba(9,249,176,0.05)); border: 1px solid rgba(9,249,176,0.3); border-radius: 10px; padding: 10px 18px; font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); }
+
+  .btn-secondary { display: inline-flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 18px; color: var(--text); font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: none; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
+  .btn-secondary:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  .error-msg { background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.25); border-radius: 10px; padding: 14px 18px; color: #ff9090; font-size: 13px; margin-top: 12px; display: none; }
+  .error-msg.visible { display: block; }
+
+  .divider { height: 1px; background: var(--border); margin: 28px 0; }
+
+  .posting-steps { counter-reset: steps; display: flex; flex-direction: column; gap: 10px; }
+  .posting-step { counter-increment: steps; display: flex; align-items: center; gap: 14px; padding: 12px 16px; background: var(--surface2); border-radius: 10px; border: 1px solid var(--border); font-size: 13px; color: var(--muted); }
+  .posting-step::before { content: counter(steps); width: 24px; height: 24px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; color: var(--accent); flex-shrink: 0; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <header>
+    <div class="logo-badge"><span class="dot"></span>VintedAI — Outil de vente</div>
+    <h1>Génère tes annonces<br><span>en quelques secondes</span></h1>
+    <p>Upload tes photos, donne le prix, l'IA crée le titre et la description parfaite pour maximiser tes ventes.</p>
+  </header>
+
+  <div class="steps">
+    <div class="step active" id="step1"><span class="step-num">1</span> Photos</div>
+    <div class="step-line"></div>
+    <div class="step" id="step2"><span class="step-num">2</span> Infos</div>
+    <div class="step-line"></div>
+    <div class="step" id="step3"><span class="step-num">3</span> Génération</div>
+    <div class="step-line"></div>
+    <div class="step" id="step4"><span class="step-num">4</span> Publication</div>
+  </div>
+
+  <!-- Photos -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📸</span>Photos de l'article</div>
+    <div class="upload-zone" id="uploadZone">
+      <input type="file" id="fileInput" accept="image/*" multiple />
+      <span class="upload-icon">🖼️</span>
+      <p><strong>Clique ou glisse tes photos ici</strong><br>JPG, PNG, WEBP — jusqu'à 8 photos</p>
+    </div>
+    <div class="preview-grid" id="previewGrid"></div>
+  </div>
+
+  <!-- Infos -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📝</span>Informations de l'article</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Catégorie</label>
+        <select id="category">
+          <option value="">Sélectionner...</option>
+          <option>Vêtements femme</option><option>Vêtements homme</option><option>Vêtements enfant</option>
+          <option>Chaussures femme</option><option>Chaussures homme</option><option>Sacs & accessoires</option>
+          <option>Électronique</option><option>Maison & déco</option><option>Sport & loisirs</option>
+          <option>Jouets & jeux</option><option>Livres & médias</option><option>Autre</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>État</label>
+        <select id="condition">
+          <option>Neuf avec étiquette</option><option>Neuf sans étiquette</option>
+          <option selected>Très bon état</option><option>Bon état</option><option>Satisfaisant</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Marque (optionnel)</label><input type="text" id="brand" placeholder="ex: Zara, Nike, H&M..." /></div>
+      <div class="form-group"><label>Taille (optionnel)</label><input type="text" id="size" placeholder="ex: M, 38, 42..." /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Prix souhaité (€)</label><input type="number" id="price" placeholder="ex: 25" min="1" /></div>
+      <div class="form-group"><label>Mots-clés / détails</label><input type="text" id="keywords" placeholder="ex: vintage, coton, rayures..." /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group full"><label>Notes supplémentaires</label><textarea id="notes" rows="2" placeholder="Imperfections, raisons de la vente..."></textarea></div>
+    </div>
+  </div>
+
+  <button class="btn-generate" id="generateBtn" onclick="generateListing()">
+    <span>✦ Générer l'annonce avec l'IA</span>
+  </button>
+  <div class="error-msg" id="errorMsg"></div>
+
+  <!-- Result -->
+  <div class="result-card" id="resultCard">
+    <div class="result-header">
+      <h2>Annonce générée</h2>
+      <span style="font-size:12px;color:var(--muted)">Copie chaque section sur Vinted</span>
+    </div>
+    <div class="result-body">
+      <div class="result-field">
+        <div class="result-field-header"><span class="result-field-label">📌 Titre</span><button class="copy-btn" onclick="copyField('titleResult', this)">Copier</button></div>
+        <div class="result-content result-title-big" id="titleResult"></div>
+      </div>
+      <div class="result-field">
+        <div class="result-field-header"><span class="result-field-label">💰 Prix recommandé</span></div>
+        <div id="priceResult"></div>
+      </div>
+      <div class="result-field">
+        <div class="result-field-header"><span class="result-field-label">📄 Description</span><button class="copy-btn" onclick="copyField('descResult', this)">Copier</button></div>
+        <div class="result-content" id="descResult"></div>
+      </div>
+      <div class="result-field">
+        <div class="result-field-header"><span class="result-field-label"># Hashtags</span><button class="copy-btn" onclick="copyTags(this)">Copier</button></div>
+        <div class="tags-container" id="tagsResult"></div>
+        <div style="display:none" id="tagsText"></div>
+      </div>
+      <div class="divider"></div>
+      <div class="result-field">
+        <div class="result-field-header"><span class="result-field-label">✅ Checklist avant publication</span><span class="result-field-label" id="checkProgress">0/10</span></div>
+        <div class="progress-wrapper"><div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div><span class="progress-label" id="progressLabel">0%</span></div>
+        <div class="checklist">
+          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Au moins 3 photos de qualité (face, dos, détails)</div></div>
+          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Photo principale sur fond clair ou porté</div></div>
+          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Titre copié-collé (60 caractères max)</div></div>
+          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Description complète collée</div></div>
+          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Bonne catégorie sélectionnée</div></div>
+          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">État de l'article correctement indiqué</div></div>
+          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Taille et marque renseignées</div></div>
+          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Prix cohérent avec le marché Vinted</div></div>
+          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Frais de port configurés (Mondial Relay / Colissimo)</div></div>
+          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Annonce publiée et partagée</div></div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="result-field">
+        <div class="result-field-header"><span class="result-field-label">🚀 Comment publier sur Vinted</span></div>
+        <div class="posting-steps">
+          <div class="posting-step">Ouvre l'app Vinted → appuie sur <strong style="color:var(--text);margin:0 4px">Vendre</strong> (bouton +)</div>
+          <div class="posting-step">Upload tes photos dans l'ordre : principale en premier</div>
+          <div class="posting-step">Colle le titre généré dans le champ "Titre"</div>
+          <div class="posting-step">Sélectionne la catégorie, la marque, la taille et l'état</div>
+          <div class="posting-step">Colle la description dans le champ "Description"</div>
+          <div class="posting-step">Entre le prix et configure les options d'envoi</div>
+          <div class="posting-step">Vérifie tout avec la checklist puis publie !</div>
+        </div>
+      </div>
+      <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap">
+        <a href="https://www.vinted.fr/sell" target="_blank" class="btn-secondary">🛍️ Ouvrir Vinted</a>
+        <button class="btn-secondary" onclick="resetForm()">🔄 Nouvelle annonce</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let uploadedImages = [];
+
+  const fileInput = document.getElementById('fileInput');
+  const uploadZone = document.getElementById('uploadZone');
+  fileInput.addEventListener('change', handleFiles);
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+  uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('dragover'); handleFiles({ target: { files: e.dataTransfer.files } }); });
+
+  function handleFiles(e) {
+    Array.from(e.target.files).forEach(file => {
+      if (!file.type.startsWith('image/') || uploadedImages.length >= 8) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        uploadedImages.push({ base64: ev.target.result.split(',')[1], type: file.type, preview: ev.target.result });
+        renderPreviews();
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function renderPreviews() {
+    const grid = document.getElementById('previewGrid');
+    grid.innerHTML = '';
+    uploadedImages.forEach((img, i) => {
+      const div = document.createElement('div');
+      div.className = 'preview-item';
+      div.innerHTML = `<img src="${img.preview}"><button class="remove-btn" onclick="removeImg(${i})">×</button>`;
+      grid.appendChild(div);
+    });
+    if (uploadedImages.length > 0) { document.getElementById('step1').classList.add('done'); document.getElementById('step1').classList.remove('active'); }
+  }
+
+  function removeImg(i) { uploadedImages.splice(i, 1); renderPreviews(); }
+
+  async function generateListing() {
+    const category = document.getElementById('category').value;
+    const price = document.getElementById('price').value.trim();
+    const errorMsg = document.getElementById('errorMsg');
+    errorMsg.classList.remove('visible');
+
+    if (!category) { showError("⚠️ Sélectionne une catégorie."); return; }
+    if (!price) { showError("⚠️ Entre un prix souhaité."); return; }
+
+    const btn = document.getElementById('generateBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div> Génération en cours...';
+    document.getElementById('step2').classList.add('done');
+    document.getElementById('step3').classList.add('active');
+
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category,
+          condition: document.getElementById('condition').value,
+          brand: document.getElementById('brand').value.trim(),
+          size: document.getElementById('size').value.trim(),
+          price,
+          keywords: document.getElementById('keywords').value.trim(),
+          notes: document.getElementById('notes').value.trim(),
+          images: uploadedImages.slice(0, 4).map(i => ({ data: i.base64, type: i.type }))
+        })
+      });
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Erreur serveur');
+
+      displayResult(result, price);
+      document.getElementById('step3').classList.add('done');
+      document.getElementById('step4').classList.add('active');
+    } catch (e) {
+      showError(`❌ Erreur : ${e.message}`);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<span>✦ Générer l\'annonce avec l\'IA</span>';
+    }
+  }
+
+  function displayResult(r, userPrice) {
+    document.getElementById('titleResult').textContent = r.titre || '';
+    document.getElementById('descResult').textContent = r.description || '';
+
+    const priceVal = r.prix_recommande || userPrice;
+    const diff = parseFloat(priceVal) - parseFloat(userPrice);
+    let diffHtml = Math.abs(diff) > 0.5 ? `<span style="font-size:12px;color:${diff>0?'var(--accent)':'var(--accent3)'};margin-left:12px">${diff>0?'+':''}${diff.toFixed(0)}€ vs ton prix</span>` : '';
+    document.getElementById('priceResult').innerHTML = `<div class="price-badge">💶 ${priceVal}€</div>${diffHtml}`;
+
+    const tagsContainer = document.getElementById('tagsResult');
+    tagsContainer.innerHTML = '';
+    const tags = r.hashtags || [];
+    tags.forEach(t => { const s = document.createElement('span'); s.className = 'tag'; s.textContent = t.startsWith('#') ? t : `#${t}`; tagsContainer.appendChild(s); });
+    document.getElementById('tagsText').textContent = tags.map(t => t.startsWith('#') ? t : `#${t}`).join(' ');
+
+    document.getElementById('resultCard').classList.add('visible');
+    document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function copyField(id, btn) {
+    navigator.clipboard.writeText(document.getElementById(id).textContent).then(() => {
+      btn.textContent = '✓ Copié !'; btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copier'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+  function copyTags(btn) {
+    navigator.clipboard.writeText(document.getElementById('tagsText').textContent).then(() => {
+      btn.textContent = '✓ Copié !'; btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copier'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  function toggleCheck(el) { el.classList.toggle('checked'); updateProgress(); }
+  function updateProgress() {
+    const total = document.querySelectorAll('.check-item').length;
+    const checked = document.querySelectorAll('.check-item.checked').length;
+    const pct = Math.round((checked/total)*100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = pct + '%';
+    document.getElementById('checkProgress').textContent = `${checked}/${total}`;
+  }
+
+  function showError(msg) { const el = document.getElementById('errorMsg'); el.textContent = msg; el.classList.add('visible'); }
+
+  function resetForm() {
+    uploadedImages = []; renderPreviews();
+    ['brand','size','price','keywords','notes'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('resultCard').classList.remove('visible');
+    document.getElementById('errorMsg').classList.remove('visible');
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('done','active'));
+    document.getElementById('step1').classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
