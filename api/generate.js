@@ -10,62 +10,95 @@ module.exports = async function handler(req, res) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'Clé API manquante côté serveur.' });
 
-  const prompt = `Tu es un expert en vente sur Vinted France avec des années d'expérience. Tu connais parfaitement ce qui fait vendre : des titres percutants, des descriptions humaines et sincères, et des prix compétitifs.
+  // Construction de la requête de recherche Vinted
+  const searchTerms = [brand, keywords, category].filter(Boolean).join(' ');
+  const vintedSearchUrl = `https://www.vinted.fr/catalog?search_text=${encodeURIComponent(searchTerms)}`;
 
-ARTICLE À VENDRE :
+  const prompt = `Tu es un vendeur Vinted expérimenté en France. Tu génères des annonces authentiques, directes et efficaces.
+
+ARTICLE :
 - Catégorie : ${category}
 - État : ${condition}
 ${brand ? `- Marque : ${brand}` : ''}
-${size ? `- Taille/Format : ${size}` : ''}
+${size ? `- Taille : ${size}` : ''}
 - Prix vendeur : ${price}€
 ${keywords ? `- Détails : ${keywords}` : ''}
-${notes ? `- Notes du vendeur : ${notes}` : ''}
-${images && images.length > 0 ? `- ${images.length} photo(s) jointe(s) — analyse-les pour enrichir la description.` : ''}
+${notes ? `- Notes : ${notes}` : ''}
+${images && images.length > 0 ? `- ${images.length} photo(s) — analyse-les avec précision.` : ''}
 
-INSTRUCTIONS STRICTES :
+---
 
-TITRE (max 60 caractères) :
-- Commence par la marque si connue et prestigieuse
-- Mentionne l'article exact + caractéristique clé (couleur, matière, style)
-- Évite les mots génériques comme "Beau", "Super", "Magnifique"
-- Exemples de bons titres : "Nike Air Force 1 blanc taille 42 neuf", "Robe fleurie Zara taille M été", "iPhone 13 128Go noir excellent état"
+RÈGLES STRICTES POUR LE TITRE :
+- 50-60 caractères max
+- Format : [Marque] + [article précis] + [détail clé] + [taille si pertinent]
+- Exemples corrects : "Veste The North Face noire taille L imperméable", "Robe Sandro Paris fleurie taille 36", "AirPods Pro 2 boitier MagSafe état neuf"
+- Interdit : adjectifs subjectifs ("beau", "super", "nickel"), majuscules excessives, points d'exclamation
 
-PRIX :
-- Analyse le marché Vinted réel pour cet article
-- Pour du neuf avec étiquette : 40-60% du prix boutique
-- Pour très bon état : 25-40% du prix boutique  
-- Pour bon état : 15-25% du prix boutique
-- Sois compétitif mais pas bradé — ajuste le prix du vendeur si nécessaire
-- Retourne uniquement le chiffre, sans symbole €
+---
 
-DESCRIPTION (5-8 lignes) :
-- Ton naturel, chaleureux, comme si tu parlais à un ami
-- Commence par décrire l'article concrètement (couleur, matière, coupe, style)
-- Mentionne l'état honnêtement avec des détails précis
-- Ajoute 1-2 arguments vendeurs (rare, tendance, polyvalent, etc.)
-- Termine par une phrase sympa sur l'envoi/échange
-- Utilise des emojis pertinents mais pas excessifs (3-5 max)
-- JAMAIS de phrases robotiques comme "N'hésitez pas à me contacter"
-- JAMAIS de fautes d'orthographe
+RÈGLES STRICTES POUR LA DESCRIPTION :
+Écris comme un vrai vendeur Vinted — pas comme un robot ou un publicitaire.
 
-HASHTAGS (exactement 8) :
-- Mix de hashtags génériques populaires ET spécifiques à l'article
-- Inclus toujours : la marque (si connue), la catégorie, l'état, le style
-- Exemples : #nike #streetwear #sneakers #vintage #zara #robe #tendance #mode
-- Sans le # dans le JSON, juste le mot
+Structure exacte à respecter :
+Ligne 1 : Description factuelle de l'article (couleur précise, matière si visible, coupe, modèle exact si connu)
+Ligne 2 : État réel avec des détails honnêtes (porté X fois, lavé en machine, petite marque à tel endroit ou rien à signaler)
+Ligne 3 : Ce qui justifie le prix ou rend l'article intéressant (modèle discontinued, coloris rare, taille difficile à trouver...)
+Ligne 4 : Infos pratiques (envoi via Mondial Relay ou Colissimo, échange possible ou non, négociation ok/non)
 
-Réponds UNIQUEMENT en JSON valide, sans markdown, sans commentaires :
+Emojis : 2-3 maximum, placés naturellement, jamais en début de ligne
+Longueur : 4-5 lignes, pas plus
+Ton : factuel, honnête, humain — comme si tu textos à quelqu'un
+
+INTERDIT dans la description :
+- "Superbe", "magnifique", "beau", "nickel", "top", "parfait", "incroyable"
+- "N'hésitez pas", "Envoi soigné", "À saisir", "Rare", "Pépite"
+- Phrases en majuscules
+- Plus de 3 emojis
+- Répéter les infos du titre
+
+---
+
+RÈGLES POUR LE PRIX :
+Analyse le marché réel pour cet article exact sur Vinted France.
+Fourchettes typiques selon l'état :
+- Neuf avec étiquette : 45-65% du prix boutique neuf
+- Neuf sans étiquette : 35-50% du prix boutique
+- Très bon état : 25-40% du prix boutique
+- Bon état : 15-25% du prix boutique
+- Satisfaisant : 10-15% du prix boutique
+
+Si le prix vendeur (${price}€) est dans la bonne fourchette, conserve-le.
+Si il est trop haut ou trop bas de plus de 15%, ajuste-le.
+Retourne uniquement le chiffre entier.
+
+---
+
+RÈGLES POUR LES HASHTAGS (exactement 8) :
+- Pertinents et spécifiques à CET article précis
+- Mix : 2-3 hashtags très populaires + 3-4 hashtags ciblés + 1-2 hashtags de niche
+- Inclure : marque (si connue), catégorie précise, style vestimentaire, occasion/usage
+- Exemples pour une veste : northface, outdoor, randonnee, veste, imperméable, trekking, montagne, sportswear
+- Exemples pour téléphone : iphone, apple, smartphone, reconditionné, hightech, ios, telephone, apple
+- Sans # dans le JSON
+
+---
+
+Réponds UNIQUEMENT en JSON valide strict, sans markdown, sans texte avant ou après :
 {
   "titre": "...",
   "prix_recommande": "...",
   "description": "...",
-  "hashtags": ["...", "...", "...", "...", "...", "...", "...", "..."]
+  "hashtags": ["...", "...", "...", "...", "...", "...", "...", "..."],
+  "vinted_search_url": "${vintedSearchUrl}"
 }`;
 
   const content = [];
   if (images && images.length > 0) {
     images.slice(0, 4).forEach(img => {
-      content.push({ type: 'image', source: { type: 'base64', media_type: img.type, data: img.data } });
+      content.push({
+        type: 'image',
+        source: { type: 'base64', media_type: img.type, data: img.data }
+      });
     });
   }
   content.push({ type: 'text', text: prompt });
@@ -86,10 +119,18 @@ Réponds UNIQUEMENT en JSON valide, sans markdown, sans commentaires :
     });
 
     const data = await response.json();
-    if (!response.ok) return res.status(response.status).json({ error: data.error?.message || 'Erreur API' });
+    if (!response.ok) {
+      return res.status(response.status).json({ error: data.error?.message || 'Erreur API Anthropic' });
+    }
 
-    const text = data.content[0].text.trim().replace(/```json|```/g, '').trim();
-    const result = JSON.parse(text);
+    const rawText = data.content[0].text.trim().replace(/```json|```/g, '').trim();
+    const result = JSON.parse(rawText);
+
+    // Toujours inclure l'URL de recherche Vinted
+    if (!result.vinted_search_url) {
+      result.vinted_search_url = vintedSearchUrl;
+    }
+
     res.status(200).json(result);
   } catch (e) {
     res.status(500).json({ error: e.message });
