@@ -11,14 +11,3 @@
     }
   ]
 }
-```
-
-**③ Commit** → attends le redéploiement
-
-Puis vérifie que dans GitHub la structure est exactement :
-```
-api/
-  generate.js
-public/
-  index.html
-vercel.json
