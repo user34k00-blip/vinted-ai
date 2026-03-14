@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -7,29 +7,14 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { category, condition, brand, size, price, keywords, notes, images } = req.body;
-
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'Clé API manquante côté serveur.' });
 
-  const prompt = `Tu es un expert en vente sur Vinted en France. Tu dois créer une annonce ultra-optimisée pour maximiser les ventes.
+  const prompt = `Tu es un expert en vente sur Vinted en France. Crée une annonce ultra-optimisée.
+Catégorie: ${category}, État: ${condition}${brand ? ', Marque: '+brand : ''}${size ? ', Taille: '+size : ''}, Prix: ${price}€${keywords ? ', Détails: '+keywords : ''}${notes ? ', Notes: '+notes : ''}
 
-Informations de l'article :
-- Catégorie : ${category}
-- État : ${condition}
-${brand ? `- Marque : ${brand}` : ''}
-${size ? `- Taille : ${size}` : ''}
-- Prix souhaité par le vendeur : ${price}€
-${keywords ? `- Mots-clés / détails : ${keywords}` : ''}
-${notes ? `- Notes : ${notes}` : ''}
-${images?.length > 0 ? `- ${images.length} photo(s) fournie(s).` : ''}
-
-Génère une annonce Vinted complète. Réponds UNIQUEMENT en JSON valide, sans balises markdown, avec exactement cette structure :
-{
-  "titre": "Titre accrocheur max 60 caractères, avec marque si connue, état, élément clé",
-  "prix_recommande": "prix en chiffre seul",
-  "description": "Description de 5-8 lignes avec emojis. 1) Description article 2) Points forts/état 3) Dimensions/taille 4) Infos envoi. Ton chaleureux et vendeur.",
-  "hashtags": ["tag1","tag2","tag3","tag4","tag5","tag6","tag7","tag8"]
-}`;
+Réponds UNIQUEMENT en JSON valide sans markdown:
+{"titre":"titre max 60 chars","prix_recommande":"prix","description":"5-8 lignes avec emojis","hashtags":["tag1","tag2","tag3","tag4","tag5","tag6","tag7","tag8"]}`;
 
   const content = [];
   if (images?.length > 0) {
