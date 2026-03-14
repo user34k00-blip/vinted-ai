@@ -182,7 +182,6 @@
     <div class="step" id="step4"><span class="step-num">4</span> Publication</div>
   </div>
 
-  <!-- Photos -->
   <div class="card">
     <div class="card-title"><span class="icon">📸</span>Photos de l'article</div>
     <div class="upload-zone" id="uploadZone">
@@ -193,7 +192,6 @@
     <div class="preview-grid" id="previewGrid"></div>
   </div>
 
-  <!-- Infos -->
   <div class="card">
     <div class="card-title"><span class="icon">📝</span>Informations de l'article</div>
     <div class="form-row">
@@ -233,7 +231,6 @@
   </button>
   <div class="error-msg" id="errorMsg"></div>
 
-  <!-- Result -->
   <div class="result-card" id="resultCard">
     <div class="result-header">
       <h2>Annonce générée</h2>
@@ -305,13 +302,27 @@
   uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
   uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('dragover'); handleFiles({ target: { files: e.dataTransfer.files } }); });
 
+  // ✅ NOUVELLE FONCTION avec compression d'images
   function handleFiles(e) {
     Array.from(e.target.files).forEach(file => {
       if (!file.type.startsWith('image/') || uploadedImages.length >= 8) return;
       const reader = new FileReader();
       reader.onload = ev => {
-        uploadedImages.push({ base64: ev.target.result.split(',')[1], type: file.type, preview: ev.target.result });
-        renderPreviews();
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX = 800;
+          let w = img.width, h = img.height;
+          if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+          if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
+          canvas.width = w;
+          canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          const compressed = canvas.toDataURL('image/jpeg', 0.7);
+          uploadedImages.push({ base64: compressed.split(',')[1], type: 'image/jpeg', preview: compressed });
+          renderPreviews();
+        };
+        img.src = ev.target.result;
       };
       reader.readAsDataURL(file);
     });
@@ -326,7 +337,10 @@
       div.innerHTML = `<img src="${img.preview}"><button class="remove-btn" onclick="removeImg(${i})">×</button>`;
       grid.appendChild(div);
     });
-    if (uploadedImages.length > 0) { document.getElementById('step1').classList.add('done'); document.getElementById('step1').classList.remove('active'); }
+    if (uploadedImages.length > 0) {
+      document.getElementById('step1').classList.add('done');
+      document.getElementById('step1').classList.remove('active');
+    }
   }
 
   function removeImg(i) { uploadedImages.splice(i, 1); renderPreviews(); }
@@ -388,7 +402,12 @@
     const tagsContainer = document.getElementById('tagsResult');
     tagsContainer.innerHTML = '';
     const tags = r.hashtags || [];
-    tags.forEach(t => { const s = document.createElement('span'); s.className = 'tag'; s.textContent = t.startsWith('#') ? t : `#${t}`; tagsContainer.appendChild(s); });
+    tags.forEach(t => {
+      const s = document.createElement('span');
+      s.className = 'tag';
+      s.textContent = t.startsWith('#') ? t : `#${t}`;
+      tagsContainer.appendChild(s);
+    });
     document.getElementById('tagsText').textContent = tags.map(t => t.startsWith('#') ? t : `#${t}`).join(' ');
 
     document.getElementById('resultCard').classList.add('visible');
@@ -401,6 +420,7 @@
       setTimeout(() => { btn.textContent = 'Copier'; btn.classList.remove('copied'); }, 2000);
     });
   }
+
   function copyTags(btn) {
     navigator.clipboard.writeText(document.getElementById('tagsText').textContent).then(() => {
       btn.textContent = '✓ Copié !'; btn.classList.add('copied');
@@ -409,6 +429,7 @@
   }
 
   function toggleCheck(el) { el.classList.toggle('checked'); updateProgress(); }
+
   function updateProgress() {
     const total = document.querySelectorAll('.check-item').length;
     const checked = document.querySelectorAll('.check-item.checked').length;
@@ -418,7 +439,11 @@
     document.getElementById('checkProgress').textContent = `${checked}/${total}`;
   }
 
-  function showError(msg) { const el = document.getElementById('errorMsg'); el.textContent = msg; el.classList.add('visible'); }
+  function showError(msg) {
+    const el = document.getElementById('errorMsg');
+    el.textContent = msg;
+    el.classList.add('visible');
+  }
 
   function resetForm() {
     uploadedImages = []; renderPreviews();
