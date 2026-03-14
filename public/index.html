@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VintedAI — Générateur d'annonces</title>
+<title>Vinted x AI by kzr</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -20,13 +20,227 @@
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+  /* ============ SPLASH SCREEN ============ */
+  #splash {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    overflow: hidden;
+  }
+
+  /* Fond animé splash */
+  #splash::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 800px 600px at 20% 30%, rgba(123,94,248,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 600px 500px at 80% 70%, rgba(9,249,176,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 400px 300px at 50% 50%, rgba(123,94,248,0.06) 0%, transparent 70%);
+    animation: bgPulse 4s ease-in-out infinite alternate;
+  }
+  @keyframes bgPulse {
+    0% { opacity: 0.6; }
+    100% { opacity: 1; }
+  }
+
+  /* Grille décorative */
+  #splash::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(42,42,58,0.3) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(42,42,58,0.3) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .splash-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    animation: splashIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes splashIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .splash-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(9,249,176,0.08);
+    border: 1px solid rgba(9,249,176,0.2);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    animation: splashIn 0.8s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .splash-tag .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.7)} }
+
+  .splash-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.8rem, 8vw, 5.5rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin-bottom: 8px;
+    animation: splashIn 0.8s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .splash-title .word-vinted { color: var(--text); }
+  .splash-title .word-x { color: var(--muted); margin: 0 8px; font-weight: 400; }
+  .splash-title .word-ai {
+    background: linear-gradient(135deg, var(--accent) 0%, #06d4a0 40%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease infinite, splashIn 0.8s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .splash-by {
+    font-family: 'DM Sans', sans-serif;
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    font-weight: 300;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 48px;
+    animation: splashIn 0.8s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .splash-by span {
+    color: var(--accent2);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  .splash-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 48px;
+    background: linear-gradient(135deg, var(--accent), #06d4a0);
+    border: none;
+    border-radius: 100px;
+    color: var(--bg);
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: splashIn 0.8s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+    overflow: hidden;
+  }
+  .splash-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .splash-btn:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 20px 60px rgba(9,249,176,0.35), 0 0 0 1px rgba(9,249,176,0.3);
+  }
+  .splash-btn:hover::before { opacity: 1; }
+  .splash-btn:active { transform: translateY(-1px) scale(1.01); }
+
+  .splash-btn-arrow {
+    transition: transform 0.3s;
+    font-size: 18px;
+  }
+  .splash-btn:hover .splash-btn-arrow { transform: translateX(4px); }
+
+  /* Particules décoratives */
+  .splash-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+    animation: orbFloat 6s ease-in-out infinite;
+  }
+  .splash-orb-1 {
+    width: 300px; height: 300px;
+    background: rgba(123,94,248,0.15);
+    top: -100px; left: -100px;
+    animation-delay: 0s;
+  }
+  .splash-orb-2 {
+    width: 200px; height: 200px;
+    background: rgba(9,249,176,0.1);
+    bottom: -50px; right: -50px;
+    animation-delay: -3s;
+  }
+  .splash-orb-3 {
+    width: 150px; height: 150px;
+    background: rgba(123,94,248,0.08);
+    bottom: 20%; left: 10%;
+    animation-delay: -1.5s;
+  }
+  @keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(15px, -20px) scale(1.05); }
+    66% { transform: translate(-10px, 10px) scale(0.95); }
+  }
+
+  /* Transition sortie splash */
+  #splash.hide {
+    animation: splashOut 0.6s cubic-bezier(0.4, 0, 1, 1) forwards;
+  }
+  @keyframes splashOut {
+    0% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(1.04); pointer-events: none; }
+  }
+
+  /* ============ APP PRINCIPALE ============ */
+  #app {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  #app.visible {
+    display: block;
+    animation: appIn 0.5s 0.3s ease forwards;
+  }
+  @keyframes appIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
   body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse 600px 400px at 10% 20%, rgba(123,94,248,0.08) 0%, transparent 70%), radial-gradient(ellipse 500px 350px at 90% 80%, rgba(9,249,176,0.06) 0%, transparent 70%); pointer-events: none; z-index: 0; }
   .wrapper { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
 
   header { text-align: center; margin-bottom: 56px; }
   .logo-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 100px; padding: 6px 16px; font-size: 12px; font-weight: 500; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 20px; }
   .logo-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
   h1 { font-family: 'Syne', sans-serif; font-size: clamp(2.2rem,5vw,3.2rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 14px; }
   h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
   header p { color: var(--muted); font-size: 1rem; font-weight: 300; max-width: 480px; margin: 0 auto; line-height: 1.6; }
@@ -96,19 +310,7 @@
   .tags-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
   .tag { background: rgba(9,249,176,0.08); border: 1px solid rgba(9,249,176,0.2); border-radius: 100px; padding: 4px 12px; font-size: 12px; color: var(--accent); }
 
-  /* Vinted comparison banner */
-  .vinted-compare {
-    background: linear-gradient(135deg, rgba(123,94,248,0.08), rgba(9,249,176,0.05));
-    border: 1px solid rgba(123,94,248,0.25);
-    border-radius: 14px;
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-  }
+  .vinted-compare { background: linear-gradient(135deg, rgba(123,94,248,0.08), rgba(9,249,176,0.05)); border: 1px solid rgba(123,94,248,0.25); border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
   .vinted-compare-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
   .vinted-compare-text strong { color: var(--text); display: block; margin-bottom: 2px; font-size: 14px; }
   .btn-vinted-search { display: inline-flex; align-items: center; gap: 8px; background: rgba(123,94,248,0.15); border: 1px solid rgba(123,94,248,0.4); border-radius: 10px; padding: 10px 18px; color: var(--accent2); font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.2s; white-space: nowrap; font-family: 'DM Sans', sans-serif; }
@@ -149,9 +351,30 @@
 </style>
 </head>
 <body>
+
+<!-- ============ SPLASH SCREEN ============ -->
+<div id="splash">
+  <div class="splash-orb splash-orb-1"></div>
+  <div class="splash-orb splash-orb-2"></div>
+  <div class="splash-orb splash-orb-3"></div>
+  <div class="splash-content">
+    <div class="splash-tag"><span class="dot"></span>Générateur d'annonces</div>
+    <div class="splash-title">
+      <span class="word-vinted">Vinted</span><span class="word-x">×</span><span class="word-ai">AI</span>
+    </div>
+    <div class="splash-by">by <span>kzr</span></div>
+    <button class="splash-btn" onclick="enterApp()">
+      Click here
+      <span class="splash-btn-arrow">→</span>
+    </button>
+  </div>
+</div>
+
+<!-- ============ APP PRINCIPALE ============ -->
+<div id="app">
 <div class="wrapper">
   <header>
-    <div class="logo-badge"><span class="dot"></span>VintedAI — Outil de vente</div>
+    <div class="logo-badge"><span class="dot"></span>Vinted x AI by kzr</div>
     <h1>Génère tes annonces<br><span>en quelques secondes</span></h1>
     <p>Upload tes photos, donne le prix, l'IA crée le titre et la description parfaite pour maximiser tes ventes.</p>
   </header>
@@ -221,46 +444,31 @@
       <span style="font-size:12px;color:var(--muted)">Copie chaque section sur Vinted</span>
     </div>
     <div class="result-body">
-
-      <!-- Titre -->
       <div class="result-field">
         <div class="result-field-header"><span class="result-field-label">📌 Titre</span><button class="copy-btn" onclick="copyField('titleResult', this)">Copier</button></div>
         <div class="result-content result-title-big" id="titleResult"></div>
       </div>
-
-      <!-- Prix -->
       <div class="result-field">
         <div class="result-field-header"><span class="result-field-label">💰 Prix recommandé</span></div>
         <div id="priceResult"></div>
       </div>
-
-      <!-- Comparaison Vinted -->
       <div class="vinted-compare" id="vintedCompare" style="display:none">
         <div class="vinted-compare-text">
           <strong>🔍 Comparer avec le marché</strong>
           Vois ce que d'autres vendent pour le même article sur Vinted
         </div>
-        <a id="vintedSearchLink" href="#" target="_blank" class="btn-vinted-search">
-          Voir les annonces similaires →
-        </a>
+        <a id="vintedSearchLink" href="#" target="_blank" class="btn-vinted-search">Voir les annonces similaires →</a>
       </div>
-
-      <!-- Description -->
       <div class="result-field">
         <div class="result-field-header"><span class="result-field-label">📄 Description</span><button class="copy-btn" onclick="copyField('descResult', this)">Copier</button></div>
         <div class="result-content" id="descResult"></div>
       </div>
-
-      <!-- Hashtags -->
       <div class="result-field">
         <div class="result-field-header"><span class="result-field-label"># Hashtags</span><button class="copy-btn" onclick="copyTags(this)">Copier</button></div>
         <div class="tags-container" id="tagsResult"></div>
         <div style="display:none" id="tagsText"></div>
       </div>
-
       <div class="divider"></div>
-
-      <!-- Checklist -->
       <div class="result-field">
         <div class="result-field-header"><span class="result-field-label">✅ Checklist avant publication</span><span class="result-field-label" id="checkProgress">0/10</span></div>
         <div class="progress-wrapper"><div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div><span class="progress-label" id="progressLabel">0%</span></div>
@@ -277,10 +485,7 @@
           <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Annonce publiée et partagée</div></div>
         </div>
       </div>
-
       <div class="divider"></div>
-
-      <!-- Guide publication -->
       <div class="result-field">
         <div class="result-field-header"><span class="result-field-label">🚀 Comment publier sur Vinted</span></div>
         <div class="posting-steps">
@@ -293,7 +498,6 @@
           <div class="posting-step">Vérifie la checklist et publie !</div>
         </div>
       </div>
-
       <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap">
         <a href="https://www.vinted.fr/items/new" target="_blank" class="btn-secondary">🛍️ Poster sur Vinted</a>
         <button class="btn-secondary" onclick="resetForm()">🔄 Nouvelle annonce</button>
@@ -301,10 +505,22 @@
     </div>
   </div>
 </div>
+</div>
 
 <script>
-  let uploadedImages = [];
+  // ============ SPLASH ============
+  function enterApp() {
+    const splash = document.getElementById('splash');
+    const app = document.getElementById('app');
+    splash.classList.add('hide');
+    setTimeout(() => {
+      splash.style.display = 'none';
+      app.classList.add('visible');
+    }, 600);
+  }
 
+  // ============ APP ============
+  let uploadedImages = [];
   const fileInput = document.getElementById('fileInput');
   const uploadZone = document.getElementById('uploadZone');
   fileInput.addEventListener('change', handleFiles);
@@ -312,7 +528,6 @@
   uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
   uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('dragover'); handleFiles({ target: { files: e.dataTransfer.files } }); });
 
-  // Compression images avant envoi (évite erreur 413)
   function handleFiles(e) {
     Array.from(e.target.files).forEach(file => {
       if (!file.type.startsWith('image/') || uploadedImages.length >= 8) return;
@@ -325,8 +540,7 @@
           let w = img.width, h = img.height;
           if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
           if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
-          canvas.width = w;
-          canvas.height = h;
+          canvas.width = w; canvas.height = h;
           canvas.getContext('2d').drawImage(img, 0, 0, w, h);
           const compressed = canvas.toDataURL('image/jpeg', 0.7);
           uploadedImages.push({ base64: compressed.split(',')[1], type: 'image/jpeg', preview: compressed });
@@ -360,16 +574,13 @@
     const price = document.getElementById('price').value.trim();
     const errorMsg = document.getElementById('errorMsg');
     errorMsg.classList.remove('visible');
-
     if (!category) { showError("⚠️ Sélectionne une catégorie."); return; }
     if (!price) { showError("⚠️ Entre un prix souhaité."); return; }
-
     const btn = document.getElementById('generateBtn');
     btn.disabled = true;
     btn.innerHTML = '<div class="spinner"></div> Génération en cours...';
     document.getElementById('step2').classList.add('done');
     document.getElementById('step3').classList.add('active');
-
     try {
       const response = await fetch('/api/generate', {
         method: 'POST',
@@ -385,10 +596,8 @@
           images: uploadedImages.slice(0, 4).map(i => ({ data: i.base64, type: i.type }))
         })
       });
-
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Erreur serveur');
-
       displayResult(result, price);
       document.getElementById('step3').classList.add('done');
       document.getElementById('step4').classList.add('active');
@@ -401,42 +610,21 @@
   }
 
   function displayResult(r, userPrice) {
-    // Titre
     document.getElementById('titleResult').textContent = r.titre || '';
-
-    // Prix
     const priceVal = r.prix_recommande || userPrice;
     const diff = parseFloat(priceVal) - parseFloat(userPrice);
-    let diffHtml = '';
-    if (Math.abs(diff) > 0.5) {
-      const sign = diff > 0 ? '+' : '';
-      diffHtml = `<span style="font-size:12px;color:${diff > 0 ? 'var(--accent)' : 'var(--accent3)'};margin-left:12px">${sign}${diff.toFixed(0)}€ vs ton prix</span>`;
-    }
+    let diffHtml = Math.abs(diff) > 0.5 ? `<span style="font-size:12px;color:${diff>0?'var(--accent)':'var(--accent3)'};margin-left:12px">${diff>0?'+':''}${diff.toFixed(0)}€ vs ton prix</span>` : '';
     document.getElementById('priceResult').innerHTML = `<div class="price-badge">💶 ${priceVal}€</div>${diffHtml}`;
-
-    // Lien comparaison Vinted
     if (r.vinted_search_url) {
-      const compareEl = document.getElementById('vintedCompare');
-      const linkEl = document.getElementById('vintedSearchLink');
-      linkEl.href = r.vinted_search_url;
-      compareEl.style.display = 'flex';
+      document.getElementById('vintedSearchLink').href = r.vinted_search_url;
+      document.getElementById('vintedCompare').style.display = 'flex';
     }
-
-    // Description
     document.getElementById('descResult').textContent = r.description || '';
-
-    // Hashtags
     const tagsContainer = document.getElementById('tagsResult');
     tagsContainer.innerHTML = '';
     const tags = r.hashtags || [];
-    tags.forEach(t => {
-      const s = document.createElement('span');
-      s.className = 'tag';
-      s.textContent = t.startsWith('#') ? t : `#${t}`;
-      tagsContainer.appendChild(s);
-    });
+    tags.forEach(t => { const s = document.createElement('span'); s.className = 'tag'; s.textContent = t.startsWith('#') ? t : `#${t}`; tagsContainer.appendChild(s); });
     document.getElementById('tagsText').textContent = tags.map(t => t.startsWith('#') ? t : `#${t}`).join(' ');
-
     document.getElementById('resultCard').classList.add('visible');
     document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -447,38 +635,29 @@
       setTimeout(() => { btn.textContent = 'Copier'; btn.classList.remove('copied'); }, 2000);
     });
   }
-
   function copyTags(btn) {
     navigator.clipboard.writeText(document.getElementById('tagsText').textContent).then(() => {
       btn.textContent = '✓ Copié !'; btn.classList.add('copied');
       setTimeout(() => { btn.textContent = 'Copier'; btn.classList.remove('copied'); }, 2000);
     });
   }
-
   function toggleCheck(el) { el.classList.toggle('checked'); updateProgress(); }
-
   function updateProgress() {
     const total = document.querySelectorAll('.check-item').length;
     const checked = document.querySelectorAll('.check-item.checked').length;
-    const pct = Math.round((checked / total) * 100);
+    const pct = Math.round((checked/total)*100);
     document.getElementById('progressFill').style.width = pct + '%';
     document.getElementById('progressLabel').textContent = pct + '%';
     document.getElementById('checkProgress').textContent = `${checked}/${total}`;
   }
-
-  function showError(msg) {
-    const el = document.getElementById('errorMsg');
-    el.textContent = msg;
-    el.classList.add('visible');
-  }
-
+  function showError(msg) { const el = document.getElementById('errorMsg'); el.textContent = msg; el.classList.add('visible'); }
   function resetForm() {
     uploadedImages = []; renderPreviews();
-    ['brand', 'size', 'price', 'keywords', 'notes'].forEach(id => document.getElementById(id).value = '');
+    ['brand','size','price','keywords','notes'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('resultCard').classList.remove('visible');
     document.getElementById('errorMsg').classList.remove('visible');
     document.getElementById('vintedCompare').style.display = 'none';
-    document.querySelectorAll('.step').forEach(s => s.classList.remove('done', 'active'));
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('done','active'));
     document.getElementById('step1').classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
