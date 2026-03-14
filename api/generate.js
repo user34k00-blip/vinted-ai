@@ -47,14 +47,23 @@ RÈGLES STRICTES POUR LE TITRE :
 ---
 
 RÈGLES STRICTES POUR LA DESCRIPTION :
-Écris 4 lignes factuelles et humaines.
+Écris 4 lignes factuelles et humaines, avec des emojis pertinents au début de chaque ligne.
 
-Ligne 1 : Description factuelle (couleur précise, matière, coupe, modèle exact)
-Ligne 2 : État réel honnête (jamais porté, porté X fois, rien à signaler...)
-Ligne 3 : Ce qui justifie le prix (modèle rare, coloris difficile à trouver, taille rare...)
-Ligne 4 : Infos pratiques (Mondial Relay ou Colissimo, échange possible ou non, prix ferme/négociable)
+Ligne 1 : 👕 (ou emoji adapté à l'article) + Description factuelle (couleur précise, matière, coupe, modèle exact)
+Ligne 2 : 🏷️ + État réel honnête (jamais porté, porté X fois, rien à signaler...)
+Ligne 3 : 💎 + Ce qui justifie le prix (modèle rare, coloris difficile à trouver, taille rare...)
+Ligne 4 : 📮 + Infos pratiques (Mondial Relay ou Colissimo, échange possible ou non, prix ferme/négociable)
 
-INTERDIT dans ces 4 lignes : "Superbe", "magnifique", "nickel", "top", "parfait", "N'hésitez pas", "À saisir", "Pépite" — max 2 emojis.
+Choix des emojis pour la ligne 1 selon la catégorie :
+- Vêtements : 👕 👗 🧥 👖 🧢 selon le type exact
+- Chaussures : 👟 👠 👞 👢
+- Sacs/accessoires : 👜 🎒 ⌚
+- Électronique : 📱 💻 🎮 🎧
+- Maison/déco : 🏠 🛋️ 🪴
+- Sport : ⚽ 🎾 🏋️ 🚴
+- Autre : ✨
+
+INTERDIT dans ces 4 lignes : "Superbe", "magnifique", "nickel", "top", "parfait", "N'hésitez pas", "À saisir", "Pépite"
 
 Après ces 4 lignes, ajoute EXACTEMENT cette signature sans rien modifier :
 ${signature}
