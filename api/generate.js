@@ -16,86 +16,89 @@ module.exports = async function handler(req, res) {
   const signatureMap = {
     'Neuf avec étiquette': '✨Article Neuf Avec Etiquette Jamais Porté✨',
     'Neuf sans étiquette': '✨Article Neuf Sans Etiquette✨',
-    'Très bon état': '✨Article en Très Bon État✨',
-    'Bon état': '✨Article en Bon État✨',
-    'Satisfaisant': '✨Article en État Satisfaisant✨'
+    'Très bon état':       '✨Article en Très Bon État✨',
+    'Bon état':            '✨Article en Bon État✨',
+    'Satisfaisant':        '✨Article en État Satisfaisant✨'
   };
   const firstLine = signatureMap[condition] || '✨Article en Très Bon État✨';
-
   const signature = `${firstLine}\n📦Emballage du colis soigné📦\n⌛Envoi du colis en 24H max⌛\n✅Article Authentique✅\n❗La procédure d'envoi du colis sera filmé du début à la fin pour éviter tout type d'arnaque❗`;
 
-  const prompt = `Tu es un vendeur Vinted sérieux et expérimenté en France. Tu génères des annonces authentiques, directes et efficaces.
+  const prompt = `Tu es un vendeur Vinted expert en France avec des centaines de ventes réussies. Ta mission : générer une annonce qui se démarque et vend vite.
 
-ARTICLE :
+ARTICLE À ANALYSER :
 - Catégorie : ${category}
 - État : ${condition}
-${brand ? `- Marque : ${brand}` : ''}
-${size ? `- Taille : ${size}` : ''}
+${brand ? `- Marque : ${brand}` : '- Marque : inconnue (détecte-la sur les photos si possible)'}
+${size ? `- Taille : ${size}` : '- Taille : non fournie (détecte-la sur l\'étiquette en photo si possible)'}
 - Prix vendeur : ${price}€
 ${keywords ? `- Détails : ${keywords}` : ''}
-${notes ? `- Notes : ${notes}` : ''}
-${images && images.length > 0 ? `- ${images.length} photo(s) — analyse-les avec précision.` : ''}
+${notes ? `- Notes vendeur : ${notes}` : ''}
+${images && images.length > 0 ? `- ${images.length} photo(s) jointe(s) — ANALYSE-LES EN PRIORITÉ : couleur exacte, matière, logo visible, étiquette, modèle précis, état réel.` : ''}
 
----
+━━━ TITRE ━━━
+Règles strictes :
+• 50-60 caractères maximum, compte précisément
+• Structure : [Marque] [type article] [couleur si visible] [taille si pertinente]
+• Si la marque est premium (Nike, Adidas, Stone Island, Supreme, etc.) → la mettre EN PREMIER
+• Inclure la couleur principale si détectable sur photo
+• INTERDIT : "beau", "super", "nickel", "top", "parfait", "rare", "✨", "🔥", majuscules excessives
+• Exemples parfaits :
+  - "Nike Dri-FIT jogging gris taille L jamais porté"
+  - "Veste Carhartt Detroit marron taille M très bon état"
+  - "iPhone 14 Pro 256Go violet débloqué"
+  - "Robe Zara fleurie blanche taille S étiquette"
 
-RÈGLES STRICTES POUR LE TITRE :
-- 50-60 caractères max
-- Format : [Marque] + [article précis] + [détail clé] + [taille si pertinent]
-- Exemples : "Veste The North Face noire taille L imperméable", "AirPods Pro 2 boitier MagSafe état neuf"
-- Interdit : adjectifs subjectifs ("beau", "super", "nickel"), majuscules excessives, points d'exclamation
+━━━ DESCRIPTION ━━━
+4 lignes seulement, structure EXACTE :
 
----
+Ligne 1 : [emoji selon catégorie ci-dessous] + description factuelle précise (modèle exact si visible sur photo, couleur précise, matière, coupe)
+Ligne 2 : 🏷️ + état réel avec détails concrets (jamais porté / porté 2-3 fois / lavé à 30° / étiquette encore attachée / aucun défaut visible)
+Ligne 3 : 💎 + ce qui justifie le prix objectivement (modèle sold out, collab limitée, coloris introuvable, taille difficile à trouver en neuf)
+Ligne 4 : 📮 + infos pratiques (Mondial Relay disponible / Colissimo suivi / pas d'échange / prix non négociable OU offres sérieuses acceptées)
 
-RÈGLES STRICTES POUR LA DESCRIPTION :
-Écris 4 lignes factuelles et humaines, avec des emojis pertinents au début de chaque ligne.
+Emojis ligne 1 selon catégorie :
+👕 t-shirt/polo | 👗 robe/jupe | 🧥 veste/manteau | 👖 pantalon/jean | 🧢 casquette/bonnet
+👟 sneakers | 👠 chaussures habillées | 👜 sac | ⌚ montre/bijou | 📱 smartphone
+💻 ordinateur | 🎮 jeux/consoles | 🏋️ sport/fitness | 📚 livres | 🏠 maison/déco
 
-Ligne 1 : 👕 (ou emoji adapté à l'article) + Description factuelle (couleur précise, matière, coupe, modèle exact)
-Ligne 2 : 🏷️ + État réel honnête (jamais porté, porté X fois, rien à signaler...)
-Ligne 3 : 💎 + Ce qui justifie le prix (modèle rare, coloris difficile à trouver, taille rare...)
-Ligne 4 : 📮 + Infos pratiques (Mondial Relay ou Colissimo, échange possible ou non, prix ferme/négociable)
+IMPORTANT sur le ton :
+• Factuel et direct, comme un message WhatsApp entre amis
+• 0 fioritures, 0 remplissage
+• Max 2 emojis dans ces 4 lignes (les emojis de début de ligne comptent)
+• INTERDIT : superbe, magnifique, beau, nickel, top, parfait, incroyable, n'hésitez pas, à saisir, pépite, rare, coup de cœur
 
-Choix des emojis pour la ligne 1 selon la catégorie :
-- Vêtements : 👕 👗 🧥 👖 🧢 selon le type exact
-- Chaussures : 👟 👠 👞 👢
-- Sacs/accessoires : 👜 🎒 ⌚
-- Électronique : 📱 💻 🎮 🎧
-- Maison/déco : 🏠 🛋️ 🪴
-- Sport : ⚽ 🎾 🏋️ 🚴
-- Autre : ✨
-
-INTERDIT dans ces 4 lignes : "Superbe", "magnifique", "nickel", "top", "parfait", "N'hésitez pas", "À saisir", "Pépite"
-
-Après ces 4 lignes, ajoute EXACTEMENT cette signature sans rien modifier :
+Après les 4 lignes, saute une ligne puis colle EXACTEMENT cette signature mot pour mot :
 ${signature}
 
----
+━━━ PRIX ━━━
+Analyse le marché Vinted pour cet article exact. Fourchettes :
+• Neuf avec étiquette → 45-65% du prix boutique neuf
+• Neuf sans étiquette → 35-50% du prix boutique
+• Très bon état → 25-40% du prix boutique
+• Bon état → 15-25% du prix boutique
+• Satisfaisant → 10-15% du prix boutique
 
-RÈGLES POUR LE PRIX :
-- Neuf avec étiquette : 45-65% du prix boutique
-- Neuf sans étiquette : 35-50%
-- Très bon état : 25-40%
-- Bon état : 15-25%
-- Satisfaisant : 10-15%
-Conserve ${price}€ si dans la fourchette. Sinon ajuste. Retourne uniquement le chiffre entier.
+Règle : si le prix vendeur (${price}€) est dans la fourchette → le conserver.
+Si trop haut de plus de 20% → ajuster à la baisse pour favoriser la vente rapide.
+Si trop bas → le conserver (c'est l'avantage du vendeur).
+Retourne UNIQUEMENT le chiffre entier, sans €.
 
----
+━━━ HASHTAGS (12 à 15) ━━━
+Répartition OBLIGATOIRE :
+• 2-3 hashtags de marque (marque principale + sous-marque si applicable)
+• 3-4 hashtags de catégorie précise (type article + sous-type)
+• 3-4 hashtags de style/usage (streetwear / casual / sport / vintage / luxe / workwear...)
+• 2-3 hashtags populaires sur Vinted (mode / tendance / vintedmode / secondemain / bonplan)
+• 1-2 hashtags ultra-spécifiques (coloris précis / modèle / collection / saison)
+Sans # dans le JSON, juste les mots en minuscules.
 
-RÈGLES POUR LES HASHTAGS (12 à 15 hashtags) :
-- 2-3 hashtags de marque
-- 3-4 hashtags de catégorie précise
-- 3-4 hashtags de style/usage (streetwear, casual, sport, vintage...)
-- 2-3 hashtags populaires Vinted (mode, tendance, vinted, vintedmode...)
-- 1-2 hashtags très spécifiques (coloris, modèle, collection...)
-- Sans # dans le JSON
-
----
-
-Réponds UNIQUEMENT en JSON valide strict, sans markdown :
+━━━ FORMAT DE RÉPONSE ━━━
+JSON valide strict, sans markdown, sans texte avant ou après :
 {
   "titre": "...",
   "prix_recommande": "...",
   "description": "...",
-  "hashtags": ["...", "...", "..."],
+  "hashtags": ["...", "...", "...", "...", "...", "...", "...", "...", "...", "...", "...", "...", "..."],
   "vinted_search_url": "${vintedSearchUrl}"
 }`;
 
@@ -110,8 +113,16 @@ Réponds UNIQUEMENT en JSON valide strict, sans markdown :
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1500, messages: [{ role: 'user', content }] })
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        messages: [{ role: 'user', content }]
+      })
     });
 
     const data = await response.json();
