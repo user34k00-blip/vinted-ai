@@ -7,520 +7,520 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --surface2: #1a1a26;
-    --border: #2a2a3a;
-    --accent: #09f9b0;
-    --accent2: #7b5ef8;
-    --accent3: #ff6b6b;
-    --text: #f0f0f8;
-    --muted: #6a6a8a;
-    --teal-glow: rgba(9,249,176,0.15);
+    --bg: #0a0a0f; --surface: #12121a; --surface2: #1a1a26; --border: #2a2a3a;
+    --accent: #09f9b0; --accent2: #7b5ef8; --accent3: #ff6b6b;
+    --text: #f0f0f8; --muted: #6a6a8a; --teal-glow: rgba(9,249,176,0.15);
   }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 600px 400px at 10% 20%,rgba(123,94,248,0.08) 0%,transparent 70%),radial-gradient(ellipse 500px 350px at 90% 80%,rgba(9,249,176,0.06) 0%,transparent 70%);pointer-events:none;z-index:0}
 
-  /* ============ SPLASH SCREEN ============ */
-  #splash {
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: var(--bg);
-    overflow: hidden;
-  }
+  /* SPLASH */
+  #splash{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);overflow:hidden}
+  #splash::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 800px 600px at 20% 30%,rgba(123,94,248,0.12) 0%,transparent 60%),radial-gradient(ellipse 600px 500px at 80% 70%,rgba(9,249,176,0.08) 0%,transparent 60%);animation:bgPulse 4s ease-in-out infinite alternate}
+  #splash::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(42,42,58,0.3) 1px,transparent 1px),linear-gradient(90deg,rgba(42,42,58,0.3) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%);pointer-events:none}
+  @keyframes bgPulse{0%{opacity:0.6}100%{opacity:1}}
+  .splash-content{position:relative;z-index:2;text-align:center;animation:splashIn 0.8s cubic-bezier(0.16,1,0.3,1) both}
+  @keyframes splashIn{from{opacity:0;transform:translateY(30px) scale(0.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+  .splash-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(9,249,176,0.08);border:1px solid rgba(9,249,176,0.2);border-radius:100px;padding:6px 16px;font-size:11px;font-weight:600;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:32px}
+  .splash-tag .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+  .splash-title{font-family:'Syne',sans-serif;font-size:clamp(2.8rem,8vw,5.5rem);font-weight:800;line-height:1;letter-spacing:-0.03em;margin-bottom:8px}
+  .splash-title .word-x{color:var(--muted);margin:0 8px;font-weight:400}
+  .splash-title .word-ai{background:linear-gradient(135deg,var(--accent) 0%,#06d4a0 40%,var(--accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .splash-by{font-size:clamp(1rem,2.5vw,1.3rem);font-weight:300;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:48px}
+  .splash-by span{color:var(--accent2);font-weight:600}
+  .splash-btn{position:relative;display:inline-flex;align-items:center;gap:12px;padding:18px 48px;background:linear-gradient(135deg,var(--accent),#06d4a0);border:none;border-radius:100px;color:var(--bg);font-family:'Syne',sans-serif;font-size:15px;font-weight:700;letter-spacing:0.04em;cursor:pointer;transition:all 0.3s cubic-bezier(0.16,1,0.3,1)}
+  .splash-btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 20px 60px rgba(9,249,176,0.35)}
+  .splash-orb{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none;animation:orbFloat 6s ease-in-out infinite}
+  .splash-orb-1{width:300px;height:300px;background:rgba(123,94,248,0.15);top:-100px;left:-100px}
+  .splash-orb-2{width:200px;height:200px;background:rgba(9,249,176,0.1);bottom:-50px;right:-50px;animation-delay:-3s}
+  @keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(15px,-20px) scale(1.05)}66%{transform:translate(-10px,10px) scale(0.95)}}
+  #splash.hide{animation:splashOut 0.6s cubic-bezier(0.4,0,1,1) forwards}
+  @keyframes splashOut{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.04);pointer-events:none}}
 
-  /* Fond animé splash */
-  #splash::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 800px 600px at 20% 30%, rgba(123,94,248,0.12) 0%, transparent 60%),
-      radial-gradient(ellipse 600px 500px at 80% 70%, rgba(9,249,176,0.08) 0%, transparent 60%),
-      radial-gradient(ellipse 400px 300px at 50% 50%, rgba(123,94,248,0.06) 0%, transparent 70%);
-    animation: bgPulse 4s ease-in-out infinite alternate;
-  }
-  @keyframes bgPulse {
-    0% { opacity: 0.6; }
-    100% { opacity: 1; }
-  }
+  /* AUTH MODAL */
+  .modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s}
+  .modal-overlay.visible{opacity:1;pointer-events:all}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:40px;width:100%;max-width:420px;margin:20px;animation:modalIn 0.3s cubic-bezier(0.16,1,0.3,1)}
+  @keyframes modalIn{from{opacity:0;transform:translateY(20px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+  .modal-title{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:6px}
+  .modal-sub{color:var(--muted);font-size:13px;margin-bottom:28px}
+  .modal-tabs{display:flex;gap:0;margin-bottom:28px;background:var(--surface2);border-radius:12px;padding:4px}
+  .modal-tab{flex:1;padding:10px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border-radius:9px;transition:all 0.2s}
+  .modal-tab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.3)}
+  .form-field{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+  .form-field label{font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em}
+  .form-field input{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s}
+  .form-field input:focus{border-color:var(--accent2)}
+  .btn-primary{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),#06d4a0);border:none;border-radius:12px;color:var(--bg);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.3s;margin-top:8px}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(9,249,176,0.3)}
+  .btn-primary:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+  .modal-error{background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.25);border-radius:8px;padding:10px 14px;color:#ff9090;font-size:12px;margin-top:12px;display:none}
+  .modal-error.visible{display:block}
 
-  /* Grille décorative */
-  #splash::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(42,42,58,0.3) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(42,42,58,0.3) 1px, transparent 1px);
-    background-size: 60px 60px;
-    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
-    pointer-events: none;
-  }
+  /* PAYWALL */
+  .paywall-overlay{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.85);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s}
+  .paywall-overlay.visible{opacity:1;pointer-events:all}
+  .paywall{background:var(--surface);border:1px solid rgba(123,94,248,0.3);border-radius:28px;padding:48px 40px;width:100%;max-width:460px;margin:20px;text-align:center}
+  .paywall-icon{font-size:3rem;margin-bottom:20px}
+  .paywall-title{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;margin-bottom:10px}
+  .paywall-sub{color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:32px}
+  .paywall-price{display:inline-flex;align-items:baseline;gap:4px;margin-bottom:32px}
+  .paywall-price .amount{font-family:'Syne',sans-serif;font-size:3.5rem;font-weight:800;color:var(--accent)}
+  .paywall-price .period{color:var(--muted);font-size:14px}
+  .paywall-features{display:flex;flex-direction:column;gap:10px;margin-bottom:32px;text-align:left}
+  .paywall-feature{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+  .paywall-feature::before{content:'✓';color:var(--accent);font-weight:700;flex-shrink:0}
+  .btn-subscribe{width:100%;padding:16px;background:linear-gradient(135deg,var(--accent2),#9b7bff);border:none;border-radius:14px;color:white;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.3s;margin-bottom:12px}
+  .btn-subscribe:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(123,94,248,0.4)}
+  .btn-subscribe:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+  .paywall-cancel{color:var(--muted);font-size:12px;cursor:pointer;border:none;background:transparent;text-decoration:underline}
 
-  .splash-content {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-    animation: splashIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-  @keyframes splashIn {
-    from { opacity: 0; transform: translateY(30px) scale(0.96); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-  }
+  /* APP */
+  #app{display:none;opacity:0}
+  #app.visible{display:block;animation:appIn 0.5s 0.3s ease forwards}
+  @keyframes appIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  .wrapper{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:40px 24px 80px}
 
-  .splash-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(9,249,176,0.08);
-    border: 1px solid rgba(9,249,176,0.2);
-    border-radius: 100px;
-    padding: 6px 16px;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--accent);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 32px;
-    animation: splashIn 0.8s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-  .splash-tag .dot {
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    background: var(--accent);
-    animation: pulse 2s infinite;
-  }
-  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.7)} }
+  /* TOPBAR */
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,10,15,0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between}
+  .topbar-logo{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--accent)}
+  .topbar-right{display:flex;align-items:center;gap:12px}
+  .quota-badge{background:var(--surface2);border:1px solid var(--border);border-radius:100px;padding:4px 12px;font-size:12px;color:var(--muted)}
+  .quota-badge span{color:var(--text);font-weight:600}
+  .btn-upgrade{background:linear-gradient(135deg,var(--accent2),#9b7bff);border:none;border-radius:100px;padding:6px 16px;color:white;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s}
+  .btn-upgrade:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(123,94,248,0.4)}
+  .btn-logout{background:transparent;border:1px solid var(--border);border-radius:100px;padding:6px 14px;color:var(--muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s}
+  .btn-logout:hover{border-color:var(--accent3);color:var(--accent3)}
+  .premium-badge{background:linear-gradient(135deg,rgba(9,249,176,0.15),rgba(123,94,248,0.15));border:1px solid rgba(9,249,176,0.3);border-radius:100px;padding:4px 12px;font-size:11px;color:var(--accent);font-weight:600}
 
-  .splash-title {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(2.8rem, 8vw, 5.5rem);
-    font-weight: 800;
-    line-height: 1;
-    letter-spacing: -0.03em;
-    margin-bottom: 8px;
-    animation: splashIn 0.8s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-  .splash-title .word-vinted { color: var(--text); }
-  .splash-title .word-x { color: var(--muted); margin: 0 8px; font-weight: 400; }
-  .splash-title .word-ai {
-    background: linear-gradient(135deg, var(--accent) 0%, #06d4a0 40%, var(--accent2) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    background-size: 200% 200%;
-    animation: gradientShift 3s ease infinite, splashIn 0.8s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-  @keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-
-  .splash-by {
-    font-family: 'DM Sans', sans-serif;
-    font-size: clamp(1rem, 2.5vw, 1.3rem);
-    font-weight: 300;
-    color: var(--muted);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-bottom: 48px;
-    animation: splashIn 0.8s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-  .splash-by span {
-    color: var(--accent2);
-    font-weight: 600;
-    letter-spacing: 0.05em;
-  }
-
-  .splash-btn {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    padding: 18px 48px;
-    background: linear-gradient(135deg, var(--accent), #06d4a0);
-    border: none;
-    border-radius: 100px;
-    color: var(--bg);
-    font-family: 'Syne', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    animation: splashIn 0.8s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
-    overflow: hidden;
-  }
-  .splash-btn::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-  .splash-btn:hover {
-    transform: translateY(-3px) scale(1.03);
-    box-shadow: 0 20px 60px rgba(9,249,176,0.35), 0 0 0 1px rgba(9,249,176,0.3);
-  }
-  .splash-btn:hover::before { opacity: 1; }
-  .splash-btn:active { transform: translateY(-1px) scale(1.01); }
-
-  .splash-btn-arrow {
-    transition: transform 0.3s;
-    font-size: 18px;
-  }
-  .splash-btn:hover .splash-btn-arrow { transform: translateX(4px); }
-
-  /* Particules décoratives */
-  .splash-orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(60px);
-    pointer-events: none;
-    animation: orbFloat 6s ease-in-out infinite;
-  }
-  .splash-orb-1 {
-    width: 300px; height: 300px;
-    background: rgba(123,94,248,0.15);
-    top: -100px; left: -100px;
-    animation-delay: 0s;
-  }
-  .splash-orb-2 {
-    width: 200px; height: 200px;
-    background: rgba(9,249,176,0.1);
-    bottom: -50px; right: -50px;
-    animation-delay: -3s;
-  }
-  .splash-orb-3 {
-    width: 150px; height: 150px;
-    background: rgba(123,94,248,0.08);
-    bottom: 20%; left: 10%;
-    animation-delay: -1.5s;
-  }
-  @keyframes orbFloat {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(15px, -20px) scale(1.05); }
-    66% { transform: translate(-10px, 10px) scale(0.95); }
-  }
-
-  /* Transition sortie splash */
-  #splash.hide {
-    animation: splashOut 0.6s cubic-bezier(0.4, 0, 1, 1) forwards;
-  }
-  @keyframes splashOut {
-    0% { opacity: 1; transform: scale(1); }
-    100% { opacity: 0; transform: scale(1.04); pointer-events: none; }
-  }
-
-  /* ============ APP PRINCIPALE ============ */
-  #app {
-    display: none;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-  }
-  #app.visible {
-    display: block;
-    animation: appIn 0.5s 0.3s ease forwards;
-  }
-  @keyframes appIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse 600px 400px at 10% 20%, rgba(123,94,248,0.08) 0%, transparent 70%), radial-gradient(ellipse 500px 350px at 90% 80%, rgba(9,249,176,0.06) 0%, transparent 70%); pointer-events: none; z-index: 0; }
-  .wrapper { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
-
-  header { text-align: center; margin-bottom: 56px; }
-  .logo-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 100px; padding: 6px 16px; font-size: 12px; font-weight: 500; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 20px; }
-  .logo-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
-  h1 { font-family: 'Syne', sans-serif; font-size: clamp(2.2rem,5vw,3.2rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 14px; }
-  h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-  header p { color: var(--muted); font-size: 1rem; font-weight: 300; max-width: 480px; margin: 0 auto; line-height: 1.6; }
-
-  .steps { display: flex; align-items: center; justify-content: center; margin-bottom: 40px; }
-  .step { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: var(--muted); transition: color 0.3s; }
-  .step.active { color: var(--text); }
-  .step.done { color: var(--accent); }
-  .step-num { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-family: 'Syne', sans-serif; font-weight: 700; transition: all 0.3s; flex-shrink: 0; }
-  .step.active .step-num { border-color: var(--accent); background: var(--teal-glow); color: var(--accent); }
-  .step.done .step-num { background: var(--accent); border-color: var(--accent); color: var(--bg); }
-  .step-line { width: 40px; height: 1px; background: var(--border); margin: 0 8px; }
-
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 32px; margin-bottom: 20px; transition: border-color 0.3s; }
-  .card:hover { border-color: rgba(123,94,248,0.3); }
-  .card-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; color: var(--text); }
-  .card-title .icon { width: 32px; height: 32px; border-radius: 8px; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 16px; }
-
-  .upload-zone { border: 2px dashed var(--border); border-radius: 14px; padding: 40px 24px; text-align: center; cursor: pointer; transition: all 0.3s; background: var(--surface2); position: relative; overflow: hidden; }
-  .upload-zone:hover, .upload-zone.dragover { border-color: var(--accent); background: rgba(9,249,176,0.04); }
-  .upload-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-  .upload-icon { font-size: 2.5rem; margin-bottom: 12px; display: block; }
-  .upload-zone p { color: var(--muted); font-size: 14px; line-height: 1.6; }
-  .upload-zone strong { color: var(--text); font-weight: 500; }
-
-  .preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 16px; }
-  .preview-item { aspect-ratio: 1; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); position: relative; background: var(--surface2); }
-  .preview-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .preview-item .remove-btn { position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; border-radius: 50%; background: rgba(255,107,107,0.9); border: none; color: white; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; }
-  .preview-item:hover .remove-btn { opacity: 1; }
-
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-  @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
-  .form-group { display: flex; flex-direction: column; gap: 8px; }
-  .form-group label { font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
-  .form-group input, .form-group select, .form-group textarea { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s; resize: none; }
-  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent2); }
-  .form-group select option { background: var(--surface2); }
-  .form-group.full { grid-column: 1 / -1; }
-
-  .btn-generate { width: 100%; padding: 16px 24px; background: linear-gradient(135deg, var(--accent), #06d4a0); border: none; border-radius: 12px; color: var(--bg); font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; letter-spacing: 0.02em; }
-  .btn-generate:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(9,249,176,0.3); }
-  .btn-generate:active { transform: translateY(0); }
-  .btn-generate:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
-
-  .spinner { width: 18px; height: 18px; border: 2px solid rgba(10,10,15,0.3); border-top-color: var(--bg); border-radius: 50%; animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .result-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; margin-bottom: 20px; display: none; }
-  .result-card.visible { display: block; animation: slideUp 0.4s ease; }
-  @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-  .result-header { padding: 20px 28px; background: linear-gradient(135deg, rgba(9,249,176,0.08), rgba(123,94,248,0.08)); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-  .result-header h2 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
-  .result-header h2::before { content: '✦'; color: var(--accent); font-size: 14px; }
-  .result-body { padding: 24px 28px; }
-
-  .result-field { margin-bottom: 24px; }
-  .result-field-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-  .result-field-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
-  .copy-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; color: var(--muted); font-size: 11px; cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
-  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .copy-btn.copied { border-color: var(--accent); color: var(--accent); background: var(--teal-glow); }
-
-  .result-content { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; font-size: 14px; line-height: 1.7; color: var(--text); white-space: pre-wrap; word-break: break-word; }
-  .result-title-big { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; }
-
-  .tags-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
-  .tag { background: rgba(9,249,176,0.08); border: 1px solid rgba(9,249,176,0.2); border-radius: 100px; padding: 4px 12px; font-size: 12px; color: var(--accent); }
-
-  .vinted-compare { background: linear-gradient(135deg, rgba(123,94,248,0.08), rgba(9,249,176,0.05)); border: 1px solid rgba(123,94,248,0.25); border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
-  .vinted-compare-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
-  .vinted-compare-text strong { color: var(--text); display: block; margin-bottom: 2px; font-size: 14px; }
-  .btn-vinted-search { display: inline-flex; align-items: center; gap: 8px; background: rgba(123,94,248,0.15); border: 1px solid rgba(123,94,248,0.4); border-radius: 10px; padding: 10px 18px; color: var(--accent2); font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.2s; white-space: nowrap; font-family: 'DM Sans', sans-serif; }
-  .btn-vinted-search:hover { background: rgba(123,94,248,0.25); border-color: var(--accent2); transform: translateY(-1px); }
-
-  .checklist { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
-  @media (max-width: 600px) { .checklist { grid-template-columns: 1fr; } }
-  .check-item { display: flex; align-items: flex-start; gap: 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; cursor: pointer; transition: all 0.2s; user-select: none; }
-  .check-item:hover { border-color: rgba(9,249,176,0.3); }
-  .check-item.checked { background: rgba(9,249,176,0.05); border-color: rgba(9,249,176,0.4); }
-  .check-box { width: 18px; height: 18px; border: 2px solid var(--border); border-radius: 5px; flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 11px; }
-  .check-item.checked .check-box { background: var(--accent); border-color: var(--accent); color: var(--bg); }
-  .check-text { font-size: 13px; line-height: 1.4; color: var(--muted); transition: color 0.2s; }
-  .check-item.checked .check-text { color: var(--text); }
-
-  .progress-wrapper { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-  .progress-bar { flex: 1; height: 4px; background: var(--surface2); border-radius: 100px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 100px; transition: width 0.4s ease; width: 0%; }
-  .progress-label { font-size: 12px; color: var(--muted); min-width: 60px; text-align: right; }
-
-  .price-badge { display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, rgba(9,249,176,0.1), rgba(9,249,176,0.05)); border: 1px solid rgba(9,249,176,0.3); border-radius: 10px; padding: 10px 18px; font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); }
-
-  .btn-secondary { display: inline-flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 18px; color: var(--text); font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: none; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
-  .btn-secondary:hover { border-color: var(--accent2); color: var(--accent2); }
-
-  .error-msg { background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.25); border-radius: 10px; padding: 14px 18px; color: #ff9090; font-size: 13px; margin-top: 12px; display: none; }
-  .error-msg.visible { display: block; }
-
-  .divider { height: 1px; background: var(--border); margin: 28px 0; }
-
-  .posting-steps { counter-reset: steps; display: flex; flex-direction: column; gap: 10px; }
-  .posting-step { counter-increment: steps; display: flex; align-items: center; gap: 14px; padding: 12px 16px; background: var(--surface2); border-radius: 10px; border: 1px solid var(--border); font-size: 13px; color: var(--muted); }
-  .posting-step::before { content: counter(steps); width: 24px; height: 24px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 11px; color: var(--accent); flex-shrink: 0; }
-
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  /* CONTENT */
+  header{text-align:center;margin-bottom:56px;padding-top:80px}
+  .logo-badge{display:inline-flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:100px;padding:6px 16px;font-size:12px;font-weight:500;color:var(--accent);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:20px}
+  .logo-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.8)}}
+  h1{font-family:'Syne',sans-serif;font-size:clamp(2.2rem,5vw,3.2rem);font-weight:800;line-height:1.1;letter-spacing:-0.02em;margin-bottom:14px}
+  h1 span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  header p{color:var(--muted);font-size:1rem;font-weight:300;max-width:480px;margin:0 auto;line-height:1.6}
+  .steps{display:flex;align-items:center;justify-content:center;margin-bottom:40px}
+  .step{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--muted);transition:color 0.3s}
+  .step.active{color:var(--text)}.step.done{color:var(--accent)}
+  .step-num{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-family:'Syne',sans-serif;font-weight:700;transition:all 0.3s;flex-shrink:0}
+  .step.active .step-num{border-color:var(--accent);background:var(--teal-glow);color:var(--accent)}
+  .step.done .step-num{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+  .step-line{width:40px;height:1px;background:var(--border);margin:0 8px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;margin-bottom:20px;transition:border-color 0.3s}
+  .card:hover{border-color:rgba(123,94,248,0.3)}
+  .card-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+  .card-title .icon{width:32px;height:32px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px}
+  .upload-zone{border:2px dashed var(--border);border-radius:14px;padding:40px 24px;text-align:center;cursor:pointer;transition:all 0.3s;background:var(--surface2);position:relative;overflow:hidden}
+  .upload-zone:hover,.upload-zone.dragover{border-color:var(--accent);background:rgba(9,249,176,0.04)}
+  .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+  .upload-icon{font-size:2.5rem;margin-bottom:12px;display:block}
+  .upload-zone p{color:var(--muted);font-size:14px;line-height:1.6}
+  .upload-zone strong{color:var(--text);font-weight:500}
+  .preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;margin-top:16px}
+  .preview-item{aspect-ratio:1;border-radius:10px;overflow:hidden;border:1px solid var(--border);position:relative;background:var(--surface2)}
+  .preview-item img{width:100%;height:100%;object-fit:cover;display:block}
+  .preview-item .remove-btn{position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(255,107,107,0.9);border:none;color:white;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s}
+  .preview-item:hover .remove-btn{opacity:1}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+  @media(max-width:600px){.form-row{grid-template-columns:1fr}}
+  .form-group{display:flex;flex-direction:column;gap:8px}
+  .form-group label{font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em}
+  .form-group input,.form-group select,.form-group textarea{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;resize:none}
+  .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent2)}
+  .form-group select option{background:var(--surface2)}
+  .form-group.full{grid-column:1/-1}
+  .btn-generate{width:100%;padding:16px 24px;background:linear-gradient(135deg,var(--accent),#06d4a0);border:none;border-radius:12px;color:var(--bg);font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:10px;letter-spacing:0.02em}
+  .btn-generate:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(9,249,176,0.3)}
+  .btn-generate:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none}
+  .spinner{width:18px;height:18px;border:2px solid rgba(10,10,15,0.3);border-top-color:var(--bg);border-radius:50%;animation:spin 0.8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .result-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:20px;display:none}
+  .result-card.visible{display:block;animation:slideUp 0.4s ease}
+  @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .result-header{padding:20px 28px;background:linear-gradient(135deg,rgba(9,249,176,0.08),rgba(123,94,248,0.08));border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .result-header h2{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;display:flex;align-items:center;gap:10px}
+  .result-header h2::before{content:'✦';color:var(--accent);font-size:14px}
+  .result-body{padding:24px 28px}
+  .result-field{margin-bottom:24px}
+  .result-field-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .result-field-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted)}
+  .copy-btn{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 10px;color:var(--muted);font-size:11px;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif}
+  .copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+  .copy-btn.copied{border-color:var(--accent);color:var(--accent);background:var(--teal-glow)}
+  .result-content{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;font-size:14px;line-height:1.7;color:var(--text);white-space:pre-wrap;word-break:break-word}
+  .result-title-big{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700}
+  .tags-container{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+  .tag{background:rgba(9,249,176,0.08);border:1px solid rgba(9,249,176,0.2);border-radius:100px;padding:4px 12px;font-size:12px;color:var(--accent)}
+  .vinted-compare{background:linear-gradient(135deg,rgba(123,94,248,0.08),rgba(9,249,176,0.05));border:1px solid rgba(123,94,248,0.25);border-radius:14px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+  .vinted-compare-text{font-size:13px;color:var(--muted);line-height:1.5}
+  .vinted-compare-text strong{color:var(--text);display:block;margin-bottom:2px;font-size:14px}
+  .btn-vinted-search{display:inline-flex;align-items:center;gap:8px;background:rgba(123,94,248,0.15);border:1px solid rgba(123,94,248,0.4);border-radius:10px;padding:10px 18px;color:var(--accent2);font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:all 0.2s;white-space:nowrap;font-family:'DM Sans',sans-serif}
+  .checklist{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+  @media(max-width:600px){.checklist{grid-template-columns:1fr}}
+  .check-item{display:flex;align-items:flex-start;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;transition:all 0.2s;user-select:none}
+  .check-item:hover{border-color:rgba(9,249,176,0.3)}
+  .check-item.checked{background:rgba(9,249,176,0.05);border-color:rgba(9,249,176,0.4)}
+  .check-box{width:18px;height:18px;border:2px solid var(--border);border-radius:5px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;font-size:11px}
+  .check-item.checked .check-box{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+  .check-text{font-size:13px;line-height:1.4;color:var(--muted);transition:color 0.2s}
+  .check-item.checked .check-text{color:var(--text)}
+  .progress-wrapper{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .progress-bar{flex:1;height:4px;background:var(--surface2);border-radius:100px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:100px;transition:width 0.4s ease;width:0%}
+  .progress-label{font-size:12px;color:var(--muted);min-width:60px;text-align:right}
+  .price-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,rgba(9,249,176,0.1),rgba(9,249,176,0.05));border:1px solid rgba(9,249,176,0.3);border-radius:10px;padding:10px 18px;font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;color:var(--accent)}
+  .btn-secondary{display:inline-flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 18px;color:var(--text);font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;transition:all 0.2s;font-family:'DM Sans',sans-serif}
+  .btn-secondary:hover{border-color:var(--accent2);color:var(--accent2)}
+  .error-msg{background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.25);border-radius:10px;padding:14px 18px;color:#ff9090;font-size:13px;margin-top:12px;display:none}
+  .error-msg.visible{display:block}
+  .divider{height:1px;background:var(--border);margin:28px 0}
+  .posting-steps{counter-reset:steps;display:flex;flex-direction:column;gap:10px}
+  .posting-step{counter-increment:steps;display:flex;align-items:center;gap:14px;padding:12px 16px;background:var(--surface2);border-radius:10px;border:1px solid var(--border);font-size:13px;color:var(--muted)}
+  .posting-step::before{content:counter(steps);width:24px;height:24px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;color:var(--accent);flex-shrink:0}
+  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 </style>
 </head>
 <body>
 
-<!-- ============ SPLASH SCREEN ============ -->
+<!-- SPLASH -->
 <div id="splash">
   <div class="splash-orb splash-orb-1"></div>
   <div class="splash-orb splash-orb-2"></div>
-  <div class="splash-orb splash-orb-3"></div>
   <div class="splash-content">
     <div class="splash-tag"><span class="dot"></span>Générateur d'annonces</div>
-    <div class="splash-title">
-      <span class="word-vinted">Vinted</span><span class="word-x">×</span><span class="word-ai">AI</span>
-    </div>
+    <div class="splash-title"><span class="word-vinted">Vinted</span><span class="word-x">×</span><span class="word-ai">AI</span></div>
     <div class="splash-by">by <span>kzr</span></div>
-    <button class="splash-btn" onclick="enterApp()">
-      Click here
-      <span class="splash-btn-arrow">→</span>
-    </button>
+    <button class="splash-btn" onclick="enterApp()">Click here <span>→</span></button>
   </div>
 </div>
 
-<!-- ============ APP PRINCIPALE ============ -->
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <div class="modal-title" id="authTitle">Bienvenue 👋</div>
+    <div class="modal-sub" id="authSub">Connecte-toi pour générer tes annonces</div>
+    <div class="modal-tabs">
+      <button class="modal-tab active" onclick="switchTab('login')">Connexion</button>
+      <button class="modal-tab" onclick="switchTab('register')">Inscription</button>
+    </div>
+    <div class="form-field">
+      <label>Email</label>
+      <input type="email" id="authEmail" placeholder="ton@email.com" />
+    </div>
+    <div class="form-field">
+      <label>Mot de passe</label>
+      <input type="password" id="authPassword" placeholder="••••••••" />
+    </div>
+    <button class="btn-primary" id="authBtn" onclick="handleAuth()">Se connecter</button>
+    <div class="modal-error" id="authError"></div>
+  </div>
+</div>
+
+<!-- PAYWALL -->
+<div class="paywall-overlay" id="paywallModal">
+  <div class="paywall">
+    <div class="paywall-icon">⚡</div>
+    <div class="paywall-title">Limite atteinte</div>
+    <div class="paywall-sub">Tu as utilisé tes 3 annonces gratuites aujourd'hui.<br>Passe Premium pour générer sans limite.</div>
+    <div class="paywall-price">
+      <span class="amount">1€</span>
+      <span class="period">/mois</span>
+    </div>
+    <div class="paywall-features">
+      <div class="paywall-feature">Annonces illimitées chaque jour</div>
+      <div class="paywall-feature">Analyse visuelle des photos par l'IA</div>
+      <div class="paywall-feature">Titres, prix et hashtags optimisés</div>
+      <div class="paywall-feature">Comparaison avec le marché Vinted</div>
+    </div>
+    <button class="btn-subscribe" id="subscribeBtn" onclick="handleSubscribe()">Passer Premium — 1€/mois</button>
+    <button class="paywall-cancel" onclick="closePaywall()">Revenir demain (3 annonces gratuites)</button>
+  </div>
+</div>
+
+<!-- APP -->
 <div id="app">
-<div class="wrapper">
-  <header>
-    <div class="logo-badge"><span class="dot"></span>Vinted x AI by kzr</div>
-    <h1>Génère tes annonces<br><span>en quelques secondes</span></h1>
-    <p>Upload tes photos, donne le prix, l'IA crée le titre et la description parfaite pour maximiser tes ventes.</p>
-  </header>
-
-  <div class="steps">
-    <div class="step active" id="step1"><span class="step-num">1</span> Photos</div>
-    <div class="step-line"></div>
-    <div class="step" id="step2"><span class="step-num">2</span> Infos</div>
-    <div class="step-line"></div>
-    <div class="step" id="step3"><span class="step-num">3</span> Génération</div>
-    <div class="step-line"></div>
-    <div class="step" id="step4"><span class="step-num">4</span> Publication</div>
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-logo">Vinted × AI</div>
+    <div class="topbar-right" id="topbarRight"></div>
   </div>
 
-  <div class="card">
-    <div class="card-title"><span class="icon">📸</span>Photos de l'article</div>
-    <div class="upload-zone" id="uploadZone">
-      <input type="file" id="fileInput" accept="image/*" multiple />
-      <span class="upload-icon">🖼️</span>
-      <p><strong>Clique ou glisse tes photos ici</strong><br>JPG, PNG, WEBP — jusqu'à 8 photos</p>
-    </div>
-    <div class="preview-grid" id="previewGrid"></div>
-  </div>
+  <div class="wrapper">
+    <header>
+      <div class="logo-badge"><span class="dot"></span>Vinted x AI by kzr</div>
+      <h1>Génère tes annonces<br><span>en quelques secondes</span></h1>
+      <p>Upload tes photos, donne le prix, l'IA crée le titre et la description parfaite.</p>
+    </header>
 
-  <div class="card">
-    <div class="card-title"><span class="icon">📝</span>Informations de l'article</div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>Catégorie</label>
-        <select id="category">
-          <option value="">Sélectionner...</option>
-          <option>Vêtements femme</option><option>Vêtements homme</option><option>Vêtements enfant</option>
-          <option>Chaussures femme</option><option>Chaussures homme</option><option>Sacs & accessoires</option>
-          <option>Électronique</option><option>Maison & déco</option><option>Sport & loisirs</option>
-          <option>Jouets & jeux</option><option>Livres & médias</option><option>Autre</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>État</label>
-        <select id="condition">
-          <option>Neuf avec étiquette</option><option>Neuf sans étiquette</option>
-          <option selected>Très bon état</option><option>Bon état</option><option>Satisfaisant</option>
-        </select>
-      </div>
+    <div class="steps">
+      <div class="step active" id="step1"><span class="step-num">1</span> Photos</div>
+      <div class="step-line"></div>
+      <div class="step" id="step2"><span class="step-num">2</span> Infos</div>
+      <div class="step-line"></div>
+      <div class="step" id="step3"><span class="step-num">3</span> Génération</div>
+      <div class="step-line"></div>
+      <div class="step" id="step4"><span class="step-num">4</span> Publication</div>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label>Marque (optionnel)</label><input type="text" id="brand" placeholder="ex: Zara, Nike, H&M..." /></div>
-      <div class="form-group"><label>Taille (optionnel)</label><input type="text" id="size" placeholder="ex: M, 38, 42..." /></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>Prix souhaité (€)</label><input type="number" id="price" placeholder="ex: 25" min="1" /></div>
-      <div class="form-group"><label>Mots-clés / détails</label><input type="text" id="keywords" placeholder="ex: vintage, coton, rayures..." /></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group full"><label>Notes supplémentaires</label><textarea id="notes" rows="2" placeholder="Imperfections, raisons de la vente..."></textarea></div>
-    </div>
-  </div>
 
-  <button class="btn-generate" id="generateBtn" onclick="generateListing()">
-    <span>✦ Générer l'annonce avec l'IA</span>
-  </button>
-  <div class="error-msg" id="errorMsg"></div>
-
-  <div class="result-card" id="resultCard">
-    <div class="result-header">
-      <h2>Annonce générée</h2>
-      <span style="font-size:12px;color:var(--muted)">Copie chaque section sur Vinted</span>
+    <div class="card">
+      <div class="card-title"><span class="icon">📸</span>Photos de l'article</div>
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="fileInput" accept="image/*" multiple />
+        <span class="upload-icon">🖼️</span>
+        <p><strong>Clique ou glisse tes photos ici</strong><br>JPG, PNG, WEBP — jusqu'à 8 photos</p>
+      </div>
+      <div class="preview-grid" id="previewGrid"></div>
     </div>
-    <div class="result-body">
-      <div class="result-field">
-        <div class="result-field-header"><span class="result-field-label">📌 Titre</span><button class="copy-btn" onclick="copyField('titleResult', this)">Copier</button></div>
-        <div class="result-content result-title-big" id="titleResult"></div>
-      </div>
-      <div class="result-field">
-        <div class="result-field-header"><span class="result-field-label">💰 Prix recommandé</span></div>
-        <div id="priceResult"></div>
-      </div>
-      <div class="vinted-compare" id="vintedCompare" style="display:none">
-        <div class="vinted-compare-text">
-          <strong>🔍 Comparer avec le marché</strong>
-          Vois ce que d'autres vendent pour le même article sur Vinted
+
+    <div class="card">
+      <div class="card-title"><span class="icon">📝</span>Informations de l'article</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Catégorie</label>
+          <select id="category">
+            <option value="">Sélectionner...</option>
+            <option>Vêtements femme</option><option>Vêtements homme</option><option>Vêtements enfant</option>
+            <option>Chaussures femme</option><option>Chaussures homme</option><option>Sacs & accessoires</option>
+            <option>Électronique</option><option>Maison & déco</option><option>Sport & loisirs</option>
+            <option>Jouets & jeux</option><option>Livres & médias</option><option>Autre</option>
+          </select>
         </div>
-        <a id="vintedSearchLink" href="#" target="_blank" class="btn-vinted-search">Voir les annonces similaires →</a>
-      </div>
-      <div class="result-field">
-        <div class="result-field-header"><span class="result-field-label">📄 Description</span><button class="copy-btn" onclick="copyField('descResult', this)">Copier</button></div>
-        <div class="result-content" id="descResult"></div>
-      </div>
-      <div class="result-field">
-        <div class="result-field-header"><span class="result-field-label"># Hashtags</span><button class="copy-btn" onclick="copyTags(this)">Copier</button></div>
-        <div class="tags-container" id="tagsResult"></div>
-        <div style="display:none" id="tagsText"></div>
-      </div>
-      <div class="divider"></div>
-      <div class="result-field">
-        <div class="result-field-header"><span class="result-field-label">✅ Checklist avant publication</span><span class="result-field-label" id="checkProgress">0/10</span></div>
-        <div class="progress-wrapper"><div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div><span class="progress-label" id="progressLabel">0%</span></div>
-        <div class="checklist">
-          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Au moins 3 photos (face, dos, détails)</div></div>
-          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Photo principale sur fond clair</div></div>
-          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Titre copié (60 caractères max)</div></div>
-          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Description complète collée</div></div>
-          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Bonne catégorie sélectionnée</div></div>
-          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">État correctement indiqué</div></div>
-          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Taille et marque renseignées</div></div>
-          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Prix vérifié vs annonces similaires</div></div>
-          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Frais de port configurés</div></div>
-          <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Annonce publiée et partagée</div></div>
+        <div class="form-group">
+          <label>État</label>
+          <select id="condition">
+            <option>Neuf avec étiquette</option><option>Neuf sans étiquette</option>
+            <option selected>Très bon état</option><option>Bon état</option><option>Satisfaisant</option>
+          </select>
         </div>
       </div>
-      <div class="divider"></div>
-      <div class="result-field">
-        <div class="result-field-header"><span class="result-field-label">🚀 Comment publier sur Vinted</span></div>
-        <div class="posting-steps">
-          <div class="posting-step">Ouvre l'app Vinted → appuie sur <strong style="color:var(--text);margin:0 4px">Vendre</strong></div>
-          <div class="posting-step">Upload tes photos — la meilleure en premier</div>
-          <div class="posting-step">Colle le titre dans le champ dédié</div>
-          <div class="posting-step">Sélectionne catégorie, marque, taille, état</div>
-          <div class="posting-step">Colle la description</div>
-          <div class="posting-step">Entre le prix et configure l'envoi</div>
-          <div class="posting-step">Vérifie la checklist et publie !</div>
-        </div>
+      <div class="form-row">
+        <div class="form-group"><label>Marque</label><input type="text" id="brand" placeholder="ex: Nike, Zara..." /></div>
+        <div class="form-group"><label>Taille</label><input type="text" id="size" placeholder="ex: M, 38..." /></div>
       </div>
-      <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap">
-        <a href="https://www.vinted.fr/items/new" target="_blank" class="btn-secondary">🛍️ Poster sur Vinted</a>
-        <button class="btn-secondary" onclick="resetForm()">🔄 Nouvelle annonce</button>
+      <div class="form-row">
+        <div class="form-group"><label>Prix souhaité (€)</label><input type="number" id="price" placeholder="ex: 25" min="1" /></div>
+        <div class="form-group"><label>Mots-clés</label><input type="text" id="keywords" placeholder="ex: vintage, streetwear..." /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group full"><label>Notes</label><textarea id="notes" rows="2" placeholder="Imperfections, infos supplémentaires..."></textarea></div>
+      </div>
+    </div>
+
+    <button class="btn-generate" id="generateBtn" onclick="generateListing()">
+      <span>✦ Générer l'annonce avec l'IA</span>
+    </button>
+    <div class="error-msg" id="errorMsg"></div>
+
+    <div class="result-card" id="resultCard">
+      <div class="result-header">
+        <h2>Annonce générée</h2>
+        <span style="font-size:12px;color:var(--muted)">Copie chaque section sur Vinted</span>
+      </div>
+      <div class="result-body">
+        <div class="result-field">
+          <div class="result-field-header"><span class="result-field-label">📌 Titre</span><button class="copy-btn" onclick="copyField('titleResult',this)">Copier</button></div>
+          <div class="result-content result-title-big" id="titleResult"></div>
+        </div>
+        <div class="result-field">
+          <div class="result-field-header"><span class="result-field-label">💰 Prix recommandé</span></div>
+          <div id="priceResult"></div>
+        </div>
+        <div class="vinted-compare" id="vintedCompare" style="display:none">
+          <div class="vinted-compare-text"><strong>🔍 Comparer avec le marché</strong>Vois ce que d'autres vendent sur Vinted</div>
+          <a id="vintedSearchLink" href="#" target="_blank" class="btn-vinted-search">Voir les annonces similaires →</a>
+        </div>
+        <div class="result-field">
+          <div class="result-field-header"><span class="result-field-label">📄 Description</span><button class="copy-btn" onclick="copyField('descResult',this)">Copier</button></div>
+          <div class="result-content" id="descResult"></div>
+        </div>
+        <div class="result-field">
+          <div class="result-field-header"><span class="result-field-label"># Hashtags</span><button class="copy-btn" onclick="copyTags(this)">Copier</button></div>
+          <div class="tags-container" id="tagsResult"></div>
+          <div style="display:none" id="tagsText"></div>
+        </div>
+        <div class="divider"></div>
+        <div class="result-field">
+          <div class="result-field-header"><span class="result-field-label">✅ Checklist</span><span class="result-field-label" id="checkProgress">0/10</span></div>
+          <div class="progress-wrapper"><div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div><span class="progress-label" id="progressLabel">0%</span></div>
+          <div class="checklist">
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Au moins 3 photos (face, dos, détails)</div></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Photo principale sur fond clair</div></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Titre copié (60 caractères max)</div></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Description complète collée</div></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Bonne catégorie sélectionnée</div></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">État correctement indiqué</div></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Taille et marque renseignées</div></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Prix vérifié vs annonces similaires</div></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Frais de port configurés</div></div>
+            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Annonce publiée et partagée</div></div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="result-field">
+          <div class="result-field-header"><span class="result-field-label">🚀 Comment publier</span></div>
+          <div class="posting-steps">
+            <div class="posting-step">Ouvre l'app Vinted → <strong style="color:var(--text);margin:0 4px">Vendre</strong></div>
+            <div class="posting-step">Upload tes photos — la meilleure en premier</div>
+            <div class="posting-step">Colle le titre dans le champ dédié</div>
+            <div class="posting-step">Sélectionne catégorie, marque, taille, état</div>
+            <div class="posting-step">Colle la description</div>
+            <div class="posting-step">Entre le prix et configure l'envoi</div>
+            <div class="posting-step">Vérifie la checklist et publie !</div>
+          </div>
+        </div>
+        <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap">
+          <a href="https://www.vinted.fr/items/new" target="_blank" class="btn-secondary">🛍️ Poster sur Vinted</a>
+          <button class="btn-secondary" onclick="resetForm()">🔄 Nouvelle annonce</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </div>
 
 <script>
-  // ============ SPLASH ============
+  // ── STATE ──────────────────────────────────────────────────────
+  let currentUser = null;
+  let uploadedImages = [];
+  let authMode = 'login';
+
+  // ── SPLASH ────────────────────────────────────────────────────
   function enterApp() {
-    const splash = document.getElementById('splash');
-    const app = document.getElementById('app');
-    splash.classList.add('hide');
+    document.getElementById('splash').classList.add('hide');
     setTimeout(() => {
-      splash.style.display = 'none';
-      app.classList.add('visible');
+      document.getElementById('splash').style.display = 'none';
+      document.getElementById('app').classList.add('visible');
+      checkSession();
     }, 600);
   }
 
-  // ============ APP ============
-  let uploadedImages = [];
+  // ── SESSION ───────────────────────────────────────────────────
+  function checkSession() {
+    const saved = localStorage.getItem('vintedai_user');
+    if (saved) {
+      currentUser = JSON.parse(saved);
+      updateTopbar();
+      // Vérifier si retour de paiement Stripe
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('payment') === 'success') {
+        currentUser.is_premium = true;
+        localStorage.setItem('vintedai_user', JSON.stringify(currentUser));
+        updateTopbar();
+        window.history.replaceState({}, '', '/');
+        showToast('🎉 Abonnement activé ! Génération illimitée.');
+      }
+    } else {
+      showAuthModal();
+    }
+  }
+
+  function updateTopbar() {
+    const el = document.getElementById('topbarRight');
+    if (!currentUser) { el.innerHTML = ''; return; }
+    const remaining = currentUser.is_premium ? '∞' : Math.max(0, 3 - (currentUser.daily_count || 0));
+    el.innerHTML = `
+      ${currentUser.is_premium ? '<span class="premium-badge">⭐ Premium</span>' : `<span class="quota-badge"><span>${remaining}</span> annonces restantes</span>`}
+      ${!currentUser.is_premium ? '<button class="btn-upgrade" onclick="showPaywall()">Passer Premium</button>' : ''}
+      <button class="btn-logout" onclick="logout()">Déconnexion</button>
+    `;
+  }
+
+  function logout() {
+    localStorage.removeItem('vintedai_user');
+    currentUser = null;
+    updateTopbar();
+    showAuthModal();
+  }
+
+  // ── AUTH ──────────────────────────────────────────────────────
+  function showAuthModal() {
+    document.getElementById('authModal').classList.add('visible');
+  }
+  function hideAuthModal() {
+    document.getElementById('authModal').classList.remove('visible');
+  }
+  function switchTab(mode) {
+    authMode = mode;
+    document.querySelectorAll('.modal-tab').forEach((t, i) => t.classList.toggle('active', (i === 0 && mode === 'login') || (i === 1 && mode === 'register')));
+    document.getElementById('authBtn').textContent = mode === 'login' ? 'Se connecter' : 'Créer mon compte';
+    document.getElementById('authTitle').textContent = mode === 'login' ? 'Bienvenue 👋' : 'Créer un compte';
+    document.getElementById('authSub').textContent = mode === 'login' ? 'Connecte-toi pour générer tes annonces' : '3 annonces gratuites par jour';
+    document.getElementById('authError').classList.remove('visible');
+  }
+
+  async function handleAuth() {
+    const email = document.getElementById('authEmail').value.trim();
+    const password = document.getElementById('authPassword').value;
+    const btn = document.getElementById('authBtn');
+    const errorEl = document.getElementById('authError');
+
+    if (!email || !password) { showAuthError('Remplis tous les champs.'); return; }
+    if (password.length < 6) { showAuthError('Mot de passe trop court (6 caractères min).'); return; }
+
+    btn.disabled = true;
+    btn.textContent = '...';
+    errorEl.classList.remove('visible');
+
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: authMode, email, password })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      currentUser = data.user;
+      localStorage.setItem('vintedai_user', JSON.stringify(currentUser));
+      hideAuthModal();
+      updateTopbar();
+      showToast(authMode === 'login' ? '👋 Bienvenue !' : '🎉 Compte créé !');
+    } catch (e) {
+      showAuthError(e.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = authMode === 'login' ? 'Se connecter' : 'Créer mon compte';
+    }
+  }
+
+  function showAuthError(msg) {
+    const el = document.getElementById('authError');
+    el.textContent = msg;
+    el.classList.add('visible');
+  }
+
+  // ── PAYWALL ───────────────────────────────────────────────────
+  function showPaywall() {
+    document.getElementById('paywallModal').classList.add('visible');
+  }
+  function closePaywall() {
+    document.getElementById('paywallModal').classList.remove('visible');
+  }
+
+  async function handleSubscribe() {
+    if (!currentUser) { showAuthModal(); return; }
+    const btn = document.getElementById('subscribeBtn');
+    btn.disabled = true;
+    btn.textContent = 'Redirection...';
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: currentUser.id, email: currentUser.email })
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else throw new Error(data.error || 'Erreur');
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = 'Passer Premium — 1€/mois';
+      showToast('❌ Erreur : ' + e.message);
+    }
+  }
+
+  // ── IMAGES ────────────────────────────────────────────────────
   const fileInput = document.getElementById('fileInput');
   const uploadZone = document.getElementById('uploadZone');
   fileInput.addEventListener('change', handleFiles);
@@ -561,31 +561,34 @@
       div.innerHTML = `<img src="${img.preview}"><button class="remove-btn" onclick="removeImg(${i})">×</button>`;
       grid.appendChild(div);
     });
-    if (uploadedImages.length > 0) {
-      document.getElementById('step1').classList.add('done');
-      document.getElementById('step1').classList.remove('active');
-    }
+    if (uploadedImages.length > 0) { document.getElementById('step1').classList.add('done'); document.getElementById('step1').classList.remove('active'); }
   }
-
   function removeImg(i) { uploadedImages.splice(i, 1); renderPreviews(); }
 
+  // ── GENERATE ──────────────────────────────────────────────────
   async function generateListing() {
+    if (!currentUser) { showAuthModal(); return; }
+
     const category = document.getElementById('category').value;
     const price = document.getElementById('price').value.trim();
     const errorMsg = document.getElementById('errorMsg');
     errorMsg.classList.remove('visible');
+
     if (!category) { showError("⚠️ Sélectionne une catégorie."); return; }
     if (!price) { showError("⚠️ Entre un prix souhaité."); return; }
+
     const btn = document.getElementById('generateBtn');
     btn.disabled = true;
     btn.innerHTML = '<div class="spinner"></div> Génération en cours...';
     document.getElementById('step2').classList.add('done');
     document.getElementById('step3').classList.add('active');
+
     try {
-      const response = await fetch('/api/generate', {
+      const res = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          userId: currentUser.id,
           category,
           condition: document.getElementById('condition').value,
           brand: document.getElementById('brand').value.trim(),
@@ -596,8 +599,19 @@
           images: uploadedImages.slice(0, 4).map(i => ({ data: i.base64, type: i.type }))
         })
       });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'Erreur serveur');
+
+      const result = await res.json();
+
+      if (result.code === 'QUOTA_EXCEEDED') { showPaywall(); return; }
+      if (result.code === 'NOT_LOGGED_IN') { showAuthModal(); return; }
+      if (!res.ok) throw new Error(result.error || 'Erreur serveur');
+
+      // Mettre à jour le compteur local
+      currentUser.daily_count = result.daily_count;
+      currentUser.is_premium = result.is_premium;
+      localStorage.setItem('vintedai_user', JSON.stringify(currentUser));
+      updateTopbar();
+
       displayResult(result, price);
       document.getElementById('step3').classList.add('done');
       document.getElementById('step4').classList.add('active');
@@ -615,31 +629,21 @@
     const diff = parseFloat(priceVal) - parseFloat(userPrice);
     let diffHtml = Math.abs(diff) > 0.5 ? `<span style="font-size:12px;color:${diff>0?'var(--accent)':'var(--accent3)'};margin-left:12px">${diff>0?'+':''}${diff.toFixed(0)}€ vs ton prix</span>` : '';
     document.getElementById('priceResult').innerHTML = `<div class="price-badge">💶 ${priceVal}€</div>${diffHtml}`;
-    if (r.vinted_search_url) {
-      document.getElementById('vintedSearchLink').href = r.vinted_search_url;
-      document.getElementById('vintedCompare').style.display = 'flex';
-    }
+    if (r.vinted_search_url) { document.getElementById('vintedSearchLink').href = r.vinted_search_url; document.getElementById('vintedCompare').style.display = 'flex'; }
     document.getElementById('descResult').textContent = r.description || '';
     const tagsContainer = document.getElementById('tagsResult');
     tagsContainer.innerHTML = '';
-    const tags = r.hashtags || [];
-    tags.forEach(t => { const s = document.createElement('span'); s.className = 'tag'; s.textContent = t.startsWith('#') ? t : `#${t}`; tagsContainer.appendChild(s); });
-    document.getElementById('tagsText').textContent = tags.map(t => t.startsWith('#') ? t : `#${t}`).join(' ');
+    (r.hashtags || []).forEach(t => { const s = document.createElement('span'); s.className = 'tag'; s.textContent = t.startsWith('#') ? t : `#${t}`; tagsContainer.appendChild(s); });
+    document.getElementById('tagsText').textContent = (r.hashtags || []).map(t => t.startsWith('#') ? t : `#${t}`).join(' ');
     document.getElementById('resultCard').classList.add('visible');
     document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function copyField(id, btn) {
-    navigator.clipboard.writeText(document.getElementById(id).textContent).then(() => {
-      btn.textContent = '✓ Copié !'; btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = 'Copier'; btn.classList.remove('copied'); }, 2000);
-    });
+    navigator.clipboard.writeText(document.getElementById(id).textContent).then(() => { btn.textContent = '✓ Copié !'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = 'Copier'; btn.classList.remove('copied'); }, 2000); });
   }
   function copyTags(btn) {
-    navigator.clipboard.writeText(document.getElementById('tagsText').textContent).then(() => {
-      btn.textContent = '✓ Copié !'; btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = 'Copier'; btn.classList.remove('copied'); }, 2000);
-    });
+    navigator.clipboard.writeText(document.getElementById('tagsText').textContent).then(() => { btn.textContent = '✓ Copié !'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = 'Copier'; btn.classList.remove('copied'); }, 2000); });
   }
   function toggleCheck(el) { el.classList.toggle('checked'); updateProgress(); }
   function updateProgress() {
@@ -651,6 +655,13 @@
     document.getElementById('checkProgress').textContent = `${checked}/${total}`;
   }
   function showError(msg) { const el = document.getElementById('errorMsg'); el.textContent = msg; el.classList.add('visible'); }
+  function showToast(msg) {
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 20px;font-size:13px;z-index:9999;animation:slideUp 0.3s ease';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
   function resetForm() {
     uploadedImages = []; renderPreviews();
     ['brand','size','price','keywords','notes'].forEach(id => document.getElementById(id).value = '');
@@ -661,6 +672,9 @@
     document.getElementById('step1').classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  // Enter sur les champs auth
+  document.addEventListener('keydown', e => { if (e.key === 'Enter' && document.getElementById('authModal').classList.contains('visible')) handleAuth(); });
 </script>
 </body>
 </html>
