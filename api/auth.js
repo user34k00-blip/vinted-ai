@@ -23,7 +23,9 @@ async function supabase(method, path, body) {
     },
     body: body ? JSON.stringify(body) : undefined
   });
-  return res.json();
+  const text = await res.text();
+  if (!text || text.trim() === "") return [];
+  try { return JSON.parse(text); } catch(e) { return []; }
 }
 
 async function sendVerificationEmail(email, code) {
