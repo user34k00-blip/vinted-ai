@@ -200,24 +200,42 @@
 <!-- AUTH MODAL -->
 <div class="modal-overlay" id="authModal">
   <div class="modal">
-    <div class="modal-title" id="authTitle">Bienvenue 👋</div>
-    <div class="modal-sub" id="authSub">Connecte-toi pour générer tes annonces</div>
-    <div class="modal-tabs">
-      <button class="modal-tab active" onclick="switchTab('login')">Connexion</button>
-      <button class="modal-tab" onclick="switchTab('register')">Inscription</button>
+    <!-- ÉCRAN LOGIN/REGISTER -->
+    <div id="authScreen">
+      <div class="modal-title" id="authTitle">Bienvenue 👋</div>
+      <div class="modal-sub" id="authSub">Connecte-toi pour générer tes annonces</div>
+      <div class="modal-tabs">
+        <button class="modal-tab active" onclick="switchTab('login')">Connexion</button>
+        <button class="modal-tab" onclick="switchTab('register')">Inscription</button>
+      </div>
+      <div class="form-field">
+        <label>Email</label>
+        <input type="email" id="authEmail" placeholder="ton@email.com" />
+      </div>
+      <div class="form-field">
+        <label>Mot de passe</label>
+        <input type="password" id="authPassword" placeholder="••••••••" />
+      </div>
+      <button class="btn-primary" id="authBtn" onclick="handleAuth()">Se connecter</button>
+      <div class="modal-error" id="authError"></div>
     </div>
-    <div class="form-field">
-      <label>Email</label>
-      <input type="email" id="authEmail" placeholder="ton@email.com" />
+    <!-- ÉCRAN VÉRIFICATION EMAIL -->
+    <div id="verifyScreen" style="display:none">
+      <div class="modal-title">📧 Vérifie ton email</div>
+      <div class="modal-sub">On a envoyé un code à <strong id="verifyEmailDisplay"></strong></div>
+      <div class="form-field" style="margin-top:24px">
+        <label>Code de vérification</label>
+        <input type="text" id="verifyCode" placeholder="123456" maxlength="6" style="font-size:1.4rem;letter-spacing:0.3em;text-align:center;font-weight:700" />
+      </div>
+      <button class="btn-primary" id="verifyBtn" onclick="handleVerify()">Vérifier →</button>
+      <div class="modal-error" id="verifyError"></div>
+      <div style="text-align:center;margin-top:16px">
+        <button onclick="resendCode()" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;text-decoration:underline">Renvoyer le code</button>
+      </div>
     </div>
-    <div class="form-field">
-      <label>Mot de passe</label>
-      <input type="password" id="authPassword" placeholder="••••••••" />
-    </div>
-    <button class="btn-primary" id="authBtn" onclick="handleAuth()">Se connecter</button>
-    <div class="modal-error" id="authError"></div>
   </div>
 </div>
+
 
 <!-- PAYWALL -->
 <div class="paywall-overlay" id="paywallModal">
@@ -435,8 +453,12 @@
   }
 
   // ── AUTH ──────────────────────────────────────────────────────
+  let pendingVerifyEmail = '';
+
   function showAuthModal() {
     document.getElementById('authModal').classList.add('visible');
+    document.getElementById('authScreen').style.display = 'block';
+    document.getElementById('verifyScreen').style.display = 'none';
   }
   function hideAuthModal() {
     document.getElementById('authModal').classList.remove('visible');
@@ -448,6 +470,15 @@
     document.getElementById('authTitle').textContent = mode === 'login' ? 'Bienvenue 👋' : 'Créer un compte';
     document.getElementById('authSub').textContent = mode === 'login' ? 'Connecte-toi pour générer tes annonces' : '3 annonces gratuites par jour';
     document.getElementById('authError').classList.remove('visible');
+  }
+
+  function showVerifyScreen(email) {
+    pendingVerifyEmail = email;
+    document.getElementById('authScreen').style.display = 'none';
+    document.getElementById('verifyScreen').style.display = 'block';
+    document.getElementById('verifyEmailDisplay').textContent = email;
+    document.getElementById('verifyCode').value = '';
+    document.getElementById('verifyError').classList.remove('visible');
   }
 
   async function handleAuth() {
@@ -472,6 +503,11 @@
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
+      if (data.action === 'verify_required') {
+        showVerifyScreen(data.email);
+        return;
+      }
+
       currentUser = data.user;
       localStorage.setItem('vintedai_user', JSON.stringify(currentUser));
       hideAuthModal();
@@ -483,6 +519,56 @@
       btn.disabled = false;
       btn.textContent = authMode === 'login' ? 'Se connecter' : 'Créer mon compte';
     }
+  }
+
+  async function handleVerify() {
+    const code = document.getElementById('verifyCode').value.trim();
+    const btn = document.getElementById('verifyBtn');
+    const errorEl = document.getElementById('verifyError');
+
+    if (!code || code.length !== 6) {
+      errorEl.textContent = 'Entre le code à 6 chiffres.';
+      errorEl.classList.add('visible');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Vérification...';
+    errorEl.classList.remove('visible');
+
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'verify_email', email: pendingVerifyEmail, code })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      currentUser = data.user;
+      localStorage.setItem('vintedai_user', JSON.stringify(currentUser));
+      hideAuthModal();
+      updateTopbar();
+      showToast('✅ Email vérifié ! Bienvenue 🎉');
+    } catch (e) {
+      errorEl.textContent = e.message;
+      errorEl.classList.add('visible');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Vérifier →';
+    }
+  }
+
+  async function resendCode() {
+    if (!pendingVerifyEmail) return;
+    try {
+      await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'resend_code', email: pendingVerifyEmail })
+      });
+      showToast('📧 Code renvoyé !');
+    } catch (e) {}
   }
 
   function showAuthError(msg) {
