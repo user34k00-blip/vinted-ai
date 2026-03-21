@@ -94,24 +94,6 @@
   .btn-logout:hover{border-color:var(--accent3);color:var(--accent3)}
   .premium-badge{background:linear-gradient(135deg,rgba(9,249,176,0.15),rgba(123,94,248,0.15));border:1px solid rgba(9,249,176,0.3);border-radius:100px;padding:4px 12px;font-size:11px;color:var(--accent);font-weight:600}
 
-  /* AVATAR MENU */
-  .avatar-wrapper{position:relative}
-  .avatar-btn{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),#9b7bff);border:none;color:white;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0}
-  .avatar-btn:hover{transform:scale(1.08);box-shadow:0 4px 14px rgba(123,94,248,0.5)}
-  .avatar-btn.premium-ring{background:linear-gradient(135deg,var(--accent),#06d4a0);box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--accent)}
-  .avatar-menu{position:absolute;top:calc(100% + 10px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:8px;min-width:220px;z-index:200;opacity:0;pointer-events:none;transform:translateY(-8px);transition:all 0.2s cubic-bezier(0.16,1,0.3,1);box-shadow:0 16px 40px rgba(0,0,0,0.4)}
-  .avatar-menu.open{opacity:1;pointer-events:all;transform:translateY(0)}
-  .avatar-menu-header{padding:10px 12px 14px;border-bottom:1px solid var(--border);margin-bottom:6px}
-  .avatar-menu-email{font-size:12px;color:var(--muted);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .avatar-menu-status{font-size:11px;font-weight:600;color:var(--accent)}
-  .avatar-menu-status.free{color:var(--muted)}
-  .avatar-menu-item{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border:none;background:transparent;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:400;cursor:pointer;border-radius:10px;transition:all 0.15s;text-align:left}
-  .avatar-menu-item:hover{background:var(--surface2)}
-  .avatar-menu-item.danger{color:var(--accent3)}
-  .avatar-menu-item.danger:hover{background:rgba(255,107,107,0.08)}
-  .avatar-menu-item .item-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
-  .avatar-menu-divider{height:1px;background:var(--border);margin:6px 0}
-
   /* CONTENT */
   header{text-align:center;margin-bottom:56px;padding-top:80px}
   .logo-badge{display:inline-flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:100px;padding:6px 16px;font-size:12px;font-weight:500;color:var(--accent);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:20px}
@@ -236,6 +218,9 @@
       </div>
       <button class="btn-primary" id="authBtn" onclick="handleAuth()">Se connecter</button>
       <div class="modal-error" id="authError"></div>
+      <div style="text-align:center;margin-top:14px">
+        <button onclick="showForgotScreen()" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;text-decoration:underline">Mot de passe oublié ?</button>
+      </div>
     </div>
     <!-- ÉCRAN VÉRIFICATION EMAIL -->
     <div id="verifyScreen" style="display:none">
@@ -250,6 +235,35 @@
       <div style="text-align:center;margin-top:16px">
         <button onclick="resendCode()" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;text-decoration:underline">Renvoyer le code</button>
       </div>
+    </div>
+    <!-- ÉCRAN MOT DE PASSE OUBLIÉ -->
+    <div id="forgotScreen" style="display:none">
+      <div style="margin-bottom:16px">
+        <button onclick="showAuthScreen()" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px">← Retour</button>
+      </div>
+      <div class="modal-title">🔑 Mot de passe oublié</div>
+      <div class="modal-sub">Entre ton email et on t'envoie un lien de réinitialisation</div>
+      <div class="form-field" style="margin-top:24px">
+        <label>Email</label>
+        <input type="email" id="forgotEmail" placeholder="ton@email.com" />
+      </div>
+      <button class="btn-primary" id="forgotBtn" onclick="handleForgot()">Envoyer le lien →</button>
+      <div class="modal-error" id="forgotError"></div>
+    </div>
+    <!-- ÉCRAN RESET MOT DE PASSE -->
+    <div id="resetScreen" style="display:none">
+      <div class="modal-title">🔒 Nouveau mot de passe</div>
+      <div class="modal-sub">Entre ton nouveau mot de passe</div>
+      <div class="form-field" style="margin-top:24px">
+        <label>Nouveau mot de passe</label>
+        <input type="password" id="resetPassword" placeholder="••••••••" />
+      </div>
+      <div class="form-field">
+        <label>Confirmer</label>
+        <input type="password" id="resetPasswordConfirm" placeholder="••••••••" />
+      </div>
+      <button class="btn-primary" id="resetBtn" onclick="handleReset()">Enregistrer →</button>
+      <div class="modal-error" id="resetError"></div>
     </div>
   </div>
 </div>
@@ -434,6 +448,7 @@
 
   // ── SESSION ───────────────────────────────────────────────────
   function checkSession() {
+    checkResetToken();
     const saved = localStorage.getItem('vintedai_user');
     if (saved) {
       currentUser = JSON.parse(saved);
@@ -456,65 +471,11 @@
     const el = document.getElementById('topbarRight');
     if (!currentUser) { el.innerHTML = ''; return; }
     const remaining = currentUser.is_premium ? '∞' : Math.max(0, 3 - (currentUser.daily_count || 0));
-    const initial = (currentUser.email || 'U')[0].toUpperCase();
-    const isPremium = currentUser.is_premium;
-
     el.innerHTML = `
-      ${!isPremium ? `<span class="quota-badge"><span>${remaining}</span> annonces restantes</span>` : ''}
-      ${!isPremium ? '<button class="btn-upgrade" onclick="showPaywall()">Passer Premium</button>' : '<span class="premium-badge">⭐ Premium</span>'}
-      <div class="avatar-wrapper" id="avatarWrapper">
-        <button class="avatar-btn ${isPremium ? 'premium-ring' : ''}" onclick="toggleAvatarMenu()" id="avatarBtn">${initial}</button>
-        <div class="avatar-menu" id="avatarMenu">
-          <div class="avatar-menu-header">
-            <div class="avatar-menu-email">${currentUser.email}</div>
-            <div class="avatar-menu-status ${isPremium ? '' : 'free'}">${isPremium ? '⭐ Abonnement Premium actif' : '🔓 Compte gratuit'}</div>
-          </div>
-          ${isPremium ? `<button class="avatar-menu-item" onclick="manageSubscription()"><span class="item-icon">⚙️</span>Gérer mon abonnement</button>` : `<button class="avatar-menu-item" onclick="closeAvatarMenu();showPaywall()"><span class="item-icon">⚡</span>Passer Premium — 1€/mois</button>`}
-          <div class="avatar-menu-divider"></div>
-          <button class="avatar-menu-item danger" onclick="logout()"><span class="item-icon">🚪</span>Déconnexion</button>
-        </div>
-      </div>
+      ${currentUser.is_premium ? '<span class="premium-badge">⭐ Premium</span>' : `<span class="quota-badge"><span>${remaining}</span> annonces restantes</span>`}
+      ${!currentUser.is_premium ? '<button class="btn-upgrade" onclick="showPaywall()">Passer Premium</button>' : ''}
+      <button class="btn-logout" onclick="logout()">Déconnexion</button>
     `;
-
-    // Fermer le menu au clic en dehors
-    setTimeout(() => {
-      document.addEventListener('click', closeOnOutsideClick);
-    }, 0);
-  }
-
-  function toggleAvatarMenu() {
-    const menu = document.getElementById('avatarMenu');
-    if (menu) menu.classList.toggle('open');
-  }
-
-  function closeAvatarMenu() {
-    const menu = document.getElementById('avatarMenu');
-    if (menu) menu.classList.remove('open');
-  }
-
-  function closeOnOutsideClick(e) {
-    const wrapper = document.getElementById('avatarWrapper');
-    if (wrapper && !wrapper.contains(e.target)) {
-      closeAvatarMenu();
-      document.removeEventListener('click', closeOnOutsideClick);
-    }
-  }
-
-  async function manageSubscription() {
-    closeAvatarMenu();
-    showToast('⏳ Redirection vers le portail...');
-    try {
-      const res = await fetch('/api/portal', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: currentUser.id })
-      });
-      const data = await res.json();
-      if (data.url) window.location.href = data.url;
-      else throw new Error(data.error || 'Erreur');
-    } catch (e) {
-      showToast('❌ ' + e.message);
-    }
   }
 
   function logout() {
@@ -829,6 +790,100 @@
     document.querySelectorAll('.step').forEach(s => s.classList.remove('done','active'));
     document.getElementById('step1').classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── MOT DE PASSE OUBLIÉ ──────────────────────────────────────
+  function showForgotScreen() {
+    document.getElementById('authScreen').style.display = 'none';
+    document.getElementById('verifyScreen').style.display = 'none';
+    document.getElementById('forgotScreen').style.display = 'block';
+    document.getElementById('resetScreen').style.display = 'none';
+    document.getElementById('forgotError').classList.remove('visible');
+  }
+
+  function showAuthScreen() {
+    document.getElementById('authScreen').style.display = 'block';
+    document.getElementById('verifyScreen').style.display = 'none';
+    document.getElementById('forgotScreen').style.display = 'none';
+    document.getElementById('resetScreen').style.display = 'none';
+  }
+
+  async function handleForgot() {
+    const email = document.getElementById('forgotEmail').value.trim();
+    const btn = document.getElementById('forgotBtn');
+    const errorEl = document.getElementById('forgotError');
+    errorEl.classList.remove('visible');
+
+    if (!email) { errorEl.textContent = 'Entre ton email.'; errorEl.classList.add('visible'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Envoi...';
+    try {
+      await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'forgot_password', email })
+      });
+      // Toujours afficher succès pour ne pas révéler si l'email existe
+      btn.textContent = '✓ Email envoyé !';
+      setTimeout(() => { showAuthScreen(); btn.disabled = false; btn.textContent = 'Envoyer le lien →'; }, 3000);
+    } catch (e) {
+      errorEl.textContent = 'Erreur, réessaie.';
+      errorEl.classList.add('visible');
+      btn.disabled = false;
+      btn.textContent = 'Envoyer le lien →';
+    }
+  }
+
+  async function handleReset() {
+    const password = document.getElementById('resetPassword').value;
+    const confirm = document.getElementById('resetPasswordConfirm').value;
+    const btn = document.getElementById('resetBtn');
+    const errorEl = document.getElementById('resetError');
+    errorEl.classList.remove('visible');
+
+    if (password.length < 6) { errorEl.textContent = 'Mot de passe trop court (6 min).'; errorEl.classList.add('visible'); return; }
+    if (password !== confirm) { errorEl.textContent = 'Les mots de passe ne correspondent pas.'; errorEl.classList.add('visible'); return; }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('reset_token');
+    if (!token) { errorEl.textContent = 'Lien invalide.'; errorEl.classList.add('visible'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Enregistrement...';
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'reset_password', token, password })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      currentUser = data.user;
+      localStorage.setItem('vintedai_user', JSON.stringify(currentUser));
+      window.history.replaceState({}, '', '/');
+      hideAuthModal();
+      updateTopbar();
+      showToast('✅ Mot de passe mis à jour !');
+    } catch (e) {
+      errorEl.textContent = e.message;
+      errorEl.classList.add('visible');
+      btn.disabled = false;
+      btn.textContent = 'Enregistrer →';
+    }
+  }
+
+  // Vérifier si on revient d'un lien de reset
+  function checkResetToken() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('reset_token')) {
+      document.getElementById('authModal').classList.add('visible');
+      document.getElementById('authScreen').style.display = 'none';
+      document.getElementById('verifyScreen').style.display = 'none';
+      document.getElementById('forgotScreen').style.display = 'none';
+      document.getElementById('resetScreen').style.display = 'block';
+    }
   }
 
   // Enter sur les champs auth
