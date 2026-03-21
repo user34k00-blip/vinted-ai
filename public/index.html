@@ -92,10 +92,25 @@
   .btn-upgrade:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(123,94,248,0.4)}
   .btn-logout{background:transparent;border:1px solid var(--border);border-radius:100px;padding:6px 14px;color:var(--muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s}
   .btn-logout:hover{border-color:var(--accent3);color:var(--accent3)}
-  .btn-manage{background:transparent;border:1px solid rgba(9,249,176,0.3);border-radius:100px;padding:6px 14px;color:var(--accent);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s}
-  .btn-manage:hover{background:rgba(9,249,176,0.08);border-color:var(--accent)}
-  .btn-manage:disabled{opacity:0.5;cursor:not-allowed}
   .premium-badge{background:linear-gradient(135deg,rgba(9,249,176,0.15),rgba(123,94,248,0.15));border:1px solid rgba(9,249,176,0.3);border-radius:100px;padding:4px 12px;font-size:11px;color:var(--accent);font-weight:600}
+
+  /* AVATAR MENU */
+  .avatar-wrapper{position:relative}
+  .avatar-btn{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),#9b7bff);border:none;color:white;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0}
+  .avatar-btn:hover{transform:scale(1.08);box-shadow:0 4px 14px rgba(123,94,248,0.5)}
+  .avatar-btn.premium-ring{background:linear-gradient(135deg,var(--accent),#06d4a0);box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--accent)}
+  .avatar-menu{position:absolute;top:calc(100% + 10px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:8px;min-width:220px;z-index:200;opacity:0;pointer-events:none;transform:translateY(-8px);transition:all 0.2s cubic-bezier(0.16,1,0.3,1);box-shadow:0 16px 40px rgba(0,0,0,0.4)}
+  .avatar-menu.open{opacity:1;pointer-events:all;transform:translateY(0)}
+  .avatar-menu-header{padding:10px 12px 14px;border-bottom:1px solid var(--border);margin-bottom:6px}
+  .avatar-menu-email{font-size:12px;color:var(--muted);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .avatar-menu-status{font-size:11px;font-weight:600;color:var(--accent)}
+  .avatar-menu-status.free{color:var(--muted)}
+  .avatar-menu-item{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border:none;background:transparent;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:400;cursor:pointer;border-radius:10px;transition:all 0.15s;text-align:left}
+  .avatar-menu-item:hover{background:var(--surface2)}
+  .avatar-menu-item.danger{color:var(--accent3)}
+  .avatar-menu-item.danger:hover{background:rgba(255,107,107,0.08)}
+  .avatar-menu-item .item-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+  .avatar-menu-divider{height:1px;background:var(--border);margin:6px 0}
 
   /* CONTENT */
   header{text-align:center;margin-bottom:56px;padding-top:80px}
@@ -441,17 +456,53 @@
     const el = document.getElementById('topbarRight');
     if (!currentUser) { el.innerHTML = ''; return; }
     const remaining = currentUser.is_premium ? '∞' : Math.max(0, 3 - (currentUser.daily_count || 0));
+    const initial = (currentUser.email || 'U')[0].toUpperCase();
+    const isPremium = currentUser.is_premium;
+
     el.innerHTML = `
-      ${currentUser.is_premium ? '<span class="premium-badge">⭐ Premium</span>' : `<span class="quota-badge"><span>${remaining}</span> annonces restantes</span>`}
-      ${!currentUser.is_premium ? '<button class="btn-upgrade" onclick="showPaywall()">Passer Premium</button>' : '<button class="btn-manage" onclick="manageSubscription()">⚙️ Gérer l\'abonnement</button>'}
-      <button class="btn-logout" onclick="logout()">Déconnexion</button>
+      ${!isPremium ? `<span class="quota-badge"><span>${remaining}</span> annonces restantes</span>` : ''}
+      ${!isPremium ? '<button class="btn-upgrade" onclick="showPaywall()">Passer Premium</button>' : '<span class="premium-badge">⭐ Premium</span>'}
+      <div class="avatar-wrapper" id="avatarWrapper">
+        <button class="avatar-btn ${isPremium ? 'premium-ring' : ''}" onclick="toggleAvatarMenu()" id="avatarBtn">${initial}</button>
+        <div class="avatar-menu" id="avatarMenu">
+          <div class="avatar-menu-header">
+            <div class="avatar-menu-email">${currentUser.email}</div>
+            <div class="avatar-menu-status ${isPremium ? '' : 'free'}">${isPremium ? '⭐ Abonnement Premium actif' : '🔓 Compte gratuit'}</div>
+          </div>
+          ${isPremium ? `<button class="avatar-menu-item" onclick="manageSubscription()"><span class="item-icon">⚙️</span>Gérer mon abonnement</button>` : `<button class="avatar-menu-item" onclick="closeAvatarMenu();showPaywall()"><span class="item-icon">⚡</span>Passer Premium — 1€/mois</button>`}
+          <div class="avatar-menu-divider"></div>
+          <button class="avatar-menu-item danger" onclick="logout()"><span class="item-icon">🚪</span>Déconnexion</button>
+        </div>
+      </div>
     `;
+
+    // Fermer le menu au clic en dehors
+    setTimeout(() => {
+      document.addEventListener('click', closeOnOutsideClick);
+    }, 0);
+  }
+
+  function toggleAvatarMenu() {
+    const menu = document.getElementById('avatarMenu');
+    if (menu) menu.classList.toggle('open');
+  }
+
+  function closeAvatarMenu() {
+    const menu = document.getElementById('avatarMenu');
+    if (menu) menu.classList.remove('open');
+  }
+
+  function closeOnOutsideClick(e) {
+    const wrapper = document.getElementById('avatarWrapper');
+    if (wrapper && !wrapper.contains(e.target)) {
+      closeAvatarMenu();
+      document.removeEventListener('click', closeOnOutsideClick);
+    }
   }
 
   async function manageSubscription() {
-    const btn = event.target;
-    btn.disabled = true;
-    btn.textContent = '...';
+    closeAvatarMenu();
+    showToast('⏳ Redirection vers le portail...');
     try {
       const res = await fetch('/api/portal', {
         method: 'POST',
@@ -463,8 +514,6 @@
       else throw new Error(data.error || 'Erreur');
     } catch (e) {
       showToast('❌ ' + e.message);
-      btn.disabled = false;
-      btn.textContent = '⚙️ Gérer l\'abonnement';
     }
   }
 
