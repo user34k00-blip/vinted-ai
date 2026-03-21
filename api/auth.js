@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SECRET = process.env.SUPABASE_SECRET;
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const APP_URL = process.env.APP_URL || 'https://project-ys1js.vercel.app';
 
 function hashPassword(password) {
   return crypto.createHash('sha256').update(password + 'vintedai_salt_2024').digest('hex');
@@ -10,6 +11,10 @@ function hashPassword(password) {
 
 function generateCode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+function generateToken() {
+  return crypto.randomBytes(32).toString('hex');
 }
 
 async function supabase(method, path, body) {
@@ -24,17 +29,14 @@ async function supabase(method, path, body) {
     body: body ? JSON.stringify(body) : undefined
   });
   const text = await res.text();
-  if (!text || text.trim() === "") return [];
+  if (!text || text.trim() === '') return [];
   try { return JSON.parse(text); } catch(e) { return []; }
 }
 
 async function sendVerificationEmail(email, code) {
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${RESEND_API_KEY}`
-    },
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${RESEND_API_KEY}` },
     body: JSON.stringify({
       from: 'VintedAI <onboarding@resend.dev>',
       to: email,
@@ -54,6 +56,30 @@ async function sendVerificationEmail(email, code) {
   return res.ok;
 }
 
+async function sendResetEmail(email, token) {
+  const resetUrl = `${APP_URL}?reset_token=${token}`;
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${RESEND_API_KEY}` },
+    body: JSON.stringify({
+      from: 'VintedAI <onboarding@resend.dev>',
+      to: email,
+      subject: 'Réinitialisation de ton mot de passe VintedAI',
+      html: `
+        <div style="font-family:sans-serif;max-width:400px;margin:0 auto;background:#12121a;color:#f0f0f8;padding:40px;border-radius:16px">
+          <h2 style="color:#09f9b0;margin-bottom:8px">VintedAI</h2>
+          <p style="color:#6a6a8a;margin-bottom:24px">Tu as demandé à réinitialiser ton mot de passe.</p>
+          <a href="${resetUrl}" style="display:block;background:linear-gradient(135deg,#09f9b0,#06d4a0);color:#0a0a0f;text-decoration:none;padding:16px 24px;border-radius:12px;text-align:center;font-weight:700;font-size:15px;margin-bottom:24px">
+            Réinitialiser mon mot de passe →
+          </a>
+          <p style="color:#6a6a8a;font-size:12px">Ce lien expire dans 30 minutes.<br>Si tu n'as pas fait cette demande, ignore cet email.</p>
+        </div>
+      `
+    })
+  });
+  return res.ok;
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -61,44 +87,24 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { action, email, password, code, userId } = req.body;
-  if (!email) return res.status(400).json({ error: 'Email requis' });
-
-  const emailLower = email.toLowerCase().trim();
+  const { action, email, password, code, token } = req.body;
 
   // ── INSCRIPTION ────────────────────────────────────────────────
   if (action === 'register') {
-    if (!password) return res.status(400).json({ error: 'Mot de passe requis' });
-    if (password.length < 6) return res.status(400).json({ error: 'Mot de passe trop court' });
-
-    const existing = await supabase('GET', `/users?email=eq.${encodeURIComponent(emailLower)}&select=id,is_verified`);
-    if (existing.length > 0 && existing[0].is_verified) {
-      return res.status(400).json({ error: 'Cet email est déjà utilisé' });
-    }
-
+    if (!email || !password) return res.status(400).json({ error: 'Email et mot de passe requis' });
+    if (password.length < 6) return res.status(400).json({ error: 'Mot de passe trop court (6 min)' });
+    const emailLower = email.toLowerCase().trim();
     const hash = hashPassword(password);
     const verifyCode = generateCode();
     const verifyExpires = new Date(Date.now() + 10 * 60 * 1000).toISOString();
 
+    const existing = await supabase('GET', `/users?email=eq.${encodeURIComponent(emailLower)}&select=id,is_verified`);
+    if (existing.length > 0 && existing[0].is_verified) return res.status(400).json({ error: 'Cet email est déjà utilisé' });
+
     if (existing.length > 0) {
-      // Mettre à jour le code si compte non vérifié
-      await supabase('PATCH', `/users?email=eq.${encodeURIComponent(emailLower)}`, {
-        password_hash: hash,
-        verify_code: verifyCode,
-        verify_expires: verifyExpires,
-        is_verified: false
-      });
+      await supabase('PATCH', `/users?email=eq.${encodeURIComponent(emailLower)}`, { password_hash: hash, verify_code: verifyCode, verify_expires: verifyExpires, is_verified: false });
     } else {
-      // Créer le compte
-      const newUser = await supabase('POST', '/users', {
-        email: emailLower,
-        password_hash: hash,
-        daily_count: 0,
-        last_reset: new Date().toISOString().split('T')[0],
-        is_verified: false,
-        verify_code: verifyCode,
-        verify_expires: verifyExpires
-      });
+      const newUser = await supabase('POST', '/users', { email: emailLower, password_hash: hash, daily_count: 0, last_reset: new Date().toISOString().split('T')[0], is_verified: false, verify_code: verifyCode, verify_expires: verifyExpires });
       if (!newUser || newUser.error) return res.status(500).json({ error: 'Erreur création compte' });
     }
 
@@ -108,8 +114,8 @@ module.exports = async function handler(req, res) {
 
   // ── VÉRIFICATION CODE EMAIL ────────────────────────────────────
   if (action === 'verify_email') {
-    if (!code) return res.status(400).json({ error: 'Code requis' });
-
+    if (!email || !code) return res.status(400).json({ error: 'Email et code requis' });
+    const emailLower = email.toLowerCase().trim();
     const users = await supabase('GET', `/users?email=eq.${encodeURIComponent(emailLower)}&select=*`);
     if (!users || users.length === 0) return res.status(400).json({ error: 'Compte introuvable' });
 
@@ -117,50 +123,36 @@ module.exports = async function handler(req, res) {
     if (user.verify_code !== code) return res.status(400).json({ error: 'Code incorrect' });
     if (new Date(user.verify_expires) < new Date()) return res.status(400).json({ error: 'Code expiré, recommence' });
 
-    await supabase('PATCH', `/users?email=eq.${encodeURIComponent(emailLower)}`, {
-      is_verified: true,
-      verify_code: null,
-      verify_expires: null
-    });
-
-    return res.status(200).json({
-      success: true,
-      user: { id: user.id, email: user.email, is_premium: user.is_premium, daily_count: user.daily_count }
-    });
+    await supabase('PATCH', `/users?email=eq.${encodeURIComponent(emailLower)}`, { is_verified: true, verify_code: null, verify_expires: null });
+    return res.status(200).json({ success: true, user: { id: user.id, email: user.email, is_premium: user.is_premium, daily_count: user.daily_count } });
   }
 
   // ── RENVOI CODE ────────────────────────────────────────────────
   if (action === 'resend_code') {
-    const users = await supabase('GET', `/users?email=eq.${encodeURIComponent(emailLower)}&select=id`);
-    if (!users || users.length === 0) return res.status(400).json({ error: 'Compte introuvable' });
-
+    if (!email) return res.status(400).json({ error: 'Email requis' });
+    const emailLower = email.toLowerCase().trim();
     const verifyCode = generateCode();
     const verifyExpires = new Date(Date.now() + 10 * 60 * 1000).toISOString();
-    await supabase('PATCH', `/users?email=eq.${encodeURIComponent(emailLower)}`, {
-      verify_code: verifyCode,
-      verify_expires: verifyExpires
-    });
+    await supabase('PATCH', `/users?email=eq.${encodeURIComponent(emailLower)}`, { verify_code: verifyCode, verify_expires: verifyExpires });
     await sendVerificationEmail(emailLower, verifyCode);
     return res.status(200).json({ success: true });
   }
 
   // ── CONNEXION ──────────────────────────────────────────────────
   if (action === 'login') {
-    if (!password) return res.status(400).json({ error: 'Mot de passe requis' });
+    if (!email || !password) return res.status(400).json({ error: 'Email et mot de passe requis' });
+    const emailLower = email.toLowerCase().trim();
     const hash = hashPassword(password);
     const users = await supabase('GET', `/users?email=eq.${encodeURIComponent(emailLower)}&select=*`);
     if (!users || users.length === 0) return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
 
     const user = users[0];
     if (user.password_hash !== hash) return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
+
     if (!user.is_verified) {
-      // Renvoyer un code et demander vérification
       const verifyCode = generateCode();
       const verifyExpires = new Date(Date.now() + 10 * 60 * 1000).toISOString();
-      await supabase('PATCH', `/users?email=eq.${encodeURIComponent(emailLower)}`, {
-        verify_code: verifyCode,
-        verify_expires: verifyExpires
-      });
+      await supabase('PATCH', `/users?email=eq.${encodeURIComponent(emailLower)}`, { verify_code: verifyCode, verify_expires: verifyExpires });
       await sendVerificationEmail(emailLower, verifyCode);
       return res.status(200).json({ success: true, action: 'verify_required', email: emailLower });
     }
@@ -171,10 +163,40 @@ module.exports = async function handler(req, res) {
       user.daily_count = 0;
     }
 
-    return res.status(200).json({
-      success: true,
-      user: { id: user.id, email: user.email, is_premium: user.is_premium, daily_count: user.daily_count }
-    });
+    return res.status(200).json({ success: true, user: { id: user.id, email: user.email, is_premium: user.is_premium, daily_count: user.daily_count } });
+  }
+
+  // ── MOT DE PASSE OUBLIÉ ────────────────────────────────────────
+  if (action === 'forgot_password') {
+    if (!email) return res.status(400).json({ error: 'Email requis' });
+    const emailLower = email.toLowerCase().trim();
+    const users = await supabase('GET', `/users?email=eq.${encodeURIComponent(emailLower)}&select=id`);
+
+    // Toujours répondre OK pour ne pas révéler si l'email existe
+    if (!users || users.length === 0) return res.status(200).json({ success: true });
+
+    const resetToken = generateToken();
+    const resetExpires = new Date(Date.now() + 30 * 60 * 1000).toISOString();
+    await supabase('PATCH', `/users?email=eq.${encodeURIComponent(emailLower)}`, { reset_token: resetToken, reset_expires: resetExpires });
+    await sendResetEmail(emailLower, resetToken);
+    return res.status(200).json({ success: true });
+  }
+
+  // ── RÉINITIALISATION MOT DE PASSE ──────────────────────────────
+  if (action === 'reset_password') {
+    if (!token || !password) return res.status(400).json({ error: 'Token et nouveau mot de passe requis' });
+    if (password.length < 6) return res.status(400).json({ error: 'Mot de passe trop court (6 min)' });
+
+    const users = await supabase('GET', `/users?reset_token=eq.${token}&select=*`);
+    if (!users || users.length === 0) return res.status(400).json({ error: 'Lien invalide ou expiré' });
+
+    const user = users[0];
+    if (new Date(user.reset_expires) < new Date()) return res.status(400).json({ error: 'Lien expiré, recommence' });
+
+    const newHash = hashPassword(password);
+    await supabase('PATCH', `/users?id=eq.${user.id}`, { password_hash: newHash, reset_token: null, reset_expires: null, is_verified: true });
+
+    return res.status(200).json({ success: true, user: { id: user.id, email: user.email, is_premium: user.is_premium, daily_count: user.daily_count || 0 } });
   }
 
   return res.status(400).json({ error: 'Action invalide' });
