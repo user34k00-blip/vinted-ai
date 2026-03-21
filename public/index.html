@@ -92,6 +92,9 @@
   .btn-upgrade:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(123,94,248,0.4)}
   .btn-logout{background:transparent;border:1px solid var(--border);border-radius:100px;padding:6px 14px;color:var(--muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s}
   .btn-logout:hover{border-color:var(--accent3);color:var(--accent3)}
+  .btn-manage{background:transparent;border:1px solid rgba(9,249,176,0.3);border-radius:100px;padding:6px 14px;color:var(--accent);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s}
+  .btn-manage:hover{background:rgba(9,249,176,0.08);border-color:var(--accent)}
+  .btn-manage:disabled{opacity:0.5;cursor:not-allowed}
   .premium-badge{background:linear-gradient(135deg,rgba(9,249,176,0.15),rgba(123,94,248,0.15));border:1px solid rgba(9,249,176,0.3);border-radius:100px;padding:4px 12px;font-size:11px;color:var(--accent);font-weight:600}
 
   /* CONTENT */
@@ -440,9 +443,29 @@
     const remaining = currentUser.is_premium ? '∞' : Math.max(0, 3 - (currentUser.daily_count || 0));
     el.innerHTML = `
       ${currentUser.is_premium ? '<span class="premium-badge">⭐ Premium</span>' : `<span class="quota-badge"><span>${remaining}</span> annonces restantes</span>`}
-      ${!currentUser.is_premium ? '<button class="btn-upgrade" onclick="showPaywall()">Passer Premium</button>' : ''}
+      ${!currentUser.is_premium ? '<button class="btn-upgrade" onclick="showPaywall()">Passer Premium</button>' : '<button class="btn-manage" onclick="manageSubscription()">⚙️ Gérer l\'abonnement</button>'}
       <button class="btn-logout" onclick="logout()">Déconnexion</button>
     `;
+  }
+
+  async function manageSubscription() {
+    const btn = event.target;
+    btn.disabled = true;
+    btn.textContent = '...';
+    try {
+      const res = await fetch('/api/portal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: currentUser.id })
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else throw new Error(data.error || 'Erreur');
+    } catch (e) {
+      showToast('❌ ' + e.message);
+      btn.disabled = false;
+      btn.textContent = '⚙️ Gérer l\'abonnement';
+    }
   }
 
   function logout() {
