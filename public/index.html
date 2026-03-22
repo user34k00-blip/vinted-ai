@@ -130,7 +130,7 @@
   .form-group label{font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em}
   .form-group input,.form-group select,.form-group textarea{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;resize:none}
   .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent2)}
-  .form-group select option{background:var(--surface2)}
+  .form-group select option{background:#1a1a26}
   .form-group.full{grid-column:1/-1}
   .btn-generate{width:100%;padding:16px 24px;background:linear-gradient(135deg,var(--accent),#06d4a0);border:none;border-radius:12px;color:var(--bg);font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:10px;letter-spacing:0.02em}
   .btn-generate:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(9,249,176,0.3)}
@@ -180,7 +180,9 @@
   .posting-steps{counter-reset:steps;display:flex;flex-direction:column;gap:10px}
   .posting-step{counter-increment:steps;display:flex;align-items:center;gap:14px;padding:12px 16px;background:var(--surface2);border-radius:10px;border:1px solid var(--border);font-size:13px;color:var(--muted)}
   .posting-step::before{content:counter(steps);width:24px;height:24px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;color:var(--accent);flex-shrink:0}
-  ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  ::-webkit-scrollbar{width:6px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
   /* NAV TABS */
   .nav-tabs{display:flex;gap:0;background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:4px;margin-bottom:32px}
   .nav-tab{flex:1;padding:10px 16px;border:none;background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-radius:10px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px}
@@ -216,8 +218,6 @@
   .chat-typing span:nth-child(2){animation-delay:0.2s}
   .chat-typing span:nth-child(3){animation-delay:0.4s}
   @keyframes typing{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
-
-  /* CONSEILS PREMIUM dans résultat */
   .conseils-premium{background:linear-gradient(135deg,rgba(123,94,248,0.08),rgba(9,249,176,0.05));border:1px solid rgba(123,94,248,0.25);border-radius:14px;padding:20px;margin-bottom:24px}
   .conseils-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:8px}
   .conseils-body{font-size:13px;color:var(--text);line-height:1.7;white-space:pre-wrap}
@@ -233,20 +233,19 @@
     <div class="splash-tag"><span class="dot"></span>Générateur d'annonces</div>
     <div class="splash-title"><span class="word-vinted">Vinted</span><span class="word-x">×</span><span class="word-ai">AI</span></div>
     <div class="splash-by">by <span>kzr</span></div>
-    <button class="splash-btn" onclick="enterApp()">Click here <span>→</span></button>
+    <button class="splash-btn" id="splashBtn">Click here <span>&#8594;</span></button>
   </div>
 </div>
 
 <!-- AUTH MODAL -->
 <div class="modal-overlay" id="authModal">
   <div class="modal">
-    <!-- ÉCRAN LOGIN/REGISTER -->
     <div id="authScreen">
-      <div class="modal-title" id="authTitle">Bienvenue 👋</div>
+      <div class="modal-title" id="authTitle">Bienvenue &#128075;</div>
       <div class="modal-sub" id="authSub">Connecte-toi pour générer tes annonces</div>
       <div class="modal-tabs">
-        <button class="modal-tab active" onclick="switchTab('login')">Connexion</button>
-        <button class="modal-tab" onclick="switchTab('register')">Inscription</button>
+        <button class="modal-tab active" id="tabLogin" onclick="switchTab('login')">Connexion</button>
+        <button class="modal-tab" id="tabRegister" onclick="switchTab('register')">Inscription</button>
       </div>
       <div class="form-field">
         <label>Email</label>
@@ -259,15 +258,14 @@
       <button class="btn-primary" id="authBtn" onclick="handleAuth()">Se connecter</button>
       <div class="modal-error" id="authError"></div>
     </div>
-    <!-- ÉCRAN VÉRIFICATION EMAIL -->
     <div id="verifyScreen" style="display:none">
-      <div class="modal-title">📧 Vérifie ton email</div>
+      <div class="modal-title">&#128231; Vérifie ton email</div>
       <div class="modal-sub">On a envoyé un code à <strong id="verifyEmailDisplay"></strong></div>
       <div class="form-field" style="margin-top:24px">
         <label>Code de vérification</label>
         <input type="text" id="verifyCode" placeholder="123456" maxlength="6" style="font-size:1.4rem;letter-spacing:0.3em;text-align:center;font-weight:700" />
       </div>
-      <button class="btn-primary" id="verifyBtn" onclick="handleVerify()">Vérifier →</button>
+      <button class="btn-primary" id="verifyBtn" onclick="handleVerify()">Vérifier &#8594;</button>
       <div class="modal-error" id="verifyError"></div>
       <div style="text-align:center;margin-top:16px">
         <button onclick="resendCode()" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;text-decoration:underline">Renvoyer le code</button>
@@ -276,15 +274,14 @@
   </div>
 </div>
 
-
 <!-- PAYWALL -->
 <div class="paywall-overlay" id="paywallModal">
   <div class="paywall">
-    <div class="paywall-icon">⚡</div>
+    <div class="paywall-icon">&#9889;</div>
     <div class="paywall-title">Limite atteinte</div>
     <div class="paywall-sub">Tu as utilisé tes 3 annonces gratuites aujourd'hui.<br>Passe Premium pour générer sans limite.</div>
     <div class="paywall-price">
-      <span class="amount">1€</span>
+      <span class="amount">1&#8364;</span>
       <span class="period">/mois</span>
     </div>
     <div class="paywall-features">
@@ -293,14 +290,13 @@
       <div class="paywall-feature">Titres, prix et hashtags optimisés</div>
       <div class="paywall-feature">Comparaison avec le marché Vinted</div>
     </div>
-    <button class="btn-subscribe" id="subscribeBtn" onclick="handleSubscribe()">Passer Premium — 1€/mois</button>
+    <button class="btn-subscribe" id="subscribeBtn" onclick="handleSubscribe()">Passer Premium — 1&#8364;/mois</button>
     <button class="paywall-cancel" onclick="closePaywall()">Revenir demain (3 annonces gratuites)</button>
   </div>
 </div>
 
 <!-- APP -->
 <div id="app">
-  <!-- TOPBAR -->
   <div class="topbar">
     <div class="topbar-logo">Vinted × AI</div>
     <div class="topbar-right" id="topbarRight"></div>
@@ -313,164 +309,160 @@
       <p>Upload tes photos, donne le prix, l'IA crée le titre et la description parfaite.</p>
     </header>
 
-    <!-- NAV TABS -->
     <div class="nav-tabs">
       <button class="nav-tab active" onclick="switchPage('generator')" id="tabGenerator">✦ Générateur</button>
-      <button class="nav-tab premium-tab" onclick="switchPage('advisor')" id="tabAdvisor">🤖 Conseiller IA <span class="lock-icon" id="advisorLock">⭐</span></button>
+      <button class="nav-tab premium-tab" onclick="switchPage('advisor')" id="tabAdvisor">&#129302; Conseiller IA <span class="lock-icon" id="advisorLock">&#11088;</span></button>
     </div>
 
     <!-- PAGE GÉNÉRATEUR -->
     <div id="generatorPage">
-    <div class="steps">
-      <div class="step active" id="step1"><span class="step-num">1</span> Photos</div>
-      <div class="step-line"></div>
-      <div class="step" id="step2"><span class="step-num">2</span> Infos</div>
-      <div class="step-line"></div>
-      <div class="step" id="step3"><span class="step-num">3</span> Génération</div>
-      <div class="step-line"></div>
-      <div class="step" id="step4"><span class="step-num">4</span> Publication</div>
-    </div>
+      <div class="steps">
+        <div class="step active" id="step1"><span class="step-num">1</span> Photos</div>
+        <div class="step-line"></div>
+        <div class="step" id="step2"><span class="step-num">2</span> Infos</div>
+        <div class="step-line"></div>
+        <div class="step" id="step3"><span class="step-num">3</span> Génération</div>
+        <div class="step-line"></div>
+        <div class="step" id="step4"><span class="step-num">4</span> Publication</div>
+      </div>
 
-    <div class="card">
-      <div class="card-title"><span class="icon">📸</span>Photos de l'article</div>
-      <div class="upload-zone" id="uploadZone">
-        <input type="file" id="fileInput" accept="image/*" multiple />
-        <span class="upload-icon">🖼️</span>
-        <p><strong>Clique ou glisse tes photos ici</strong><br>JPG, PNG, WEBP — jusqu'à 8 photos</p>
+      <div class="card">
+        <div class="card-title"><span class="icon">&#128248;</span>Photos de l'article</div>
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="fileInput" accept="image/*" multiple />
+          <span class="upload-icon">&#128444;&#65039;</span>
+          <p><strong>Clique ou glisse tes photos ici</strong><br>JPG, PNG, WEBP — jusqu'à 8 photos</p>
+        </div>
+        <div class="preview-grid" id="previewGrid"></div>
       </div>
-      <div class="preview-grid" id="previewGrid"></div>
-    </div>
 
-    <div class="card">
-      <div class="card-title"><span class="icon">📝</span>Informations de l'article</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Catégorie</label>
-          <select id="category">
-            <option value="">Sélectionner...</option>
-            <option>Vêtements femme</option><option>Vêtements homme</option><option>Vêtements enfant</option>
-            <option>Chaussures femme</option><option>Chaussures homme</option><option>Sacs & accessoires</option>
-            <option>Électronique</option><option>Maison & déco</option><option>Sport & loisirs</option>
-            <option>Jouets & jeux</option><option>Livres & médias</option><option>Autre</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>État</label>
-          <select id="condition">
-            <option>Neuf avec étiquette</option><option>Neuf sans étiquette</option>
-            <option selected>Très bon état</option><option>Bon état</option><option>Satisfaisant</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Marque</label><input type="text" id="brand" placeholder="ex: Nike, Zara..." /></div>
-        <div class="form-group"><label>Taille</label><input type="text" id="size" placeholder="ex: M, 38..." /></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Prix souhaité (€)</label><input type="number" id="price" placeholder="ex: 25" min="1" /></div>
-        <div class="form-group"><label>Mots-clés</label><input type="text" id="keywords" placeholder="ex: vintage, streetwear..." /></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group full"><label>Notes</label><textarea id="notes" rows="2" placeholder="Imperfections, infos supplémentaires..."></textarea></div>
-      </div>
-    </div>
-
-    <button class="btn-generate" id="generateBtn" onclick="generateListing()">
-      <span>✦ Générer l'annonce avec l'IA</span>
-    </button>
-    <div class="error-msg" id="errorMsg"></div>
-
-    <div class="result-card" id="resultCard">
-      <div class="result-header">
-        <h2>Annonce générée</h2>
-        <span style="font-size:12px;color:var(--muted)">Copie chaque section sur Vinted</span>
-      </div>
-      <div class="result-body">
-        <div class="result-field">
-          <div class="result-field-header"><span class="result-field-label">📌 Titre</span><button class="copy-btn" onclick="copyField('titleResult',this)">Copier</button></div>
-          <div class="result-content result-title-big" id="titleResult"></div>
-        </div>
-        <div class="result-field">
-          <div class="result-field-header"><span class="result-field-label">💰 Prix recommandé</span></div>
-          <div id="priceResult"></div>
-        </div>
-        <div class="vinted-compare" id="vintedCompare" style="display:none">
-          <div class="vinted-compare-text"><strong>🔍 Comparer avec le marché</strong>Vois ce que d'autres vendent sur Vinted</div>
-          <a id="vintedSearchLink" href="#" target="_blank" class="btn-vinted-search">Voir les annonces similaires →</a>
-        </div>
-        <div class="result-field">
-          <div class="result-field-header"><span class="result-field-label">📄 Description</span><button class="copy-btn" onclick="copyField('descResult',this)">Copier</button></div>
-          <div class="result-content" id="descResult"></div>
-        </div>
-        <div class="result-field">
-          <div class="result-field-header"><span class="result-field-label"># Hashtags</span><button class="copy-btn" onclick="copyTags(this)">Copier</button></div>
-          <div class="tags-container" id="tagsResult"></div>
-          <div style="display:none" id="tagsText"></div>
-        </div>
-        <!-- CONSEILS PREMIUM -->
-        <div class="conseils-premium" id="conseilsPremium" style="display:none">
-          <div class="conseils-title">⭐ Conseils de vente personnalisés</div>
-          <div class="conseils-body" id="conseilsBody"></div>
-        </div>
-
-        <div class="divider"></div>
-        <div class="result-field">
-          <div class="result-field-header"><span class="result-field-label">✅ Checklist</span><span class="result-field-label" id="checkProgress">0/10</span></div>
-          <div class="progress-wrapper"><div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div><span class="progress-label" id="progressLabel">0%</span></div>
-          <div class="checklist">
-            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Au moins 3 photos (face, dos, détails)</div></div>
-            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Photo principale sur fond clair</div></div>
-            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Titre copié (60 caractères max)</div></div>
-            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Description complète collée</div></div>
-            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Bonne catégorie sélectionnée</div></div>
-            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">État correctement indiqué</div></div>
-            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Taille et marque renseignées</div></div>
-            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Prix vérifié vs annonces similaires</div></div>
-            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Frais de port configurés</div></div>
-            <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Annonce publiée et partagée</div></div>
+      <div class="card">
+        <div class="card-title"><span class="icon">&#128221;</span>Informations de l'article</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Catégorie</label>
+            <select id="category">
+              <option value="">Sélectionner...</option>
+              <option>Vêtements femme</option><option>Vêtements homme</option><option>Vêtements enfant</option>
+              <option>Chaussures femme</option><option>Chaussures homme</option><option>Sacs &amp; accessoires</option>
+              <option>Électronique</option><option>Maison &amp; déco</option><option>Sport &amp; loisirs</option>
+              <option>Jouets &amp; jeux</option><option>Livres &amp; médias</option><option>Autre</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>État</label>
+            <select id="condition">
+              <option>Neuf avec étiquette</option><option>Neuf sans étiquette</option>
+              <option selected>Très bon état</option><option>Bon état</option><option>Satisfaisant</option>
+            </select>
           </div>
         </div>
-        <div class="divider"></div>
-        <div class="result-field">
-          <div class="result-field-header"><span class="result-field-label">🚀 Comment publier</span></div>
-          <div class="posting-steps">
-            <div class="posting-step">Ouvre l'app Vinted → <strong style="color:var(--text);margin:0 4px">Vendre</strong></div>
-            <div class="posting-step">Upload tes photos — la meilleure en premier</div>
-            <div class="posting-step">Colle le titre dans le champ dédié</div>
-            <div class="posting-step">Sélectionne catégorie, marque, taille, état</div>
-            <div class="posting-step">Colle la description</div>
-            <div class="posting-step">Entre le prix et configure l'envoi</div>
-            <div class="posting-step">Vérifie la checklist et publie !</div>
-          </div>
+        <div class="form-row">
+          <div class="form-group"><label>Marque</label><input type="text" id="brand" placeholder="ex: Nike, Zara..." /></div>
+          <div class="form-group"><label>Taille</label><input type="text" id="size" placeholder="ex: M, 38..." /></div>
         </div>
-        <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap">
-          <a href="https://www.vinted.fr/items/new" target="_blank" class="btn-secondary">🛍️ Poster sur Vinted</a>
-          <button class="btn-secondary" onclick="resetForm()">🔄 Nouvelle annonce</button>
+        <div class="form-row">
+          <div class="form-group"><label>Prix souhaité (€)</label><input type="number" id="price" placeholder="ex: 25" min="1" /></div>
+          <div class="form-group"><label>Mots-clés</label><input type="text" id="keywords" placeholder="ex: vintage, streetwear..." /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group full"><label>Notes</label><textarea id="notes" rows="2" placeholder="Imperfections, infos supplémentaires..."></textarea></div>
+        </div>
+      </div>
+
+      <button class="btn-generate" id="generateBtn" onclick="generateListing()">
+        <span>✦ Générer l'annonce avec l'IA</span>
+      </button>
+      <div class="error-msg" id="errorMsg"></div>
+
+      <div class="result-card" id="resultCard">
+        <div class="result-header">
+          <h2>Annonce générée</h2>
+          <span style="font-size:12px;color:var(--muted)">Copie chaque section sur Vinted</span>
+        </div>
+        <div class="result-body">
+          <div class="result-field">
+            <div class="result-field-header"><span class="result-field-label">&#128204; Titre</span><button class="copy-btn" onclick="copyField('titleResult',this)">Copier</button></div>
+            <div class="result-content result-title-big" id="titleResult"></div>
+          </div>
+          <div class="result-field">
+            <div class="result-field-header"><span class="result-field-label">&#128176; Prix recommandé</span></div>
+            <div id="priceResult"></div>
+          </div>
+          <div class="vinted-compare" id="vintedCompare" style="display:none">
+            <div class="vinted-compare-text"><strong>&#128269; Comparer avec le marché</strong>Vois ce que d'autres vendent sur Vinted</div>
+            <a id="vintedSearchLink" href="#" target="_blank" class="btn-vinted-search">Voir les annonces similaires &#8594;</a>
+          </div>
+          <div class="result-field">
+            <div class="result-field-header"><span class="result-field-label">&#128196; Description</span><button class="copy-btn" onclick="copyField('descResult',this)">Copier</button></div>
+            <div class="result-content" id="descResult"></div>
+          </div>
+          <div class="result-field">
+            <div class="result-field-header"><span class="result-field-label"># Hashtags</span><button class="copy-btn" onclick="copyTags(this)">Copier</button></div>
+            <div class="tags-container" id="tagsResult"></div>
+            <div style="display:none" id="tagsText"></div>
+          </div>
+          <div class="conseils-premium" id="conseilsPremium" style="display:none">
+            <div class="conseils-title">&#11088; Conseils de vente personnalisés</div>
+            <div class="conseils-body" id="conseilsBody"></div>
+          </div>
+
+          <div class="divider"></div>
+          <div class="result-field">
+            <div class="result-field-header"><span class="result-field-label">&#9989; Checklist</span><span class="result-field-label" id="checkProgress">0/10</span></div>
+            <div class="progress-wrapper"><div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div><span class="progress-label" id="progressLabel">0%</span></div>
+            <div class="checklist">
+              <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Au moins 3 photos (face, dos, détails)</div></div>
+              <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Photo principale sur fond clair</div></div>
+              <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Titre copié (60 caractères max)</div></div>
+              <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Description complète collée</div></div>
+              <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Bonne catégorie sélectionnée</div></div>
+              <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">État correctement indiqué</div></div>
+              <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Taille et marque renseignées</div></div>
+              <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Prix vérifié vs annonces similaires</div></div>
+              <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Frais de port configurés</div></div>
+              <div class="check-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><div class="check-text">Annonce publiée et partagée</div></div>
+            </div>
+          </div>
+          <div class="divider"></div>
+          <div class="result-field">
+            <div class="result-field-header"><span class="result-field-label">&#128640; Comment publier</span></div>
+            <div class="posting-steps">
+              <div class="posting-step">Ouvre l'app Vinted &#8594; <strong style="color:var(--text);margin:0 4px">Vendre</strong></div>
+              <div class="posting-step">Upload tes photos — la meilleure en premier</div>
+              <div class="posting-step">Colle le titre dans le champ dédié</div>
+              <div class="posting-step">Sélectionne catégorie, marque, taille, état</div>
+              <div class="posting-step">Colle la description</div>
+              <div class="posting-step">Entre le prix et configure l'envoi</div>
+              <div class="posting-step">Vérifie la checklist et publie !</div>
+            </div>
+          </div>
+          <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap">
+            <a href="https://www.vinted.fr/items/new" target="_blank" class="btn-secondary">&#128717;&#65039; Poster sur Vinted</a>
+            <button class="btn-secondary" onclick="resetForm()">&#128260; Nouvelle annonce</button>
+          </div>
         </div>
       </div>
     </div>
-    </div> <!-- end generatorPage -->
 
     <!-- PAGE CONSEILLER IA -->
     <div id="advisorPage">
-      <!-- Locked state pour non-premium -->
       <div class="advisor-locked" id="advisorLocked">
-        <div class="advisor-locked-icon">🤖</div>
+        <div class="advisor-locked-icon">&#129302;</div>
         <div class="advisor-locked-title">Conseiller IA Premium</div>
         <div class="advisor-locked-sub">Pose toutes tes questions à ton expert Vinted personnel.<br>Stratégie de prix, conseils photos, optimisation d'annonces...</div>
-        <button class="btn-subscribe" style="max-width:300px;margin:0 auto" onclick="closeAdvisorLock();showPaywall()">Débloquer — 1€/mois</button>
+        <button class="btn-subscribe" style="max-width:300px;margin:0 auto" onclick="showPaywall()">Débloquer — 1&#8364;/mois</button>
       </div>
-      <!-- Chat interface pour premium -->
       <div class="chat-container" id="advisorChat" style="display:none">
         <div class="chat-messages" id="chatMessages">
           <div class="chat-msg ai">
             <div class="chat-avatar ai">AI</div>
-            <div class="chat-bubble">Salut ! Je suis ton conseiller Vinted personnel 👋 Je connais le marché de la mode seconde main sur le bout des doigts. Pose-moi toutes tes questions : prix, photos, stratégie, négociation... Je suis là pour maximiser tes ventes !</div>
+            <div class="chat-bubble">Salut ! Je suis ton conseiller Vinted personnel &#128075; Je connais le marché de la mode seconde main sur le bout des doigts. Pose-moi toutes tes questions : prix, photos, stratégie, négociation... Je suis là pour maximiser tes ventes !</div>
           </div>
         </div>
         <div class="chat-input-area">
           <textarea class="chat-input" id="chatInput" placeholder="Pose ta question..." rows="1" onkeydown="handleChatKey(event)"></textarea>
-          <button class="chat-send" id="chatSend" onclick="sendChatMessage()">➤</button>
+          <button class="chat-send" id="chatSend" onclick="sendChatMessage()">&#9654;</button>
         </div>
       </div>
     </div>
@@ -479,50 +471,62 @@
 </div>
 
 <script>
-  // ── STATE ──────────────────────────────────────────────────────
-  let currentUser = null;
-  let uploadedImages = [];
-  let authMode = 'login';
+  // ── STATE
+  var currentUser = null;
+  var uploadedImages = [];
+  var authMode = 'login';
+  var pendingVerifyEmail = '';
+  var chatHistory = [];
 
-  // ── SPLASH ────────────────────────────────────────────────────
+  // ── SPLASH
+  document.getElementById('splashBtn').addEventListener('click', function() {
+    enterApp();
+  });
+
   function enterApp() {
-    document.getElementById('splash').classList.add('hide');
-    setTimeout(() => {
-      document.getElementById('splash').style.display = 'none';
+    var splash = document.getElementById('splash');
+    splash.classList.add('hide');
+    setTimeout(function() {
+      splash.style.display = 'none';
       document.getElementById('app').classList.add('visible');
       checkSession();
     }, 600);
   }
 
-  // ── SESSION ───────────────────────────────────────────────────
+  // ── SESSION
   function checkSession() {
-    const saved = localStorage.getItem('vintedai_user');
+    var saved = localStorage.getItem('vintedai_user');
     if (saved) {
-      currentUser = JSON.parse(saved);
-      updateTopbar();
-      // Vérifier si retour de paiement Stripe
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('payment') === 'success') {
-        currentUser.is_premium = true;
-        localStorage.setItem('vintedai_user', JSON.stringify(currentUser));
+      try { currentUser = JSON.parse(saved); } catch(e) { currentUser = null; }
+      if (currentUser) {
         updateTopbar();
-        window.history.replaceState({}, '', '/');
-        showToast('🎉 Abonnement activé ! Génération illimitée.');
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('payment') === 'success') {
+          currentUser.is_premium = true;
+          localStorage.setItem('vintedai_user', JSON.stringify(currentUser));
+          updateTopbar();
+          window.history.replaceState({}, '', '/');
+          showToast('Abonnement activé ! Génération illimitée.');
+        }
+        return;
       }
-    } else {
-      showAuthModal();
     }
+    showAuthModal();
   }
 
   function updateTopbar() {
-    const el = document.getElementById('topbarRight');
+    var el = document.getElementById('topbarRight');
     if (!currentUser) { el.innerHTML = ''; return; }
-    const remaining = currentUser.is_premium ? '∞' : Math.max(0, 3 - (currentUser.daily_count || 0));
-    el.innerHTML = `
-      ${currentUser.is_premium ? '<span class="premium-badge">⭐ Premium</span>' : `<span class="quota-badge"><span>${remaining}</span> annonces restantes</span>`}
-      ${!currentUser.is_premium ? '<button class="btn-upgrade" onclick="showPaywall()">Passer Premium</button>' : ''}
-      <button class="btn-logout" onclick="logout()">Déconnexion</button>
-    `;
+    var remaining = currentUser.is_premium ? '&infin;' : Math.max(0, 3 - (currentUser.daily_count || 0));
+    var html = '';
+    if (currentUser.is_premium) {
+      html += '<span class="premium-badge">&#11088; Premium</span>';
+    } else {
+      html += '<span class="quota-badge"><span>' + remaining + '</span> annonces restantes</span>';
+      html += '<button class="btn-upgrade" onclick="showPaywall()">Passer Premium</button>';
+    }
+    html += '<button class="btn-logout" onclick="logout()">Déconnexion</button>';
+    el.innerHTML = html;
   }
 
   function logout() {
@@ -532,22 +536,23 @@
     showAuthModal();
   }
 
-  // ── AUTH ──────────────────────────────────────────────────────
-  let pendingVerifyEmail = '';
-
+  // ── AUTH
   function showAuthModal() {
     document.getElementById('authModal').classList.add('visible');
     document.getElementById('authScreen').style.display = 'block';
     document.getElementById('verifyScreen').style.display = 'none';
   }
+
   function hideAuthModal() {
     document.getElementById('authModal').classList.remove('visible');
   }
+
   function switchTab(mode) {
     authMode = mode;
-    document.querySelectorAll('.modal-tab').forEach((t, i) => t.classList.toggle('active', (i === 0 && mode === 'login') || (i === 1 && mode === 'register')));
+    document.getElementById('tabLogin').classList.toggle('active', mode === 'login');
+    document.getElementById('tabRegister').classList.toggle('active', mode === 'register');
     document.getElementById('authBtn').textContent = mode === 'login' ? 'Se connecter' : 'Créer mon compte';
-    document.getElementById('authTitle').textContent = mode === 'login' ? 'Bienvenue 👋' : 'Créer un compte';
+    document.getElementById('authTitle').textContent = mode === 'login' ? 'Bienvenue' : 'Créer un compte';
     document.getElementById('authSub').textContent = mode === 'login' ? 'Connecte-toi pour générer tes annonces' : '3 annonces gratuites par jour';
     document.getElementById('authError').classList.remove('visible');
   }
@@ -561,11 +566,11 @@
     document.getElementById('verifyError').classList.remove('visible');
   }
 
-  async function handleAuth() {
-    const email = document.getElementById('authEmail').value.trim();
-    const password = document.getElementById('authPassword').value;
-    const btn = document.getElementById('authBtn');
-    const errorEl = document.getElementById('authError');
+  function handleAuth() {
+    var email = document.getElementById('authEmail').value.trim();
+    var password = document.getElementById('authPassword').value;
+    var btn = document.getElementById('authBtn');
+    var errorEl = document.getElementById('authError');
 
     if (!email || !password) { showAuthError('Remplis tous les champs.'); return; }
     if (password.length < 6) { showAuthError('Mot de passe trop court (6 caractères min).'); return; }
@@ -574,37 +579,32 @@
     btn.textContent = '...';
     errorEl.classList.remove('visible');
 
-    try {
-      const res = await fetch('/api/auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: authMode, email, password })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-
-      if (data.action === 'verify_required') {
-        showVerifyScreen(data.email);
-        return;
-      }
-
-      currentUser = data.user;
+    fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: authMode, email: email, password: password })
+    })
+    .then(function(res) { return res.json().then(function(data) { return { ok: res.ok, data: data }; }); })
+    .then(function(r) {
+      if (!r.ok) throw new Error(r.data.error);
+      if (r.data.action === 'verify_required') { showVerifyScreen(r.data.email); return; }
+      currentUser = r.data.user;
       localStorage.setItem('vintedai_user', JSON.stringify(currentUser));
       hideAuthModal();
       updateTopbar();
-      showToast(authMode === 'login' ? '👋 Bienvenue !' : '🎉 Compte créé !');
-    } catch (e) {
-      showAuthError(e.message);
-    } finally {
+      showToast(authMode === 'login' ? 'Bienvenue !' : 'Compte créé !');
+    })
+    .catch(function(e) { showAuthError(e.message); })
+    .finally(function() {
       btn.disabled = false;
       btn.textContent = authMode === 'login' ? 'Se connecter' : 'Créer mon compte';
-    }
+    });
   }
 
-  async function handleVerify() {
-    const code = document.getElementById('verifyCode').value.trim();
-    const btn = document.getElementById('verifyBtn');
-    const errorEl = document.getElementById('verifyError');
+  function handleVerify() {
+    var code = document.getElementById('verifyCode').value.trim();
+    var btn = document.getElementById('verifyBtn');
+    var errorEl = document.getElementById('verifyError');
 
     if (!code || code.length !== 6) {
       errorEl.textContent = 'Entre le code à 6 chiffres.';
@@ -616,99 +616,104 @@
     btn.textContent = 'Vérification...';
     errorEl.classList.remove('visible');
 
-    try {
-      const res = await fetch('/api/auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'verify_email', email: pendingVerifyEmail, code })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-
-      currentUser = data.user;
+    fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'verify_email', email: pendingVerifyEmail, code: code })
+    })
+    .then(function(res) { return res.json().then(function(data) { return { ok: res.ok, data: data }; }); })
+    .then(function(r) {
+      if (!r.ok) throw new Error(r.data.error);
+      currentUser = r.data.user;
       localStorage.setItem('vintedai_user', JSON.stringify(currentUser));
       hideAuthModal();
       updateTopbar();
-      showToast('✅ Email vérifié ! Bienvenue 🎉');
-    } catch (e) {
+      showToast('Email vérifié ! Bienvenue');
+    })
+    .catch(function(e) {
       errorEl.textContent = e.message;
       errorEl.classList.add('visible');
-    } finally {
+    })
+    .finally(function() {
       btn.disabled = false;
-      btn.textContent = 'Vérifier →';
-    }
+      btn.textContent = 'Vérifier';
+    });
   }
 
-  async function resendCode() {
+  function resendCode() {
     if (!pendingVerifyEmail) return;
-    try {
-      await fetch('/api/auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'resend_code', email: pendingVerifyEmail })
-      });
-      showToast('📧 Code renvoyé !');
-    } catch (e) {}
+    fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'resend_code', email: pendingVerifyEmail })
+    }).then(function() { showToast('Code renvoyé !'); }).catch(function() {});
   }
 
   function showAuthError(msg) {
-    const el = document.getElementById('authError');
+    var el = document.getElementById('authError');
     el.textContent = msg;
     el.classList.add('visible');
   }
 
-  // ── PAYWALL ───────────────────────────────────────────────────
+  // ── PAYWALL
   function showPaywall() {
     document.getElementById('paywallModal').classList.add('visible');
   }
+
   function closePaywall() {
     document.getElementById('paywallModal').classList.remove('visible');
   }
 
-  async function handleSubscribe() {
+  function handleSubscribe() {
     if (!currentUser) { showAuthModal(); return; }
-    const btn = document.getElementById('subscribeBtn');
+    var btn = document.getElementById('subscribeBtn');
     btn.disabled = true;
     btn.textContent = 'Redirection...';
-    try {
-      const res = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: currentUser.id, email: currentUser.email })
-      });
-      const data = await res.json();
-      if (data.url) window.location.href = data.url;
+    fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: currentUser.id, email: currentUser.email })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data.url) { window.location.href = data.url; }
       else throw new Error(data.error || 'Erreur');
-    } catch (e) {
+    })
+    .catch(function(e) {
       btn.disabled = false;
       btn.textContent = 'Passer Premium — 1€/mois';
-      showToast('❌ Erreur : ' + e.message);
-    }
+      showToast('Erreur : ' + e.message);
+    });
   }
 
-  // ── IMAGES ────────────────────────────────────────────────────
-  const fileInput = document.getElementById('fileInput');
-  const uploadZone = document.getElementById('uploadZone');
+  // ── IMAGES
+  var fileInput = document.getElementById('fileInput');
+  var uploadZone = document.getElementById('uploadZone');
+
   fileInput.addEventListener('change', handleFiles);
-  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
-  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
-  uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('dragover'); handleFiles({ target: { files: e.dataTransfer.files } }); });
+  uploadZone.addEventListener('dragover', function(e) { e.preventDefault(); uploadZone.classList.add('dragover'); });
+  uploadZone.addEventListener('dragleave', function() { uploadZone.classList.remove('dragover'); });
+  uploadZone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    uploadZone.classList.remove('dragover');
+    handleFiles({ target: { files: e.dataTransfer.files } });
+  });
 
   function handleFiles(e) {
-    Array.from(e.target.files).forEach(file => {
+    Array.from(e.target.files).forEach(function(file) {
       if (!file.type.startsWith('image/') || uploadedImages.length >= 8) return;
-      const reader = new FileReader();
-      reader.onload = ev => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX = 800;
-          let w = img.width, h = img.height;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          var MAX = 800;
+          var w = img.width, h = img.height;
           if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
           if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
           canvas.width = w; canvas.height = h;
           canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          const compressed = canvas.toDataURL('image/jpeg', 0.7);
+          var compressed = canvas.toDataURL('image/jpeg', 0.7);
           uploadedImages.push({ base64: compressed.split(',')[1], type: 'image/jpeg', preview: compressed });
           renderPreviews();
         };
@@ -719,77 +724,78 @@
   }
 
   function renderPreviews() {
-    const grid = document.getElementById('previewGrid');
+    var grid = document.getElementById('previewGrid');
     grid.innerHTML = '';
-    uploadedImages.forEach((img, i) => {
-      const div = document.createElement('div');
+    uploadedImages.forEach(function(img, i) {
+      var div = document.createElement('div');
       div.className = 'preview-item';
-      div.innerHTML = `<img src="${img.preview}"><button class="remove-btn" onclick="removeImg(${i})">×</button>`;
+      div.innerHTML = '<img src="' + img.preview + '"><button class="remove-btn" onclick="removeImg(' + i + ')">×</button>';
       grid.appendChild(div);
     });
-    if (uploadedImages.length > 0) { document.getElementById('step1').classList.add('done'); document.getElementById('step1').classList.remove('active'); }
+    if (uploadedImages.length > 0) {
+      document.getElementById('step1').classList.add('done');
+      document.getElementById('step1').classList.remove('active');
+    }
   }
+
   function removeImg(i) { uploadedImages.splice(i, 1); renderPreviews(); }
 
-  // ── GENERATE ──────────────────────────────────────────────────
-  async function generateListing() {
+  // ── GENERATE
+  function generateListing() {
     if (!currentUser) { showAuthModal(); return; }
 
-    const category = document.getElementById('category').value;
-    const price = document.getElementById('price').value.trim();
-    const errorMsg = document.getElementById('errorMsg');
+    var category = document.getElementById('category').value;
+    var price = document.getElementById('price').value.trim();
+    var errorMsg = document.getElementById('errorMsg');
     errorMsg.classList.remove('visible');
 
-    if (!category) { showError("⚠️ Sélectionne une catégorie."); return; }
-    if (!price) { showError("⚠️ Entre un prix souhaité."); return; }
+    if (!category) { showError('Sélectionne une catégorie.'); return; }
+    if (!price) { showError('Entre un prix souhaité.'); return; }
 
-    const btn = document.getElementById('generateBtn');
+    var btn = document.getElementById('generateBtn');
     btn.disabled = true;
     btn.innerHTML = '<div class="spinner"></div> Génération en cours...';
     document.getElementById('step2').classList.add('done');
     document.getElementById('step3').classList.add('active');
 
-    try {
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: currentUser.id,
-          category,
-          condition: document.getElementById('condition').value,
-          brand: document.getElementById('brand').value.trim(),
-          size: document.getElementById('size').value.trim(),
-          price,
-          keywords: document.getElementById('keywords').value.trim(),
-          notes: document.getElementById('notes').value.trim(),
-          images: uploadedImages.slice(0, 4).map(i => ({ data: i.base64, type: i.type }))
-        })
-      });
+    fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: currentUser.id,
+        category: category,
+        condition: document.getElementById('condition').value,
+        brand: document.getElementById('brand').value.trim(),
+        size: document.getElementById('size').value.trim(),
+        price: price,
+        keywords: document.getElementById('keywords').value.trim(),
+        notes: document.getElementById('notes').value.trim(),
+        images: uploadedImages.slice(0, 4).map(function(i) { return { data: i.base64, type: i.type }; })
+      })
+    })
+    .then(function(res) { return res.json().then(function(data) { return { ok: res.ok, data: data }; }); })
+    .then(function(r) {
+      if (r.data.code === 'QUOTA_EXCEEDED') { showPaywall(); return; }
+      if (r.data.code === 'NOT_LOGGED_IN') { showAuthModal(); return; }
+      if (!r.ok) throw new Error(r.data.error || 'Erreur serveur');
 
-      const result = await res.json();
-
-      if (result.code === 'QUOTA_EXCEEDED') { showPaywall(); return; }
-      if (result.code === 'NOT_LOGGED_IN') { showAuthModal(); return; }
-      if (!res.ok) throw new Error(result.error || 'Erreur serveur');
-
-      // Mettre à jour le compteur local
-      currentUser.daily_count = result.daily_count;
-      currentUser.is_premium = result.is_premium;
+      currentUser.daily_count = r.data.daily_count;
+      currentUser.is_premium = r.data.is_premium;
       localStorage.setItem('vintedai_user', JSON.stringify(currentUser));
       updateTopbar();
 
-      displayResult(result, price);
+      displayResult(r.data, price);
       document.getElementById('step3').classList.add('done');
       document.getElementById('step4').classList.add('active');
-    } catch (e) {
-      showError(`❌ Erreur : ${e.message}`);
-    } finally {
+    })
+    .catch(function(e) { showError('Erreur : ' + e.message); })
+    .finally(function() {
       btn.disabled = false;
       btn.innerHTML = '<span>✦ Générer l\'annonce avec l\'IA</span>';
-    }
+    });
   }
 
-  // ── PAGE SWITCHING ────────────────────────────────────────────
+  // ── PAGE SWITCHING
   function switchPage(page) {
     document.getElementById('generatorPage').style.display = page === 'generator' ? 'block' : 'none';
     document.getElementById('advisorPage').style.display = page === 'advisor' ? 'block' : 'none';
@@ -806,29 +812,22 @@
       }
     }
   }
-  function closeAdvisorLock() {}
 
-  // ── CHAT CONSEILLER ────────────────────────────────────────────
-  let chatHistory = [];
-
+  // ── CHAT
   function handleChatKey(e) {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); }
   }
 
-  async function sendChatMessage() {
-    const input = document.getElementById('chatInput');
-    const msg = input.value.trim();
+  function sendChatMessage() {
+    var input = document.getElementById('chatInput');
+    var msg = input.value.trim();
     if (!msg || !currentUser) return;
 
     input.value = '';
-    input.style.height = 'auto';
-
-    // Ajouter message user
     appendChatMsg('user', msg);
     chatHistory.push({ role: 'user', content: msg });
 
-    // Typing indicator
-    const typingEl = document.createElement('div');
+    var typingEl = document.createElement('div');
     typingEl.className = 'chat-msg ai';
     typingEl.id = 'typingIndicator';
     typingEl.innerHTML = '<div class="chat-avatar ai">AI</div><div class="chat-bubble"><div class="chat-typing"><span></span><span></span><span></span></div></div>';
@@ -837,58 +836,69 @@
 
     document.getElementById('chatSend').disabled = true;
 
-    try {
-      const res = await fetch('/api/advisor', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: msg, history: chatHistory.slice(-10), userId: currentUser.id })
-      });
-      const data = await res.json();
-      document.getElementById('typingIndicator')?.remove();
-
-      if (data.code === 'NOT_PREMIUM') { showPaywall(); return; }
-      if (!res.ok) throw new Error(data.error);
-
-      chatHistory.push({ role: 'assistant', content: data.reply });
-      appendChatMsg('ai', data.reply);
-    } catch (e) {
-      document.getElementById('typingIndicator')?.remove();
-      appendChatMsg('ai', '❌ Erreur : ' + e.message);
-    } finally {
+    fetch('/api/advisor', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: msg, history: chatHistory.slice(-10), userId: currentUser.id })
+    })
+    .then(function(res) { return res.json().then(function(data) { return { ok: res.ok, data: data }; }); })
+    .then(function(r) {
+      var indicator = document.getElementById('typingIndicator');
+      if (indicator) indicator.remove();
+      if (r.data.code === 'NOT_PREMIUM') { showPaywall(); return; }
+      if (!r.ok) throw new Error(r.data.error);
+      chatHistory.push({ role: 'assistant', content: r.data.reply });
+      appendChatMsg('ai', r.data.reply);
+    })
+    .catch(function(e) {
+      var indicator = document.getElementById('typingIndicator');
+      if (indicator) indicator.remove();
+      appendChatMsg('ai', 'Erreur : ' + e.message);
+    })
+    .finally(function() {
       document.getElementById('chatSend').disabled = false;
-    }
+    });
   }
 
   function appendChatMsg(role, text) {
-    const el = document.createElement('div');
-    el.className = `chat-msg ${role}`;
-    const initial = role === 'user' ? (currentUser?.email?.[0]?.toUpperCase() || 'U') : 'AI';
+    var el = document.createElement('div');
+    el.className = 'chat-msg ' + role;
+    var initial = role === 'user' ? ((currentUser && currentUser.email) ? currentUser.email[0].toUpperCase() : 'U') : 'AI';
     el.innerHTML = '<div class="chat-avatar ' + role + '">' + initial + '</div><div class="chat-bubble">' + text.replace(/\n/g, '<br>') + '</div>';
     document.getElementById('chatMessages').appendChild(el);
     scrollChat();
   }
 
   function scrollChat() {
-    const msgs = document.getElementById('chatMessages');
+    var msgs = document.getElementById('chatMessages');
     if (msgs) msgs.scrollTop = msgs.scrollHeight;
   }
 
   function displayResult(r, userPrice) {
     document.getElementById('titleResult').textContent = r.titre || '';
-    const priceVal = r.prix_recommande || userPrice;
-    const diff = parseFloat(priceVal) - parseFloat(userPrice);
-    let diffHtml = Math.abs(diff) > 0.5 ? `<span style="font-size:12px;color:${diff>0?'var(--accent)':'var(--accent3)'};margin-left:12px">${diff>0?'+':''}${diff.toFixed(0)}€ vs ton prix</span>` : '';
-    document.getElementById('priceResult').innerHTML = `<div class="price-badge">💶 ${priceVal}€</div>${diffHtml}`;
-    if (r.vinted_search_url) { document.getElementById('vintedSearchLink').href = r.vinted_search_url; document.getElementById('vintedCompare').style.display = 'flex'; }
-    document.getElementById('descResult').textContent = r.description || '';
-    const tagsContainer = document.getElementById('tagsResult');
-    tagsContainer.innerHTML = '';
-    (r.hashtags || []).forEach(t => { const s = document.createElement('span'); s.className = 'tag'; s.textContent = t.startsWith('#') ? t : `#${t}`; tagsContainer.appendChild(s); });
-    document.getElementById('tagsText').textContent = (r.hashtags || []).map(t => t.startsWith('#') ? t : `#${t}`).join(' ');
+    var priceVal = r.prix_recommande || userPrice;
+    var diff = parseFloat(priceVal) - parseFloat(userPrice);
+    var diffHtml = Math.abs(diff) > 0.5 ? '<span style="font-size:12px;color:' + (diff > 0 ? 'var(--accent)' : 'var(--accent3)') + ';margin-left:12px">' + (diff > 0 ? '+' : '') + diff.toFixed(0) + '€ vs ton prix</span>' : '';
+    document.getElementById('priceResult').innerHTML = '<div class="price-badge">&#128182; ' + priceVal + '€</div>' + diffHtml;
 
-    // Conseils premium
-    const conseilsEl = document.getElementById('conseilsPremium');
-    if (r.conseils && currentUser?.is_premium) {
+    if (r.vinted_search_url) {
+      document.getElementById('vintedSearchLink').href = r.vinted_search_url;
+      document.getElementById('vintedCompare').style.display = 'flex';
+    }
+
+    document.getElementById('descResult').textContent = r.description || '';
+    var tagsContainer = document.getElementById('tagsResult');
+    tagsContainer.innerHTML = '';
+    (r.hashtags || []).forEach(function(t) {
+      var s = document.createElement('span');
+      s.className = 'tag';
+      s.textContent = t.startsWith('#') ? t : ('#' + t);
+      tagsContainer.appendChild(s);
+    });
+    document.getElementById('tagsText').textContent = (r.hashtags || []).map(function(t) { return t.startsWith('#') ? t : ('#' + t); }).join(' ');
+
+    var conseilsEl = document.getElementById('conseilsPremium');
+    if (r.conseils && currentUser && currentUser.is_premium) {
       conseilsEl.style.display = 'block';
       document.getElementById('conseilsBody').textContent = r.conseils;
     } else {
@@ -900,41 +910,64 @@
   }
 
   function copyField(id, btn) {
-    navigator.clipboard.writeText(document.getElementById(id).textContent).then(() => { btn.textContent = '✓ Copié !'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = 'Copier'; btn.classList.remove('copied'); }, 2000); });
+    navigator.clipboard.writeText(document.getElementById(id).textContent).then(function() {
+      btn.textContent = 'Copié !';
+      btn.classList.add('copied');
+      setTimeout(function() { btn.textContent = 'Copier'; btn.classList.remove('copied'); }, 2000);
+    });
   }
+
   function copyTags(btn) {
-    navigator.clipboard.writeText(document.getElementById('tagsText').textContent).then(() => { btn.textContent = '✓ Copié !'; btn.classList.add('copied'); setTimeout(() => { btn.textContent = 'Copier'; btn.classList.remove('copied'); }, 2000); });
+    navigator.clipboard.writeText(document.getElementById('tagsText').textContent).then(function() {
+      btn.textContent = 'Copié !';
+      btn.classList.add('copied');
+      setTimeout(function() { btn.textContent = 'Copier'; btn.classList.remove('copied'); }, 2000);
+    });
   }
+
   function toggleCheck(el) { el.classList.toggle('checked'); updateProgress(); }
+
   function updateProgress() {
-    const total = document.querySelectorAll('.check-item').length;
-    const checked = document.querySelectorAll('.check-item.checked').length;
-    const pct = Math.round((checked/total)*100);
+    var total = document.querySelectorAll('.check-item').length;
+    var checked = document.querySelectorAll('.check-item.checked').length;
+    var pct = Math.round((checked / total) * 100);
     document.getElementById('progressFill').style.width = pct + '%';
     document.getElementById('progressLabel').textContent = pct + '%';
-    document.getElementById('checkProgress').textContent = `${checked}/${total}`;
+    document.getElementById('checkProgress').textContent = checked + '/' + total;
   }
-  function showError(msg) { const el = document.getElementById('errorMsg'); el.textContent = msg; el.classList.add('visible'); }
+
+  function showError(msg) {
+    var el = document.getElementById('errorMsg');
+    el.textContent = msg;
+    el.classList.add('visible');
+  }
+
   function showToast(msg) {
-    const t = document.createElement('div');
+    var t = document.createElement('div');
     t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 20px;font-size:13px;z-index:9999;animation:slideUp 0.3s ease';
     t.textContent = msg;
     document.body.appendChild(t);
-    setTimeout(() => t.remove(), 3000);
+    setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 3000);
   }
+
   function resetForm() {
-    uploadedImages = []; renderPreviews();
-    ['brand','size','price','keywords','notes'].forEach(id => document.getElementById(id).value = '');
+    uploadedImages = [];
+    renderPreviews();
+    ['brand','size','price','keywords','notes'].forEach(function(id) { document.getElementById(id).value = ''; });
     document.getElementById('resultCard').classList.remove('visible');
     document.getElementById('errorMsg').classList.remove('visible');
     document.getElementById('vintedCompare').style.display = 'none';
-    document.querySelectorAll('.step').forEach(s => s.classList.remove('done','active'));
+    document.querySelectorAll('.step').forEach(function(s) { s.classList.remove('done','active'); });
     document.getElementById('step1').classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   // Enter sur les champs auth
-  document.addEventListener('keydown', e => { if (e.key === 'Enter' && document.getElementById('authModal').classList.contains('visible')) handleAuth(); });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && document.getElementById('authModal').classList.contains('visible')) {
+      handleAuth();
+    }
+  });
 </script>
 </body>
 </html>
