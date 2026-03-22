@@ -863,8 +863,7 @@
     const el = document.createElement('div');
     el.className = `chat-msg ${role}`;
     const initial = role === 'user' ? (currentUser?.email?.[0]?.toUpperCase() || 'U') : 'AI';
-    el.innerHTML = `<div class="chat-avatar ${role}">${initial}</div><div class="chat-bubble">${text.replace(/
-/g, '<br>')}</div>`;
+    el.innerHTML = '<div class="chat-avatar ' + role + '">' + initial + '</div><div class="chat-bubble">' + text.replace(/\n/g, '<br>') + '</div>';
     document.getElementById('chatMessages').appendChild(el);
     scrollChat();
   }
