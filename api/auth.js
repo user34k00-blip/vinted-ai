@@ -1,18 +1,18 @@
 const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SECRET = process.env.SUPABASE_SECRET;
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const APP_URL = process.env.APP_URL || 'https://project-ys1js.vercel.app';
+const GMAIL_USER = process.env.GMAIL_USER;
+const GMAIL_PASS = process.env.GMAIL_PASS;
 
 function hashPassword(password) {
   return crypto.createHash('sha256').update(password + 'vintedai_salt_2024').digest('hex');
 }
-
 function generateCode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
-
 function generateToken() {
   return crypto.randomBytes(32).toString('hex');
 }
@@ -33,12 +33,18 @@ async function supabase(method, path, body) {
   try { return JSON.parse(text); } catch(e) { return []; }
 }
 
+function createTransporter() {
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: { user: GMAIL_USER, pass: GMAIL_PASS }
+  });
+}
+
 async function sendVerificationEmail(email, code) {
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${RESEND_API_KEY}` },
-    body: JSON.stringify({
-      from: 'VintedAI <onboarding@resend.dev>',
+  try {
+    const transporter = createTransporter();
+    await transporter.sendMail({
+      from: `"VintedAI" <${GMAIL_USER}>`,
       to: email,
       subject: 'Ton code de vérification VintedAI',
       html: `
@@ -51,18 +57,20 @@ async function sendVerificationEmail(email, code) {
           <p style="color:#6a6a8a;font-size:13px">Ce code expire dans 10 minutes.<br>Si tu n'as pas demandé ce code, ignore cet email.</p>
         </div>
       `
-    })
-  });
-  return res.ok;
+    });
+    return true;
+  } catch(e) {
+    console.error('Email error:', e.message);
+    return false;
+  }
 }
 
 async function sendResetEmail(email, token) {
-  const resetUrl = `${APP_URL}?reset_token=${token}`;
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${RESEND_API_KEY}` },
-    body: JSON.stringify({
-      from: 'VintedAI <onboarding@resend.dev>',
+  try {
+    const resetUrl = `${APP_URL}?reset_token=${token}`;
+    const transporter = createTransporter();
+    await transporter.sendMail({
+      from: `"VintedAI" <${GMAIL_USER}>`,
       to: email,
       subject: 'Réinitialisation de ton mot de passe VintedAI',
       html: `
@@ -75,9 +83,12 @@ async function sendResetEmail(email, token) {
           <p style="color:#6a6a8a;font-size:12px">Ce lien expire dans 30 minutes.<br>Si tu n'as pas fait cette demande, ignore cet email.</p>
         </div>
       `
-    })
-  });
-  return res.ok;
+    });
+    return true;
+  } catch(e) {
+    console.error('Reset email error:', e.message);
+    return false;
+  }
 }
 
 module.exports = async function handler(req, res) {
@@ -112,7 +123,7 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ success: true, action: 'verify_required', email: emailLower });
   }
 
-  // ── VÉRIFICATION CODE EMAIL ────────────────────────────────────
+  // ── VÉRIFICATION CODE ──────────────────────────────────────────
   if (action === 'verify_email') {
     if (!email || !code) return res.status(400).json({ error: 'Email et code requis' });
     const emailLower = email.toLowerCase().trim();
@@ -162,7 +173,6 @@ module.exports = async function handler(req, res) {
       await supabase('PATCH', `/users?id=eq.${user.id}`, { daily_count: 0, last_reset: today });
       user.daily_count = 0;
     }
-
     return res.status(200).json({ success: true, user: { id: user.id, email: user.email, is_premium: user.is_premium, daily_count: user.daily_count } });
   }
 
@@ -171,8 +181,6 @@ module.exports = async function handler(req, res) {
     if (!email) return res.status(400).json({ error: 'Email requis' });
     const emailLower = email.toLowerCase().trim();
     const users = await supabase('GET', `/users?email=eq.${encodeURIComponent(emailLower)}&select=id`);
-
-    // Toujours répondre OK pour ne pas révéler si l'email existe
     if (!users || users.length === 0) return res.status(200).json({ success: true });
 
     const resetToken = generateToken();
@@ -182,9 +190,9 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ success: true });
   }
 
-  // ── RÉINITIALISATION MOT DE PASSE ──────────────────────────────
+  // ── RESET MOT DE PASSE ─────────────────────────────────────────
   if (action === 'reset_password') {
-    if (!token || !password) return res.status(400).json({ error: 'Token et nouveau mot de passe requis' });
+    if (!token || !password) return res.status(400).json({ error: 'Token et mot de passe requis' });
     if (password.length < 6) return res.status(400).json({ error: 'Mot de passe trop court (6 min)' });
 
     const users = await supabase('GET', `/users?reset_token=eq.${token}&select=*`);
@@ -195,7 +203,6 @@ module.exports = async function handler(req, res) {
 
     const newHash = hashPassword(password);
     await supabase('PATCH', `/users?id=eq.${user.id}`, { password_hash: newHash, reset_token: null, reset_expires: null, is_verified: true });
-
     return res.status(200).json({ success: true, user: { id: user.id, email: user.email, is_premium: user.is_premium, daily_count: user.daily_count || 0 } });
   }
 
