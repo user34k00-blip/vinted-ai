@@ -191,45 +191,64 @@
   .nav-tab.premium-tab.active{background:linear-gradient(135deg,rgba(123,94,248,0.2),rgba(9,249,176,0.1));color:var(--accent)}
   .nav-tab .lock-icon{font-size:11px}
 
-  /* ADVISOR */
+  /* ADVISOR PREMIUM */
   #advisorPage{display:none}
-  .advisor-locked{background:var(--surface);border:1px solid rgba(123,94,248,0.3);border-radius:20px;padding:48px 32px;text-align:center;margin-top:20px}
-  .advisor-locked-icon{font-size:3rem;margin-bottom:16px}
-  .advisor-locked-title{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:8px}
-  .advisor-locked-sub{color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:28px}
-  .chat-container{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;height:500px;display:flex;flex-direction:column}
-  .chat-messages{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:16px}
-  .chat-msg{display:flex;gap:12px;animation:slideUp 0.3s ease}
+
+  /* Locked state */
+  .advisor-locked{position:relative;background:var(--surface);border:1px solid rgba(123,94,248,0.3);border-radius:24px;padding:56px 40px;text-align:center;margin-top:20px;overflow:hidden}
+  .advisor-locked::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 600px 400px at 50% 0%,rgba(123,94,248,0.12) 0%,transparent 70%);pointer-events:none}
+  .advisor-locked-badge{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,rgba(123,94,248,0.2),rgba(9,249,176,0.1));border:1px solid rgba(123,94,248,0.4);border-radius:100px;padding:6px 16px;font-size:11px;font-weight:700;color:var(--accent2);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:24px}
+  .advisor-locked-icon{font-size:4rem;margin-bottom:20px;filter:drop-shadow(0 0 20px rgba(123,94,248,0.5))}
+  .advisor-locked-title{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;margin-bottom:12px;background:linear-gradient(135deg,var(--text),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .advisor-locked-sub{color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:36px;max-width:400px;margin-left:auto;margin-right:auto}
+  .advisor-features{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:36px;text-align:left;max-width:480px;margin-left:auto;margin-right:auto}
+  .advisor-feature-item{display:flex;align-items:center;gap:10px;background:rgba(123,94,248,0.06);border:1px solid rgba(123,94,248,0.15);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--text)}
+  .advisor-feature-item .feat-icon{font-size:18px;flex-shrink:0}
+  .btn-unlock{display:inline-flex;align-items:center;gap:10px;padding:16px 40px;background:linear-gradient(135deg,var(--accent2),#9b7bff);border:none;border-radius:100px;color:white;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.3s;box-shadow:0 8px 30px rgba(123,94,248,0.4)}
+  .btn-unlock:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(123,94,248,0.5)}
+
+  /* Chat premium */
+  .chat-wrapper{display:flex;flex-direction:column;gap:0;border-radius:24px;overflow:hidden;border:1px solid rgba(123,94,248,0.25);background:var(--surface);box-shadow:0 0 60px rgba(123,94,248,0.08)}
+  .chat-header{padding:16px 20px;background:linear-gradient(135deg,rgba(123,94,248,0.15),rgba(9,249,176,0.08));border-bottom:1px solid rgba(123,94,248,0.2);display:flex;align-items:center;justify-content:space-between}
+  .chat-header-left{display:flex;align-items:center;gap:12px}
+  .chat-ai-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),#9b7bff);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 15px rgba(123,94,248,0.5)}
+  .chat-ai-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text)}
+  .chat-ai-status{font-size:11px;color:var(--accent);display:flex;align-items:center;gap:4px}
+  .chat-ai-status::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;animation:pulse 2s infinite}
+  .chat-premium-badge{background:linear-gradient(135deg,rgba(9,249,176,0.15),rgba(123,94,248,0.15));border:1px solid rgba(9,249,176,0.3);border-radius:100px;padding:4px 12px;font-size:11px;color:var(--accent);font-weight:600}
+  .chat-messages{height:420px;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;background:var(--bg)}
+  .chat-msg{display:flex;gap:10px;animation:slideUp 0.3s ease}
   .chat-msg.user{flex-direction:row-reverse}
-  .chat-avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;font-family:'Syne',sans-serif}
-  .chat-avatar.ai{background:linear-gradient(135deg,var(--accent2),#9b7bff);color:white}
+  .chat-avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:'Syne',sans-serif}
+  .chat-avatar.ai{background:linear-gradient(135deg,var(--accent2),#9b7bff);color:white;font-size:14px}
   .chat-avatar.user{background:linear-gradient(135deg,var(--accent),#06d4a0);color:var(--bg)}
-  .chat-bubble{max-width:75%;padding:12px 16px;border-radius:16px;font-size:13px;line-height:1.6}
-  .chat-msg.ai .chat-bubble{background:var(--surface2);border:1px solid var(--border);border-top-left-radius:4px;color:var(--text)}
+  .chat-bubble{max-width:78%;padding:12px 16px;border-radius:18px;font-size:13px;line-height:1.65}
+  .chat-msg.ai .chat-bubble{background:var(--surface);border:1px solid var(--border);border-top-left-radius:4px;color:var(--text)}
   .chat-msg.user .chat-bubble{background:linear-gradient(135deg,var(--accent2),#9b7bff);color:white;border-top-right-radius:4px}
-  .chat-input-area{padding:16px;border-top:1px solid var(--border);display:flex;gap:10px;background:var(--surface)}
-  .chat-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;resize:none;transition:border-color 0.2s}
-  .chat-input:focus{border-color:var(--accent2)}
-  .chat-send{background:linear-gradient(135deg,var(--accent2),#9b7bff);border:none;border-radius:12px;padding:12px 18px;color:white;font-size:16px;cursor:pointer;transition:all 0.2s;flex-shrink:0}
-  .chat-send:hover{transform:scale(1.05)}
-  .chat-send:disabled{opacity:0.4;cursor:not-allowed;transform:none}
   .chat-typing{display:flex;gap:4px;padding:4px 0}
   .chat-typing span{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:typing 1.2s infinite}
   .chat-typing span:nth-child(2){animation-delay:0.2s}
   .chat-typing span:nth-child(3){animation-delay:0.4s}
   @keyframes typing{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+
+  /* Chat input zone */
+  .chat-bottom{background:var(--surface);border-top:1px solid var(--border)}
+  .chat-img-preview{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px 0}
+  .chat-img-thumb{position:relative;width:60px;height:60px;border-radius:10px;overflow:hidden;border:1px solid rgba(123,94,248,0.3);flex-shrink:0}
+  .chat-img-thumb img{width:100%;height:100%;object-fit:cover}
+  .chat-img-thumb .remove-chat-img{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(255,107,107,0.95);border:none;color:white;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700}
+  .chat-input-row{display:flex;align-items:flex-end;gap:8px;padding:12px 16px}
+  .chat-attach-btn{width:38px;height:38px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0}
+  .chat-attach-btn:hover{border-color:var(--accent2);color:var(--accent2);background:rgba(123,94,248,0.08)}
+  .chat-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;resize:none;transition:border-color 0.2s;max-height:120px}
+  .chat-input:focus{border-color:var(--accent2)}
+  .chat-send{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--accent2),#9b7bff);border:none;color:white;font-size:16px;cursor:pointer;transition:all 0.2s;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+  .chat-send:hover{transform:scale(1.08);box-shadow:0 4px 14px rgba(123,94,248,0.5)}
+  .chat-send:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none}
+  .chat-hint{padding:0 16px 10px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px}
   .conseils-premium{background:linear-gradient(135deg,rgba(123,94,248,0.08),rgba(9,249,176,0.05));border:1px solid rgba(123,94,248,0.25);border-radius:14px;padding:20px;margin-bottom:24px}
   .conseils-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:8px}
   .conseils-body{font-size:13px;color:var(--text);line-height:1.7;white-space:pre-wrap}
-
-  /* CHAT IMAGE UPLOAD */
-  .chat-toolbar{padding:8px 16px 0;display:flex;align-items:center;gap:8px;border-top:1px solid var(--border)}
-  .chat-img-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--muted);font-size:12px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:6px}
-  .chat-img-btn:hover{border-color:var(--accent2);color:var(--accent2)}
-  .chat-img-preview{display:flex;gap:6px;flex-wrap:wrap;padding:0 16px 8px}
-  .chat-img-thumb{position:relative;width:56px;height:56px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
-  .chat-img-thumb img{width:100%;height:100%;object-fit:cover}
-  .chat-img-thumb .remove-chat-img{position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;background:rgba(255,107,107,0.9);border:none;color:white;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 </style>
 </head>
 <body>
@@ -456,25 +475,61 @@
 
     <!-- PAGE CONSEILLER IA -->
     <div id="advisorPage">
+
+      <!-- LOCKED STATE -->
       <div class="advisor-locked" id="advisorLocked">
+        <div class="advisor-locked-badge">&#11088; Premium exclusif</div>
         <div class="advisor-locked-icon">&#129302;</div>
-        <div class="advisor-locked-title">Conseiller IA Premium</div>
-        <div class="advisor-locked-sub">Pose toutes tes questions à ton expert Vinted personnel.<br>Stratégie de prix, conseils photos, optimisation d'annonces...</div>
-        <button class="btn-subscribe" style="max-width:300px;margin:0 auto" onclick="showPaywall()">Débloquer — 1&#8364;/mois</button>
+        <div class="advisor-locked-title">Ton expert Vinted personnel</div>
+        <div class="advisor-locked-sub">Discute en direct avec une IA qui connait le march&#233; Vinted sur le bout des doigts. Envoie des photos, obtiens une estimation de prix en temps r&#233;el.</div>
+        <div class="advisor-features">
+          <div class="advisor-feature-item"><span class="feat-icon">&#128176;</span>Estimation de prix pr&#233;cise</div>
+          <div class="advisor-feature-item"><span class="feat-icon">&#128247;</span>Analyse de tes photos</div>
+          <div class="advisor-feature-item"><span class="feat-icon">&#128200;</span>Strat&#233;gie de vente</div>
+          <div class="advisor-feature-item"><span class="feat-icon">&#129309;</span>Conseils n&#233;gociation</div>
+        </div>
+        <button class="btn-unlock" onclick="showPaywall()">&#9889; D&#233;bloquer pour 1&#8364;/mois</button>
       </div>
-      <div class="chat-container" id="advisorChat" style="display:none">
+
+      <!-- CHAT PREMIUM -->
+      <div class="chat-wrapper" id="advisorChat" style="display:none">
+        <div class="chat-header">
+          <div class="chat-header-left">
+            <div class="chat-ai-avatar">&#129302;</div>
+            <div>
+              <div class="chat-ai-name">Conseiller Vinted IA</div>
+              <div class="chat-ai-status">En ligne</div>
+            </div>
+          </div>
+          <div class="chat-premium-badge">&#11088; Premium</div>
+        </div>
         <div class="chat-messages" id="chatMessages">
           <div class="chat-msg ai">
-            <div class="chat-avatar ai">AI</div>
-            <div class="chat-bubble"Salut ! Je suis ton conseiller Vinted expert &#127381;<br><br>Je peux t'aider sur :<br>&#128176; <strong>Estimer le prix</strong> de tes articles (envoie des photos !)<br>&#128247; <strong>Analyser tes vêtements</strong> via photos<br>&#128200; <strong>Stratégie de vente</strong> et timing<br>&#128172; <strong>Optimiser tes annonces</strong><br><br>Dis-moi ce que tu veux vendre ou pose ta question !</div>
+            <div class="chat-avatar ai">&#129302;</div>
+            <div class="chat-bubble">
+              Salut&#160;! Je suis ton expert Vinted personnel &#128075;<br><br>
+              Je peux t'aider &#224; :<br>
+              &#128176; <strong>Estimer le prix</strong> de tes articles (envoie des photos !)<br>
+              &#128247; <strong>Analyser tes v&#234;tements</strong> en d&#233;tail<br>
+              &#128200; <strong>Optimiser tes annonces</strong> pour vendre vite<br>
+              &#129309; <strong>G&#233;rer les n&#233;gociations</strong> avec les acheteurs<br><br>
+              Qu'est-ce que tu veux vendre ?
+            </div>
           </div>
         </div>
-        <div class="chat-input-area">
-          <textarea class="chat-input" id="chatInput" placeholder="Pose ta question..." rows="1" onkeydown="handleChatKey(event)"></textarea>
-          <button class="chat-send" id="chatSend" onclick="sendChatMessage()">&#9654;</button>
+        <div class="chat-bottom">
+          <div class="chat-img-preview" id="chatImgPreview"></div>
+          <div class="chat-input-row">
+            <button class="chat-attach-btn" id="chatAttachBtn" title="Ajouter des photos">&#128247;</button>
+            <input type="file" id="chatImgInput" accept="image/*" multiple style="display:none">
+            <textarea class="chat-input" id="chatInput" placeholder="Pose ta question ou d&#233;cris ton article..." rows="1"></textarea>
+            <button class="chat-send" id="chatSend">&#10148;</button>
+          </div>
+          <div class="chat-hint">&#128247; Envoie jusqu'&#224; 4 photos pour une estimation pr&#233;cise</div>
         </div>
       </div>
-    </div>
+
+    </div></div>
 
   </div>
 </div>
@@ -486,7 +541,6 @@
   var authMode = 'login';
   var pendingVerifyEmail = '';
   var chatHistory = [];
-  var chatImages = [];
 
   // ── SPLASH
   document.getElementById('splashBtn').addEventListener('click', function() {
@@ -806,6 +860,7 @@
   }
 
   // ── PAGE SWITCHING
+  var chatListenersInit = false;
   function switchPage(page) {
     document.getElementById('generatorPage').style.display = page === 'generator' ? 'block' : 'none';
     document.getElementById('advisorPage').style.display = page === 'advisor' ? 'block' : 'none';
@@ -816,6 +871,10 @@
       if (currentUser && currentUser.is_premium) {
         document.getElementById('advisorLocked').style.display = 'none';
         document.getElementById('advisorChat').style.display = 'flex';
+        if (!chatListenersInit) {
+          chatListenersInit = true;
+          setTimeout(initChatListeners, 50);
+        }
       } else {
         document.getElementById('advisorLocked').style.display = 'block';
         document.getElementById('advisorChat').style.display = 'none';
@@ -823,105 +882,38 @@
     }
   }
 
-  // ── CHAT
+  // ── CHAT SETUP
+  function initChatListeners() {
+    var input = document.getElementById('chatInput');
+    var send = document.getElementById('chatSend');
+    var attach = document.getElementById('chatAttachBtn');
+    var fileInput = document.getElementById('chatImgInput');
+    if (input) {
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); }
+      });
+      input.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+      });
+    }
+    if (send) send.addEventListener('click', sendChatMessage);
+    if (attach) attach.addEventListener('click', function() { if (fileInput) fileInput.click(); });
+    if (fileInput) fileInput.addEventListener('change', handleChatImages);
+  }
+
   function handleChatKey(e) {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); }
-  }
-
-  function handleChatImages(e) {
-    Array.from(e.target.files).forEach(function(file) {
-      if (!file.type.startsWith('image/') || chatImages.length >= 4) return;
-      var reader = new FileReader();
-      reader.onload = function(ev) {
-        var img2 = new Image();
-        img2.onload = function() {
-          var canvas = document.createElement('canvas');
-          var MAX = 800;
-          var w = img2.width, h = img2.height;
-          if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
-          if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
-          canvas.width = w; canvas.height = h;
-          canvas.getContext('2d').drawImage(img2, 0, 0, w, h);
-          var compressed = canvas.toDataURL('image/jpeg', 0.7);
-          chatImages.push({ data: compressed.split(',')[1], type: 'image/jpeg', preview: compressed });
-          renderChatImgPreview();
-        };
-        img2.src = ev.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
-    e.target.value = '';
-  }
-
-  function renderChatImgPreview() {
-    var preview = document.getElementById('chatImgPreview');
-    var count = document.getElementById('chatImgCount');
-    preview.innerHTML = '';
-    chatImages.forEach(function(img2, i) {
-      var div = document.createElement('div');
-      div.className = 'chat-img-thumb';
-      var imgEl = document.createElement('img');
-      imgEl.src = img2.preview;
-      var btn = document.createElement('button');
-      btn.className = 'remove-chat-img';
-      btn.textContent = 'x';
-      btn.onclick = function() { removeChatImg(i); };
-      div.appendChild(imgEl);
-      div.appendChild(btn);
-      preview.appendChild(div);
-    });
-    count.textContent = chatImages.length > 0 ? chatImages.length + ' photo(s)' : '';
-  }
-
-  function removeChatImg(i) {
-    chatImages.splice(i, 1);
-    renderChatImgPreview();
   }
 
   function sendChatMessage() {
     var input = document.getElementById('chatInput');
     var msg = input.value.trim();
-    if (!msg && chatImages.length === 0) return;
-    if (!currentUser) return;
+    if (!msg || !currentUser) return;
 
-    var msgToSend = msg || 'Analyse ces photos.';
     input.value = '';
-
-    if (chatImages.length > 0) {
-      var el = document.createElement('div');
-      el.className = 'chat-msg user';
-      var initial = (currentUser && currentUser.email) ? currentUser.email[0].toUpperCase() : 'U';
-      var avatarDiv = document.createElement('div');
-      avatarDiv.className = 'chat-avatar user';
-      avatarDiv.textContent = initial;
-      var bubbleDiv = document.createElement('div');
-      bubbleDiv.className = 'chat-bubble';
-      var imgRow = document.createElement('div');
-      imgRow.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px';
-      chatImages.forEach(function(img2) {
-        var imgEl = document.createElement('img');
-        imgEl.src = img2.preview;
-        imgEl.style.cssText = 'width:60px;height:60px;object-fit:cover;border-radius:6px';
-        imgRow.appendChild(imgEl);
-      });
-      bubbleDiv.appendChild(imgRow);
-      if (msg) {
-        var textNode = document.createTextNode(msg);
-        bubbleDiv.appendChild(textNode);
-      }
-      el.appendChild(avatarDiv);
-      el.appendChild(bubbleDiv);
-      document.getElementById('chatMessages').appendChild(el);
-      scrollChat();
-    } else {
-      appendChatMsg('user', msgToSend);
-    }
-
-    chatHistory.push({ role: 'user', content: msgToSend });
-
-    var imagesToSend = chatImages.slice();
-    chatImages = [];
-    renderChatImgPreview();
+    appendChatMsg('user', msg);
+    chatHistory.push({ role: 'user', content: msg });
 
     var typingEl = document.createElement('div');
     typingEl.className = 'chat-msg ai';
@@ -929,15 +921,13 @@
     typingEl.innerHTML = '<div class="chat-avatar ai">AI</div><div class="chat-bubble"><div class="chat-typing"><span></span><span></span><span></span></div></div>';
     document.getElementById('chatMessages').appendChild(typingEl);
     scrollChat();
-    document.getElementById('chatSend').disabled = true;
 
-    var payload = { message: msgToSend, history: chatHistory.slice(-10), userId: currentUser.id };
-    if (imagesToSend.length > 0) { payload.images = imagesToSend; }
+    document.getElementById('chatSend').disabled = true;
 
     fetch('/api/advisor', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ message: msg, history: chatHistory.slice(-10), userId: currentUser.id })
     })
     .then(function(res) { return res.json().then(function(data) { return { ok: res.ok, data: data }; }); })
     .then(function(r) {
