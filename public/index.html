@@ -16,7 +16,7 @@
   body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 600px 400px at 10% 20%,rgba(123,94,248,0.08) 0%,transparent 70%),radial-gradient(ellipse 500px 350px at 90% 80%,rgba(9,249,176,0.06) 0%,transparent 70%);pointer-events:none;z-index:0}
 
   /* ======= LANDING PRO PAGE ======= */
-  #landingPro{position:fixed;inset:0;z-index:2000;background:var(--bg);overflow-y:auto;display:flex;flex-direction:column}
+  #landingPro{position:fixed;inset:0;z-index:2000;background:var(--bg);overflow-y:auto;display:none;flex-direction:column}
   #landingPro::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 900px 600px at 15% 10%,rgba(123,94,248,0.13) 0%,transparent 65%),radial-gradient(ellipse 700px 500px at 85% 85%,rgba(9,249,176,0.09) 0%,transparent 65%);pointer-events:none;z-index:0}
   #landingPro::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(42,42,58,0.2) 1px,transparent 1px),linear-gradient(90deg,rgba(42,42,58,0.2) 1px,transparent 1px);background-size:50px 50px;mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,black 20%,transparent 100%);pointer-events:none;z-index:0}
   .lp-inner{position:relative;z-index:1;max-width:780px;margin:0 auto;padding:48px 24px 80px;text-align:center}
@@ -352,7 +352,7 @@
   <div class="lp-topbar">
     <div class="lp-logo">Vinted × AI <span style="color:var(--muted);font-weight:400;font-size:11px;margin-left:6px">by kzr</span></div>
     <div class="lp-nav-cta">
-      <button class="lp-login-btn" onclick="enterLanding(true)">J'ai déjà un compte</button>
+      <button class="lp-login-btn" onclick="landingLoginOnly()">J'ai déjà un compte</button>
     </div>
   </div>
 
@@ -374,10 +374,10 @@
       </div>
 
       <div class="lp-cta-wrap">
-        <button class="lp-cta-main" onclick="enterLanding(false)">
+        <button class="lp-cta-main" onclick="landingStartPro()">
           Commencer pour 1€/mois <span class="lp-cta-arrow">→</span>
         </button>
-        <button class="lp-cta-free" onclick="enterLanding(true)">Essayer gratuitement (3 annonces/jour)</button>
+        <button class="lp-cta-free" onclick="landingStartFree()">Essayer gratuitement (3 annonces/jour)</button>
         <div class="lp-guarantee"><span class="icon">🔒</span>Sans engagement · Résiliable en 1 clic · Paiement sécurisé</div>
       </div>
     </div>
@@ -472,10 +472,10 @@
       <h2>Prêt à vendre comme un pro ?</h2>
       <p>Rejoins les vendeurs Vinted qui utilisent l'IA pour vendre plus vite et mieux.<br>Sans engagement, pour seulement <strong style="color:var(--accent)">1€ par mois.</strong></p>
       <div class="lp-cta-wrap" style="margin-bottom:0">
-        <button class="lp-cta-main" onclick="enterLanding(false)">
+        <button class="lp-cta-main" onclick="landingStartPro()">
           Démarrer maintenant — 1€/mois <span class="lp-cta-arrow">→</span>
         </button>
-        <button class="lp-cta-free" onclick="enterLanding(true)">Essayer gratuitement d'abord</button>
+        <button class="lp-cta-free" onclick="landingStartFree()">Essayer gratuitement d'abord</button>
         <div class="lp-guarantee"><span class="icon">🔒</span>Paiement Stripe sécurisé · Résiliable immédiatement</div>
       </div>
     </div>
@@ -772,38 +772,53 @@
   var pendingVerifyEmail = '';
   var chatHistory = [];
 
-  // ── LANDING PRO PAGE
-  window._wantsPro = false;
-  function enterLanding(isFree) {
-    var lp = document.getElementById('landingPro');
-    lp.classList.add('hide-lp');
-    setTimeout(function() {
-      lp.style.display = 'none';
-      if (!isFree) { window._wantsPro = true; }
-      // Show splash briefly then enter app
-      var splash = document.getElementById('splash');
-      splash.classList.add('hide');
-      setTimeout(function() {
-        splash.style.display = 'none';
-        document.getElementById('app').classList.add('visible');
-        checkSession();
-      }, 100);
-    }, 450);
-  }
+  // ── FLOW : Splash → Landing → App
+  // authIntent : 'login_only' | 'login_or_register_pro' | 'login_or_register_free'
+  window._authIntent = 'login_or_register_free';
 
-  // ── SPLASH
+  // SPLASH → show landing
   document.getElementById('splashBtn').addEventListener('click', function() {
-    enterApp();
-  });
-
-  function enterApp() {
     var splash = document.getElementById('splash');
     splash.classList.add('hide');
     setTimeout(function() {
       splash.style.display = 'none';
+      var lp = document.getElementById('landingPro');
+      lp.style.display = 'flex';
+      lp.style.animation = 'lp-fadein 0.6s cubic-bezier(0.16,1,0.3,1) both';
+    }, 600);
+  });
+
+  // LANDING → App : "J'ai déjà un compte" (login only)
+  function landingLoginOnly() {
+    window._authIntent = 'login_only';
+    hideLandingGoApp();
+  }
+
+  // LANDING → App : "Commencer pour 1€/mois" (login OR register, flag pro)
+  function landingStartPro() {
+    window._authIntent = 'login_or_register_pro';
+    hideLandingGoApp();
+  }
+
+  // LANDING → App : "Essayer gratuitement" (login OR register, no flag)
+  function landingStartFree() {
+    window._authIntent = 'login_or_register_free';
+    hideLandingGoApp();
+  }
+
+  function hideLandingGoApp() {
+    var lp = document.getElementById('landingPro');
+    lp.classList.add('hide-lp');
+    setTimeout(function() {
+      lp.style.display = 'none';
       document.getElementById('app').classList.add('visible');
       checkSession();
-    }, 600);
+    }, 450);
+  }
+
+  function enterApp() {
+    // kept for compatibility (not used in new flow)
+    hideLandingGoApp();
   }
 
   // ── SESSION
@@ -824,11 +839,12 @@
         return;
       }
     }
-    if (window._wantsPro) {
-      showAuthModal();
-      // After auth modal closes, trigger subscribe — patched via updateTopbar
+    if (window._authIntent === 'login_only') {
+      showAuthModal('login_only');
+    } else if (window._authIntent === 'login_or_register_pro') {
+      showAuthModal('login_or_register_pro');
     } else {
-      showAuthModal();
+      showAuthModal('login_or_register_free');
     }
   }
 
@@ -855,7 +871,32 @@
   }
 
   // ── AUTH
-  function showAuthModal() {
+  function showAuthModal(mode) {
+    // mode: 'login_only' | 'login_or_register_pro' | 'login_or_register_free' | undefined
+    var loginTab = document.getElementById('tabLogin');
+    var registerTab = document.getElementById('tabRegister');
+    var subEl = document.getElementById('authSub');
+
+    if (mode === 'login_only') {
+      // Hide register tab, force login
+      registerTab.style.display = 'none';
+      loginTab.style.display = 'block';
+      switchTab('login');
+      subEl.textContent = 'Connecte-toi à ton compte';
+    } else if (mode === 'login_or_register_pro') {
+      registerTab.style.display = 'block';
+      loginTab.style.display = 'block';
+      switchTab('register');
+      subEl.textContent = 'Crée ton compte — puis active ton abonnement Pro à 1€';
+      window._wantsPro = true;
+    } else {
+      registerTab.style.display = 'block';
+      loginTab.style.display = 'block';
+      switchTab('login');
+      subEl.textContent = '3 annonces gratuites par jour';
+      window._wantsPro = false;
+    }
+
     document.getElementById('authModal').classList.add('visible');
     document.getElementById('authScreen').style.display = 'block';
     document.getElementById('verifyScreen').style.display = 'none';
