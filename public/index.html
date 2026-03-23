@@ -833,20 +833,20 @@
       if (!file.type.startsWith('image/') || chatImages.length >= 4) return;
       var reader = new FileReader();
       reader.onload = function(ev) {
-        var img = new Image();
-        img.onload = function() {
+        var img2 = new Image();
+        img2.onload = function() {
           var canvas = document.createElement('canvas');
           var MAX = 800;
-          var w = img.width, h = img.height;
+          var w = img2.width, h = img2.height;
           if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
           if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
           canvas.width = w; canvas.height = h;
-          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          canvas.getContext('2d').drawImage(img2, 0, 0, w, h);
           var compressed = canvas.toDataURL('image/jpeg', 0.7);
           chatImages.push({ data: compressed.split(',')[1], type: 'image/jpeg', preview: compressed });
           renderChatImgPreview();
         };
-        img.src = ev.target.result;
+        img2.src = ev.target.result;
       };
       reader.readAsDataURL(file);
     });
@@ -857,10 +857,17 @@
     var preview = document.getElementById('chatImgPreview');
     var count = document.getElementById('chatImgCount');
     preview.innerHTML = '';
-    chatImages.forEach(function(img, i) {
+    chatImages.forEach(function(img2, i) {
       var div = document.createElement('div');
       div.className = 'chat-img-thumb';
-      div.innerHTML = '<img src="' + img.preview + '"><button class="remove-chat-img" onclick="removeChatImg(' + i + ')">×</button>';
+      var imgEl = document.createElement('img');
+      imgEl.src = img2.preview;
+      var btn = document.createElement('button');
+      btn.className = 'remove-chat-img';
+      btn.textContent = 'x';
+      btn.onclick = function() { removeChatImg(i); };
+      div.appendChild(imgEl);
+      div.appendChild(btn);
       preview.appendChild(div);
     });
     count.textContent = chatImages.length > 0 ? chatImages.length + ' photo(s)' : '';
@@ -880,20 +887,36 @@
     var msgToSend = msg || 'Analyse ces photos.';
     input.value = '';
 
-    // Show user message with images
     if (chatImages.length > 0) {
-      var imgHtml = '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">';
-      chatImages.forEach(function(img) {
-        imgHtml += '<img src="' + img.preview + '" style="width:60px;height:60px;object-fit:cover;border-radius:6px;">';
+      var el = document.createElement('div');
+      el.className = 'chat-msg user';
+      var initial = (currentUser && currentUser.email) ? currentUser.email[0].toUpperCase() : 'U';
+      var avatarDiv = document.createElement('div');
+      avatarDiv.className = 'chat-avatar user';
+      avatarDiv.textContent = initial;
+      var bubbleDiv = document.createElement('div');
+      bubbleDiv.className = 'chat-bubble';
+      var imgRow = document.createElement('div');
+      imgRow.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px';
+      chatImages.forEach(function(img2) {
+        var imgEl = document.createElement('img');
+        imgEl.src = img2.preview;
+        imgEl.style.cssText = 'width:60px;height:60px;object-fit:cover;border-radius:6px';
+        imgRow.appendChild(imgEl);
       });
-      imgHtml += '</div>' + (msg ? msg.replace(/
-/g, '<br>') : '');
-      appendChatMsgHtml('user', imgHtml);
+      bubbleDiv.appendChild(imgRow);
+      if (msg) {
+        var textNode = document.createTextNode(msg);
+        bubbleDiv.appendChild(textNode);
+      }
+      el.appendChild(avatarDiv);
+      el.appendChild(bubbleDiv);
+      document.getElementById('chatMessages').appendChild(el);
+      scrollChat();
     } else {
       appendChatMsg('user', msgToSend);
     }
 
-    // Add to history as text only
     chatHistory.push({ role: 'user', content: msgToSend });
 
     var imagesToSend = chatImages.slice();
@@ -906,18 +929,15 @@
     typingEl.innerHTML = '<div class="chat-avatar ai">AI</div><div class="chat-bubble"><div class="chat-typing"><span></span><span></span><span></span></div></div>';
     document.getElementById('chatMessages').appendChild(typingEl);
     scrollChat();
-
     document.getElementById('chatSend').disabled = true;
+
+    var payload = { message: msgToSend, history: chatHistory.slice(-10), userId: currentUser.id };
+    if (imagesToSend.length > 0) { payload.images = imagesToSend; }
 
     fetch('/api/advisor', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: msgToSend,
-        history: chatHistory.slice(-10),
-        userId: currentUser.id,
-        images: imagesToSend.length > 0 ? imagesToSend : undefined
-      })
+      body: JSON.stringify(payload)
     })
     .then(function(res) { return res.json().then(function(data) { return { ok: res.ok, data: data }; }); })
     .then(function(r) {
@@ -943,15 +963,6 @@
     el.className = 'chat-msg ' + role;
     var initial = role === 'user' ? ((currentUser && currentUser.email) ? currentUser.email[0].toUpperCase() : 'U') : 'AI';
     el.innerHTML = '<div class="chat-avatar ' + role + '">' + initial + '</div><div class="chat-bubble">' + text.replace(/\n/g, '<br>') + '</div>';
-    document.getElementById('chatMessages').appendChild(el);
-    scrollChat();
-  }
-
-  function appendChatMsgHtml(role, html) {
-    var el = document.createElement('div');
-    el.className = 'chat-msg ' + role;
-    var initial = role === 'user' ? ((currentUser && currentUser.email) ? currentUser.email[0].toUpperCase() : 'U') : 'AI';
-    el.innerHTML = '<div class="chat-avatar ' + role + '">' + initial + '</div><div class="chat-bubble">' + html + '</div>';
     document.getElementById('chatMessages').appendChild(el);
     scrollChat();
   }
