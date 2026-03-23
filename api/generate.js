@@ -182,15 +182,49 @@ JSON strict sans markdown :
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: maxTokens, messages: [{ role: 'user', content }] })
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: maxTokens,
+        messages: [{ role: 'user', content }]
+      })
     });
 
     const data = await response.json();
-    if (!response.ok) return res.status(response.status).json({ error: data.error?.message || 'Erreur API' });
 
-    const rawText = data.content[0].text.trim().replace(/```json|```/g, '').trim();
-    const result = JSON.parse(rawText);
+    if (!response.ok) {
+      console.error('Anthropic error:', JSON.stringify(data));
+      return res.status(response.status).json({
+        error: data.error?.message || 'Erreur API Anthropic',
+        code: data.error?.type || 'API_ERROR'
+      });
+    }
+
+    if (!data.content || !data.content[0] || !data.content[0].text) {
+      console.error('Réponse API inattendue:', JSON.stringify(data));
+      return res.status(500).json({ error: 'Réponse vide de l\'IA' });
+    }
+
+    // Extraction robuste du JSON même si l'IA ajoute du texte autour
+    let rawText = data.content[0].text.trim().replace(/```json|```/g, '').trim();
+    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      console.error('Pas de JSON trouvé dans:', rawText.slice(0, 500));
+      return res.status(500).json({ error: 'Format de réponse IA invalide' });
+    }
+
+    let result;
+    try {
+      result = JSON.parse(jsonMatch[0]);
+    } catch (parseErr) {
+      console.error('Erreur JSON parse:', parseErr.message);
+      return res.status(500).json({ error: 'Impossible de lire la réponse IA' });
+    }
+
     if (!result.vinted_search_url) result.vinted_search_url = vintedSearchUrl;
 
     const newCount = (user.daily_count || 0) + 1;
@@ -200,7 +234,9 @@ JSON strict sans markdown :
     result.remaining = isPremium ? 999 : Math.max(0, 3 - newCount);
 
     return res.status(200).json(result);
+
   } catch (e) {
-    return res.status(500).json({ error: e.message });
+    console.error('Erreur generate.js:', e.message, e.stack);
+    return res.status(500).json({ error: 'Erreur serveur : ' + e.message });
   }
 };
