@@ -105,6 +105,172 @@
   .lp-orb-1{width:400px;height:400px;background:rgba(123,94,248,0.1);top:-150px;right:-100px}
   .lp-orb-2{width:300px;height:300px;background:rgba(9,249,176,0.08);bottom:-100px;left:-100px;animation-delay:-4s}
 
+  /* Free button — visible */
+  .lp-cta-divider{display:flex;align-items:center;gap:12px;width:100%;max-width:360px;color:var(--muted);font-size:11px}
+  .lp-cta-divider::before,.lp-cta-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+  .lp-cta-free-btn{display:inline-flex;flex-direction:column;align-items:center;gap:4px;padding:14px 36px;background:var(--surface);border:1.5px solid var(--border);border-radius:16px;color:var(--text);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.3s;width:100%;max-width:360px;position:relative;overflow:hidden}
+  .lp-cta-free-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(9,249,176,0.04),rgba(123,94,248,0.04));opacity:0;transition:opacity 0.3s}
+  .lp-cta-free-btn:hover{border-color:rgba(9,249,176,0.4);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.25)}
+  .lp-cta-free-btn:hover::before{opacity:1}
+  .lp-cta-free-icon{font-size:20px;margin-bottom:2px}
+  .lp-cta-free-sub{font-size:11px;font-weight:400;color:var(--muted);font-family:'DM Sans',sans-serif}
+
+  /* ═══════════════════════════════════
+     PREMIUM THEME — body.is-premium
+  ═══════════════════════════════════ */
+  body.is-premium {
+    --bg: #08060f;
+    --surface: #100d1c;
+    --surface2: #16122a;
+    --border: #2d2150;
+    --accent: #c9a84c;
+    --accent2: #a374f7;
+    --accent3: #ff6b6b;
+    --text: #f5f0ff;
+    --muted: #7a6e9a;
+    --teal-glow: rgba(201,168,76,0.12);
+  }
+  /* Premium animated background */
+  body.is-premium::before{
+    background:
+      radial-gradient(ellipse 700px 500px at 5% 10%, rgba(163,116,247,0.12) 0%, transparent 65%),
+      radial-gradient(ellipse 500px 400px at 95% 90%, rgba(201,168,76,0.1) 0%, transparent 65%),
+      radial-gradient(ellipse 400px 300px at 50% 50%, rgba(163,116,247,0.05) 0%, transparent 70%);
+  }
+  /* Premium topbar */
+  body.is-premium .topbar{
+    background: rgba(8,6,15,0.92);
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    box-shadow: 0 1px 0 rgba(201,168,76,0.08);
+  }
+  body.is-premium .topbar-logo{
+    background: linear-gradient(135deg, #c9a84c, #e8d08a, #a374f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 15px;
+  }
+  /* Premium gold shimmer on cards */
+  body.is-premium .card{
+    border-color: rgba(201,168,76,0.15);
+    background: linear-gradient(160deg, #100d1c 0%, #130f20 100%);
+    box-shadow: 0 4px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(201,168,76,0.08);
+  }
+  body.is-premium .card:hover{
+    border-color: rgba(201,168,76,0.35);
+    box-shadow: 0 8px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(201,168,76,0.15);
+  }
+  /* Premium header */
+  body.is-premium header h1 span{
+    background: linear-gradient(135deg, #c9a84c, #e8d08a, #a374f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  body.is-premium .logo-badge{
+    background: linear-gradient(135deg,rgba(201,168,76,0.12),rgba(163,116,247,0.08));
+    border-color: rgba(201,168,76,0.3);
+    color: #c9a84c;
+  }
+  body.is-premium .logo-badge .dot{ background: #c9a84c; }
+  /* Premium generate button */
+  body.is-premium .btn-generate{
+    background: linear-gradient(135deg, #c9a84c, #e8d08a, #b08030);
+    box-shadow: 0 4px 20px rgba(201,168,76,0.25);
+  }
+  body.is-premium .btn-generate:hover{
+    box-shadow: 0 8px 32px rgba(201,168,76,0.4);
+  }
+  /* Premium result card */
+  body.is-premium .result-header{
+    background: linear-gradient(135deg, rgba(201,168,76,0.1), rgba(163,116,247,0.08));
+    border-bottom-color: rgba(201,168,76,0.2);
+  }
+  body.is-premium .result-header h2::before{ color: #c9a84c; }
+  body.is-premium .tag{
+    background: rgba(201,168,76,0.08);
+    border-color: rgba(201,168,76,0.25);
+    color: #c9a84c;
+  }
+  body.is-premium .price-badge{
+    background: linear-gradient(135deg,rgba(201,168,76,0.12),rgba(201,168,76,0.06));
+    border-color: rgba(201,168,76,0.35);
+    color: #c9a84c;
+  }
+  /* Premium nav tabs */
+  body.is-premium .nav-tabs{
+    background: rgba(22,18,42,0.8);
+    border-color: rgba(201,168,76,0.15);
+  }
+  body.is-premium .nav-tab.active{
+    background: linear-gradient(135deg, rgba(201,168,76,0.12), rgba(163,116,247,0.08));
+    color: #c9a84c;
+  }
+  body.is-premium .nav-tab.premium-tab{ color: #c9a84c; }
+  body.is-premium .nav-tab.premium-tab.active{
+    background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(163,116,247,0.12));
+    color: #e8d08a;
+  }
+  /* Premium step indicators */
+  body.is-premium .step.active .step-num{
+    border-color: #c9a84c;
+    background: rgba(201,168,76,0.1);
+    color: #c9a84c;
+  }
+  body.is-premium .step.done .step-num{ background: #c9a84c; border-color: #c9a84c; color: #08060f; }
+  body.is-premium .step.done{ color: #c9a84c; }
+  /* Premium premium-badge */
+  body.is-premium .premium-badge{
+    background: linear-gradient(135deg, rgba(201,168,76,0.2), rgba(163,116,247,0.1));
+    border-color: rgba(201,168,76,0.4);
+    color: #c9a84c;
+    animation: goldPulse 3s ease-in-out infinite;
+  }
+  @keyframes goldPulse{
+    0%,100%{ box-shadow: 0 0 0 0 rgba(201,168,76,0); }
+    50%{ box-shadow: 0 0 12px 2px rgba(201,168,76,0.25); }
+  }
+  /* Premium scrollbar */
+  body.is-premium ::-webkit-scrollbar-thumb{ background: rgba(201,168,76,0.2); }
+  body.is-premium ::-webkit-scrollbar-thumb:hover{ background: rgba(201,168,76,0.35); }
+  /* Premium copy buttons */
+  body.is-premium .copy-btn:hover{ border-color: #c9a84c; color: #c9a84c; }
+  body.is-premium .copy-btn.copied{ border-color: #c9a84c; color: #c9a84c; background: rgba(201,168,76,0.08); }
+  /* Premium upload zone */
+  body.is-premium .upload-zone:hover, body.is-premium .upload-zone.dragover{
+    border-color: #c9a84c;
+    background: rgba(201,168,76,0.03);
+  }
+  /* Gold crown watermark on body background */
+  body.is-premium #app::after{
+    content: '';
+    position: fixed;
+    bottom: -60px;
+    right: -60px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  /* Premium welcome banner */
+  .premium-welcome{
+    display: none;
+    background: linear-gradient(135deg, rgba(201,168,76,0.1), rgba(163,116,247,0.08));
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 16px;
+    padding: 16px 24px;
+    margin-bottom: 24px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    animation: slideUp 0.4s ease;
+  }
+  .premium-welcome strong{ color: #c9a84c; font-family: 'Syne', sans-serif; font-size: 15px; display: block; margin-bottom: 4px; }
+  body.is-premium .premium-welcome{ display: block; }
+
+  /* ───── end premium theme ───── */
+
   /* SPLASH */
   #splash{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);overflow:hidden}
   #splash::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 800px 600px at 20% 30%,rgba(123,94,248,0.12) 0%,transparent 60%),radial-gradient(ellipse 600px 500px at 80% 70%,rgba(9,249,176,0.08) 0%,transparent 60%);animation:bgPulse 4s ease-in-out infinite alternate}
@@ -377,7 +543,12 @@
         <button class="lp-cta-main" onclick="landingStartPro()">
           Commencer pour 1€/mois <span class="lp-cta-arrow">→</span>
         </button>
-        <button class="lp-cta-free" onclick="landingStartFree()">Essayer gratuitement (3 annonces/jour)</button>
+        <div class="lp-cta-divider"><span>ou</span></div>
+        <button class="lp-cta-free-btn" onclick="landingStartFree()">
+          <span class="lp-cta-free-icon">🎁</span>
+          Essayer gratuitement
+          <span class="lp-cta-free-sub">3 annonces offertes · Sans carte bancaire</span>
+        </button>
         <div class="lp-guarantee"><span class="icon">🔒</span>Sans engagement · Résiliable en 1 clic · Paiement sécurisé</div>
       </div>
     </div>
@@ -475,7 +646,12 @@
         <button class="lp-cta-main" onclick="landingStartPro()">
           Démarrer maintenant — 1€/mois <span class="lp-cta-arrow">→</span>
         </button>
-        <button class="lp-cta-free" onclick="landingStartFree()">Essayer gratuitement d'abord</button>
+        <div class="lp-cta-divider"><span>ou</span></div>
+        <button class="lp-cta-free-btn" onclick="landingStartFree()">
+          <span class="lp-cta-free-icon">🎁</span>
+          Essayer gratuitement
+          <span class="lp-cta-free-sub">3 annonces offertes · Sans carte bancaire</span>
+        </button>
         <div class="lp-guarantee"><span class="icon">🔒</span>Paiement Stripe sécurisé · Résiliable immédiatement</div>
       </div>
     </div>
@@ -561,6 +737,11 @@
   </div>
 
   <div class="wrapper">
+    <div class="premium-welcome">
+      <strong>👑 Bienvenue dans l'espace Premium</strong>
+      Annonces illimitées · Estimation de prix · Conseiller IA · Analyse marché avancée
+    </div>
+
     <header>
       <div class="logo-badge"><span class="dot"></span>Vinted x AI by kzr</div>
       <h1>Génère tes annonces<br><span>en quelques secondes</span></h1>
@@ -850,14 +1031,16 @@
 
   function updateTopbar() {
     var el = document.getElementById('topbarRight');
-    if (!currentUser) { el.innerHTML = ''; return; }
+    if (!currentUser) { el.innerHTML = ''; document.body.classList.remove('is-premium'); return; }
     var remaining = currentUser.is_premium ? '&infin;' : Math.max(0, 3 - (currentUser.daily_count || 0));
     var html = '';
     if (currentUser.is_premium) {
-      html += '<span class="premium-badge">&#11088; Premium</span>';
+      html += '<span class="premium-badge">👑 Premium</span>';
+      document.body.classList.add('is-premium');
     } else {
       html += '<span class="quota-badge"><span>' + remaining + '</span> annonces restantes</span>';
       html += '<button class="btn-upgrade" onclick="showPaywall()">Passer Premium</button>';
+      document.body.classList.remove('is-premium');
     }
     html += '<button class="btn-logout" onclick="logout()">Déconnexion</button>';
     el.innerHTML = html;
