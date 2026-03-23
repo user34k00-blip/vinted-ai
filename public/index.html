@@ -15,6 +15,96 @@
   body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
   body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 600px 400px at 10% 20%,rgba(123,94,248,0.08) 0%,transparent 70%),radial-gradient(ellipse 500px 350px at 90% 80%,rgba(9,249,176,0.06) 0%,transparent 70%);pointer-events:none;z-index:0}
 
+  /* ======= LANDING PRO PAGE ======= */
+  #landingPro{position:fixed;inset:0;z-index:2000;background:var(--bg);overflow-y:auto;display:flex;flex-direction:column}
+  #landingPro::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 900px 600px at 15% 10%,rgba(123,94,248,0.13) 0%,transparent 65%),radial-gradient(ellipse 700px 500px at 85% 85%,rgba(9,249,176,0.09) 0%,transparent 65%);pointer-events:none;z-index:0}
+  #landingPro::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(42,42,58,0.2) 1px,transparent 1px),linear-gradient(90deg,rgba(42,42,58,0.2) 1px,transparent 1px);background-size:50px 50px;mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,black 20%,transparent 100%);pointer-events:none;z-index:0}
+  .lp-inner{position:relative;z-index:1;max-width:780px;margin:0 auto;padding:48px 24px 80px;text-align:center}
+  .lp-topbar{position:fixed;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:rgba(10,10,15,0.8);backdrop-filter:blur(12px);border-bottom:1px solid rgba(42,42,58,0.6)}
+  .lp-logo{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--accent);letter-spacing:0.02em}
+  .lp-nav-cta{display:flex;align-items:center;gap:10px}
+  .lp-login-btn{background:transparent;border:1px solid var(--border);border-radius:100px;padding:7px 18px;color:var(--muted);font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s}
+  .lp-login-btn:hover{border-color:var(--accent);color:var(--accent)}
+  /* HERO */
+  .lp-hero{padding-top:100px;margin-bottom:64px}
+  .lp-badge{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,rgba(9,249,176,0.1),rgba(123,94,248,0.08));border:1px solid rgba(9,249,176,0.25);border-radius:100px;padding:7px 18px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:28px;animation:lp-fadein 0.6s ease both}
+  .lp-badge .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+  .lp-h1{font-family:'Syne',sans-serif;font-size:clamp(2.4rem,7vw,4.2rem);font-weight:800;line-height:1.05;letter-spacing:-0.03em;margin-bottom:20px;animation:lp-fadein 0.6s 0.1s ease both}
+  .lp-h1 .grad{background:linear-gradient(135deg,var(--accent) 0%,#06d4a0 40%,var(--accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .lp-sub{font-size:clamp(1rem,2.2vw,1.15rem);color:var(--muted);font-weight:300;max-width:540px;margin:0 auto 40px;line-height:1.65;animation:lp-fadein 0.6s 0.2s ease both}
+  /* PRICE HERO */
+  .lp-price-hero{display:inline-flex;flex-direction:column;align-items:center;gap:4px;background:linear-gradient(135deg,rgba(9,249,176,0.07),rgba(123,94,248,0.07));border:1px solid rgba(9,249,176,0.2);border-radius:24px;padding:24px 48px;margin-bottom:36px;animation:lp-fadein 0.6s 0.25s ease both}
+  .lp-price-hero .old-price{font-size:13px;color:var(--muted);text-decoration:line-through}
+  .lp-price-hero .price-row{display:flex;align-items:baseline;gap:6px}
+  .lp-price-hero .amount{font-family:'Syne',sans-serif;font-size:3.8rem;font-weight:800;color:var(--accent);line-height:1}
+  .lp-price-hero .per{color:var(--muted);font-size:15px;margin-bottom:2px}
+  .lp-price-hero .savings{font-size:12px;font-weight:600;color:var(--accent2);background:rgba(123,94,248,0.12);border-radius:100px;padding:3px 12px;margin-top:6px}
+  /* CTA buttons */
+  .lp-cta-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;animation:lp-fadein 0.6s 0.3s ease both;margin-bottom:20px}
+  .lp-cta-main{display:inline-flex;align-items:center;gap:12px;padding:18px 52px;background:linear-gradient(135deg,var(--accent),#06d4a0);border:none;border-radius:100px;color:var(--bg);font-family:'Syne',sans-serif;font-size:16px;font-weight:800;cursor:pointer;transition:all 0.3s cubic-bezier(0.16,1,0.3,1);letter-spacing:0.02em;position:relative;overflow:hidden}
+  .lp-cta-main::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.15),transparent);opacity:0;transition:opacity 0.3s}
+  .lp-cta-main:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 24px 60px rgba(9,249,176,0.4)}
+  .lp-cta-main:hover::after{opacity:1}
+  .lp-cta-arrow{font-size:18px;transition:transform 0.3s}
+  .lp-cta-main:hover .lp-cta-arrow{transform:translateX(4px)}
+  .lp-cta-free{font-size:12px;color:var(--muted);cursor:pointer;border:none;background:transparent;text-decoration:underline;text-underline-offset:3px}
+  .lp-cta-free:hover{color:var(--text)}
+  .lp-guarantee{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-top:4px}
+  .lp-guarantee .icon{font-size:14px}
+  /* FEATURES GRID */
+  .lp-section-label{font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent2);margin-bottom:16px}
+  .lp-features{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:56px;text-align:left;animation:lp-fadein 0.7s 0.35s ease both}
+  @media(max-width:600px){.lp-features{grid-template-columns:1fr}}
+  .lp-feat{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;transition:all 0.3s;cursor:default;position:relative;overflow:hidden}
+  .lp-feat::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity 0.3s;background:radial-gradient(ellipse 200px 200px at var(--mx,50%) var(--my,50%),rgba(9,249,176,0.06),transparent)}
+  .lp-feat:hover{border-color:rgba(9,249,176,0.3);transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,0.3)}
+  .lp-feat:hover::before{opacity:1}
+  .lp-feat-icon{font-size:1.8rem;margin-bottom:14px;display:block}
+  .lp-feat-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:8px;color:var(--text)}
+  .lp-feat-desc{font-size:13px;color:var(--muted);line-height:1.6}
+  .lp-feat-tag{display:inline-block;margin-top:10px;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);background:rgba(9,249,176,0.08);border:1px solid rgba(9,249,176,0.2);border-radius:100px;padding:3px 10px}
+  .lp-feat.pro-only .lp-feat-tag{color:var(--accent2);background:rgba(123,94,248,0.1);border-color:rgba(123,94,248,0.3)}
+  /* COMPARISON TABLE */
+  .lp-compare{background:var(--surface);border:1px solid var(--border);border-radius:24px;overflow:hidden;margin-bottom:56px;animation:lp-fadein 0.7s 0.4s ease both}
+  .lp-compare-header{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--surface2);padding:18px 24px;border-bottom:1px solid var(--border)}
+  .lp-ch-cell{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;text-align:center}
+  .lp-ch-cell:first-child{text-align:left;color:var(--muted)}
+  .lp-ch-cell.pro{color:var(--accent);display:flex;flex-direction:column;align-items:center;gap:4px}
+  .lp-ch-cell.pro .pro-price{font-size:11px;font-weight:400;color:var(--muted)}
+  .lp-compare-row{display:grid;grid-template-columns:1fr 1fr 1fr;padding:14px 24px;border-bottom:1px solid rgba(42,42,58,0.5);align-items:center;transition:background 0.2s}
+  .lp-compare-row:last-child{border:none}
+  .lp-compare-row:hover{background:rgba(42,42,58,0.3)}
+  .lp-cr-feat{font-size:13px;color:var(--muted)}
+  .lp-cr-free,.lp-cr-pro{text-align:center;font-size:18px}
+  .lp-cr-pro .yes{color:var(--accent)}
+  .lp-cr-free .no{color:rgba(255,107,107,0.6)}
+  .lp-cr-free .partial{color:var(--muted);font-size:11px;font-weight:500}
+  /* SOCIAL PROOF */
+  .lp-proof{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:56px;animation:lp-fadein 0.7s 0.45s ease both}
+  @media(max-width:600px){.lp-proof{grid-template-columns:1fr}}
+  .lp-proof-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;text-align:left}
+  .lp-proof-stars{color:#ffd166;font-size:13px;margin-bottom:10px}
+  .lp-proof-text{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:14px;font-style:italic}
+  .lp-proof-author{font-size:11px;font-weight:600;color:var(--text);text-transform:uppercase;letter-spacing:0.06em}
+  /* BOTTOM CTA */
+  .lp-bottom-cta{background:linear-gradient(135deg,rgba(123,94,248,0.1),rgba(9,249,176,0.07));border:1px solid rgba(123,94,248,0.25);border-radius:28px;padding:48px 40px;margin-bottom:48px;animation:lp-fadein 0.7s 0.5s ease both}
+  .lp-bottom-cta h2{font-family:'Syne',sans-serif;font-size:clamp(1.6rem,4vw,2.2rem);font-weight:800;margin-bottom:12px;letter-spacing:-0.02em}
+  .lp-bottom-cta p{color:var(--muted);font-size:14px;margin-bottom:32px;line-height:1.6}
+  /* STATS */
+  .lp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:56px;animation:lp-fadein 0.7s 0.38s ease both}
+  @media(max-width:600px){.lp-stats{grid-template-columns:1fr}}
+  .lp-stat{text-align:center;padding:24px;background:var(--surface);border:1px solid var(--border);border-radius:16px}
+  .lp-stat-num{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--accent);margin-bottom:4px}
+  .lp-stat-label{font-size:12px;color:var(--muted)}
+  /* ANIM */
+  @keyframes lp-fadein{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+  #landingPro.hide-lp{animation:lp-out 0.5s cubic-bezier(0.4,0,1,1) forwards}
+  @keyframes lp-out{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.03);pointer-events:none}}
+  /* FLOATING ORBS */
+  .lp-orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;animation:orbFloat 8s ease-in-out infinite}
+  .lp-orb-1{width:400px;height:400px;background:rgba(123,94,248,0.1);top:-150px;right:-100px}
+  .lp-orb-2{width:300px;height:300px;background:rgba(9,249,176,0.08);bottom:-100px;left:-100px;animation-delay:-4s}
+
   /* SPLASH */
   #splash{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);overflow:hidden}
   #splash::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 800px 600px at 20% 30%,rgba(123,94,248,0.12) 0%,transparent 60%),radial-gradient(ellipse 600px 500px at 80% 70%,rgba(9,249,176,0.08) 0%,transparent 60%);animation:bgPulse 4s ease-in-out infinite alternate}
@@ -252,6 +342,146 @@
 </style>
 </head>
 <body>
+
+<!-- LANDING PRO PAGE -->
+<div id="landingPro">
+  <div class="lp-orb lp-orb-1"></div>
+  <div class="lp-orb lp-orb-2"></div>
+
+  <!-- Topbar -->
+  <div class="lp-topbar">
+    <div class="lp-logo">Vinted × AI <span style="color:var(--muted);font-weight:400;font-size:11px;margin-left:6px">by kzr</span></div>
+    <div class="lp-nav-cta">
+      <button class="lp-login-btn" onclick="enterLanding(true)">J'ai déjà un compte</button>
+    </div>
+  </div>
+
+  <div class="lp-inner">
+
+    <!-- HERO -->
+    <div class="lp-hero">
+      <div class="lp-badge"><span class="dot"></span>IA spécialisée Vinted — Offre de lancement</div>
+      <h1 class="lp-h1">Vends plus vite,<br><span class="grad">gagne plus d'argent</span><br>sur Vinted.</h1>
+      <p class="lp-sub">La première IA entraînée spécialement pour Vinted. Génère des annonces parfaites, estime tes prix en temps réel, analyse le marché — tout ça pour <strong style="color:var(--text)">seulement 1€/mois.</strong></p>
+
+      <div class="lp-price-hero">
+        <span class="old-price">Valeur réelle : 19€/mois</span>
+        <div class="price-row">
+          <span class="amount">1€</span>
+          <span class="per">/mois</span>
+        </div>
+        <span class="savings">🎉 Offre de lancement — Prix bloqué à vie</span>
+      </div>
+
+      <div class="lp-cta-wrap">
+        <button class="lp-cta-main" onclick="enterLanding(false)">
+          Commencer pour 1€/mois <span class="lp-cta-arrow">→</span>
+        </button>
+        <button class="lp-cta-free" onclick="enterLanding(true)">Essayer gratuitement (3 annonces/jour)</button>
+        <div class="lp-guarantee"><span class="icon">🔒</span>Sans engagement · Résiliable en 1 clic · Paiement sécurisé</div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="lp-stats">
+      <div class="lp-stat"><div class="lp-stat-num">∞</div><div class="lp-stat-label">Annonces générées par mois</div></div>
+      <div class="lp-stat"><div class="lp-stat-num">+40%</div><div class="lp-stat-label">De ventes en moyenne</div></div>
+      <div class="lp-stat"><div class="lp-stat-num">8s</div><div class="lp-stat-label">Pour créer une annonce parfaite</div></div>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="lp-section-label">Ce que tu obtiens avec Pro</div>
+    <div class="lp-features">
+      <div class="lp-feat pro-only">
+        <span class="lp-feat-icon">🤖</span>
+        <div class="lp-feat-title">IA Conseiller Vinted</div>
+        <div class="lp-feat-desc">Un assistant IA dédié qui répond à toutes tes questions sur Vinted : stratégie de vente, mise en avant, relances acheteurs, négociation de prix.</div>
+        <span class="lp-feat-tag">⭐ Pro exclusif</span>
+      </div>
+      <div class="lp-feat pro-only">
+        <span class="lp-feat-icon">💸</span>
+        <div class="lp-feat-title">Estimation de prix en temps réel</div>
+        <div class="lp-feat-desc">L'IA analyse les annonces similaires actuellement sur Vinted et te donne le prix idéal pour vendre vite sans brader.</div>
+        <span class="lp-feat-tag">⭐ Pro exclusif</span>
+      </div>
+      <div class="lp-feat">
+        <span class="lp-feat-icon">📝</span>
+        <div class="lp-feat-title">Annonces illimitées</div>
+        <div class="lp-feat-desc">Génère autant d'annonces que tu veux, sans limite. Titre accrocheur, description optimisée, hashtags parfaits — en 8 secondes.</div>
+        <span class="lp-feat-tag">Illimité</span>
+      </div>
+      <div class="lp-feat pro-only">
+        <span class="lp-feat-icon">🔍</span>
+        <div class="lp-feat-title">Analyse marché approfondie</div>
+        <div class="lp-feat-desc">Comparaison directe avec les annonces concurrentes sur Vinted, analyse de tendances et conseils personnalisés pour maximiser tes ventes.</div>
+        <span class="lp-feat-tag">⭐ Pro exclusif</span>
+      </div>
+      <div class="lp-feat">
+        <span class="lp-feat-icon">📸</span>
+        <div class="lp-feat-title">Analyse visuelle IA des photos</div>
+        <div class="lp-feat-desc">L'IA lit tes photos et détecte automatiquement la marque, l'état, la couleur et les détails pour rédiger la description la plus précise possible.</div>
+        <span class="lp-feat-tag">Inclus</span>
+      </div>
+      <div class="lp-feat pro-only">
+        <span class="lp-feat-icon">🏷️</span>
+        <div class="lp-feat-title">Hashtags & SEO Vinted</div>
+        <div class="lp-feat-desc">Des hashtags ultra-ciblés générés par l'IA pour maximiser ta visibilité dans les recherches Vinted et être trouvé en premier.</div>
+        <span class="lp-feat-tag">⭐ Pro exclusif</span>
+      </div>
+    </div>
+
+    <!-- COMPARISON TABLE -->
+    <div class="lp-section-label">Gratuit vs Pro</div>
+    <div class="lp-compare">
+      <div class="lp-compare-header">
+        <div class="lp-ch-cell">Fonctionnalité</div>
+        <div class="lp-ch-cell">Gratuit</div>
+        <div class="lp-ch-cell pro">⭐ Pro <span class="pro-price">1€/mois</span></div>
+      </div>
+      <div class="lp-compare-row"><div class="lp-cr-feat">Génération d'annonces</div><div class="lp-cr-free"><span class="partial">3/jour</span></div><div class="lp-cr-pro"><span class="yes">✓ Illimitées</span></div></div>
+      <div class="lp-compare-row"><div class="lp-cr-feat">Analyse visuelle IA</div><div class="lp-cr-free"><span class="no">✗</span></div><div class="lp-cr-pro"><span class="yes">✓</span></div></div>
+      <div class="lp-compare-row"><div class="lp-cr-feat">Estimation de prix Vinted</div><div class="lp-cr-free"><span class="no">✗</span></div><div class="lp-cr-pro"><span class="yes">✓</span></div></div>
+      <div class="lp-compare-row"><div class="lp-cr-feat">Conseiller IA spécialisé</div><div class="lp-cr-free"><span class="no">✗</span></div><div class="lp-cr-pro"><span class="yes">✓</span></div></div>
+      <div class="lp-compare-row"><div class="lp-cr-feat">Analyse marché approfondie</div><div class="lp-cr-free"><span class="no">✗</span></div><div class="lp-cr-pro"><span class="yes">✓</span></div></div>
+      <div class="lp-compare-row"><div class="lp-cr-feat">Hashtags SEO optimisés</div><div class="lp-cr-free"><span class="no">✗</span></div><div class="lp-cr-pro"><span class="yes">✓</span></div></div>
+      <div class="lp-compare-row"><div class="lp-cr-feat">Comparaison concurrence</div><div class="lp-cr-free"><span class="no">✗</span></div><div class="lp-cr-pro"><span class="yes">✓</span></div></div>
+    </div>
+
+    <!-- TESTIMONIALS -->
+    <div class="lp-section-label">Ils vendent mieux grâce à Vinted × AI</div>
+    <div class="lp-proof">
+      <div class="lp-proof-card">
+        <div class="lp-proof-stars">★★★★★</div>
+        <div class="lp-proof-text">"En 1 semaine j'ai vendu 12 articles. Avant je galerais à faire des descriptions, maintenant c'est en 10 secondes et ça se vend mieux !"</div>
+        <div class="lp-proof-author">Camille, 24 ans · Paris</div>
+      </div>
+      <div class="lp-proof-card">
+        <div class="lp-proof-stars">★★★★★</div>
+        <div class="lp-proof-text">"L'estimation de prix c'est game changer. Je ne bradais plus, je ne vendais plus trop cher. Maintenant mes annonces partent en quelques heures."</div>
+        <div class="lp-proof-author">Thomas · Lyon</div>
+      </div>
+      <div class="lp-proof-card">
+        <div class="lp-proof-stars">★★★★★</div>
+        <div class="lp-proof-text">"Pour 1€/mois j'aurais été con de pas essayer. Le conseiller IA m'a appris des techniques de vente que je connaissais pas du tout."</div>
+        <div class="lp-proof-author">Sara · Bordeaux</div>
+      </div>
+    </div>
+
+    <!-- BOTTOM CTA -->
+    <div class="lp-bottom-cta">
+      <h2>Prêt à vendre comme un pro ?</h2>
+      <p>Rejoins les vendeurs Vinted qui utilisent l'IA pour vendre plus vite et mieux.<br>Sans engagement, pour seulement <strong style="color:var(--accent)">1€ par mois.</strong></p>
+      <div class="lp-cta-wrap" style="margin-bottom:0">
+        <button class="lp-cta-main" onclick="enterLanding(false)">
+          Démarrer maintenant — 1€/mois <span class="lp-cta-arrow">→</span>
+        </button>
+        <button class="lp-cta-free" onclick="enterLanding(true)">Essayer gratuitement d'abord</button>
+        <div class="lp-guarantee"><span class="icon">🔒</span>Paiement Stripe sécurisé · Résiliable immédiatement</div>
+      </div>
+    </div>
+
+  </div>
+</div>
 
 <!-- SPLASH -->
 <div id="splash">
@@ -542,6 +772,25 @@
   var pendingVerifyEmail = '';
   var chatHistory = [];
 
+  // ── LANDING PRO PAGE
+  window._wantsPro = false;
+  function enterLanding(isFree) {
+    var lp = document.getElementById('landingPro');
+    lp.classList.add('hide-lp');
+    setTimeout(function() {
+      lp.style.display = 'none';
+      if (!isFree) { window._wantsPro = true; }
+      // Show splash briefly then enter app
+      var splash = document.getElementById('splash');
+      splash.classList.add('hide');
+      setTimeout(function() {
+        splash.style.display = 'none';
+        document.getElementById('app').classList.add('visible');
+        checkSession();
+      }, 100);
+    }, 450);
+  }
+
   // ── SPLASH
   document.getElementById('splashBtn').addEventListener('click', function() {
     enterApp();
@@ -575,7 +824,12 @@
         return;
       }
     }
-    showAuthModal();
+    if (window._wantsPro) {
+      showAuthModal();
+      // After auth modal closes, trigger subscribe — patched via updateTopbar
+    } else {
+      showAuthModal();
+    }
   }
 
   function updateTopbar() {
@@ -657,6 +911,10 @@
       hideAuthModal();
       updateTopbar();
       showToast(authMode === 'login' ? 'Bienvenue !' : 'Compte créé !');
+      if (window._wantsPro && !currentUser.is_premium) {
+        setTimeout(function() { handleSubscribe(); }, 500);
+        window._wantsPro = false;
+      }
     })
     .catch(function(e) { showAuthError(e.message); })
     .finally(function() {
