@@ -221,17 +221,6 @@
   .conseils-premium{background:linear-gradient(135deg,rgba(123,94,248,0.08),rgba(9,249,176,0.05));border:1px solid rgba(123,94,248,0.25);border-radius:14px;padding:20px;margin-bottom:24px}
   .conseils-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:8px}
   .conseils-body{font-size:13px;color:var(--text);line-height:1.7;white-space:pre-wrap}
-
-  /* Chat input zone */
-  .chat-bottom{background:var(--surface);border-top:1px solid var(--border)}
-  .chat-img-preview{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px 0;min-height:0}
-  .chat-img-thumb{position:relative;width:60px;height:60px;border-radius:10px;overflow:hidden;border:1px solid rgba(123,94,248,0.3);flex-shrink:0}
-  .chat-img-thumb img{width:100%;height:100%;object-fit:cover}
-  .chat-img-thumb .remove-chat-img{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(255,107,107,0.95);border:none;color:white;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700}
-  .chat-input-row{display:flex;align-items:flex-end;gap:8px;padding:12px 16px}
-  .chat-attach-btn{width:38px;height:38px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;line-height:1}
-  .chat-attach-btn:hover{border-color:var(--accent2);color:var(--accent2);background:rgba(123,94,248,0.08)}
-  .chat-hint{padding:0 16px 10px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px}
 </style>
 </head>
 <body>
@@ -291,17 +280,24 @@
     <div class="paywall-icon">&#9889;</div>
     <div class="paywall-title">Limite atteinte</div>
     <div class="paywall-sub">Tu as utilisé tes 3 annonces gratuites aujourd'hui.<br>Passe Premium pour générer sans limite.</div>
-    <div class="paywall-price">
-      <span class="amount">1&#8364;</span>
-      <span class="period">/mois</span>
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.3);border-radius:100px;padding:4px 14px;font-size:11px;font-weight:700;color:#ff9090;margin-bottom:8px">&#128293; -67% de réduction</div>
+    <div class="paywall-price" style="flex-direction:column;align-items:center;gap:2px">
+      <div style="font-size:13px;color:var(--muted);text-decoration:line-through">15&#8364;/mois</div>
+      <div style="display:flex;align-items:baseline;gap:4px">
+        <span class="amount">4,99&#8364;</span>
+        <span class="period">/mois</span>
+      </div>
+      <div style="font-size:11px;color:var(--accent2);font-weight:600;margin-top:2px">&#127881; Offre de lancement — Prix bloqué à vie</div>
     </div>
     <div class="paywall-features">
       <div class="paywall-feature">Annonces illimitées chaque jour</div>
       <div class="paywall-feature">Analyse visuelle des photos par l'IA</div>
       <div class="paywall-feature">Titres, prix et hashtags optimisés</div>
       <div class="paywall-feature">Comparaison avec le marché Vinted</div>
+      <div class="paywall-feature">Conseiller IA expert Vinted</div>
+      <div class="paywall-feature">Estimation de prix en temps réel</div>
     </div>
-    <button class="btn-subscribe" id="subscribeBtn" onclick="handleSubscribe()">Passer Premium — 1&#8364;/mois</button>
+    <button class="btn-subscribe" id="subscribeBtn" onclick="handleSubscribe()">Passer Premium — 4,99&#8364;/mois</button>
     <button class="paywall-cancel" onclick="closePaywall()">Revenir demain (3 annonces gratuites)</button>
   </div>
 </div>
@@ -462,7 +458,7 @@
         <div class="advisor-locked-icon">&#129302;</div>
         <div class="advisor-locked-title">Conseiller IA Premium</div>
         <div class="advisor-locked-sub">Pose toutes tes questions à ton expert Vinted personnel.<br>Stratégie de prix, conseils photos, optimisation d'annonces...</div>
-        <button class="btn-subscribe" style="max-width:300px;margin:0 auto" onclick="showPaywall()">Débloquer — 1&#8364;/mois</button>
+        <button class="btn-subscribe" style="max-width:300px;margin:0 auto" onclick="showPaywall()">Débloquer — 4,99&#8364;/mois</button>
       </div>
       <div class="chat-container" id="advisorChat" style="display:none">
         <div class="chat-messages" id="chatMessages">
@@ -471,15 +467,9 @@
             <div class="chat-bubble">Salut ! Je suis ton conseiller Vinted personnel &#128075; Je connais le marché de la mode seconde main sur le bout des doigts. Pose-moi toutes tes questions : prix, photos, stratégie, négociation... Je suis là pour maximiser tes ventes !</div>
           </div>
         </div>
-        <div class="chat-bottom">
-          <div class="chat-img-preview" id="chatImgPreview"></div>
-          <div class="chat-input-row">
-            <button class="chat-attach-btn" id="chatAttachBtn" title="Ajouter des photos">&#128247;</button>
-            <input type="file" id="chatImgInput" accept="image/*" multiple style="display:none">
-            <textarea class="chat-input" id="chatInput" placeholder="Pose ta question ou d&#233;cris ton article..." rows="1"></textarea>
-            <button class="chat-send" id="chatSend">&#10148;</button>
-          </div>
-          <div class="chat-hint" id="chatHint">&#128247; Envoie jusqu'&#224; 4 photos pour une estimation pr&#233;cise</div>
+        <div class="chat-input-area">
+          <textarea class="chat-input" id="chatInput" placeholder="Pose ta question..." rows="1" onkeydown="handleChatKey(event)"></textarea>
+          <button class="chat-send" id="chatSend" onclick="sendChatMessage()">&#9654;</button>
         </div>
       </div>
     </div>
@@ -494,7 +484,6 @@
   var authMode = 'login';
   var pendingVerifyEmail = '';
   var chatHistory = [];
-  var chatImages = [];
 
   // ── SPLASH
   document.getElementById('splashBtn').addEventListener('click', function() {
@@ -541,7 +530,7 @@
       html += '<span class="premium-badge">&#11088; Premium</span>';
     } else {
       html += '<span class="quota-badge"><span>' + remaining + '</span> annonces restantes</span>';
-      html += '<button class="btn-upgrade" onclick="showPaywall()">Passer Premium</button>';
+      html += '<button class="btn-upgrade" onclick="showPaywall()">Premium — 4,99&#8364;</button>';
     }
     html += '<button class="btn-logout" onclick="logout()">Déconnexion</button>';
     el.innerHTML = html;
@@ -699,7 +688,7 @@
     })
     .catch(function(e) {
       btn.disabled = false;
-      btn.textContent = 'Passer Premium — 1€/mois';
+      btn.textContent = 'Passer Premium — 4,99€/mois';
       showToast('Erreur : ' + e.message);
     });
   }
@@ -814,7 +803,6 @@
   }
 
   // ── PAGE SWITCHING
-  var chatListenersInit = false;
   function switchPage(page) {
     document.getElementById('generatorPage').style.display = page === 'generator' ? 'block' : 'none';
     document.getElementById('advisorPage').style.display = page === 'advisor' ? 'block' : 'none';
@@ -825,10 +813,6 @@
       if (currentUser && currentUser.is_premium) {
         document.getElementById('advisorLocked').style.display = 'none';
         document.getElementById('advisorChat').style.display = 'flex';
-        if (!chatListenersInit) {
-          chatListenersInit = true;
-          setTimeout(initChatListeners, 100);
-        }
       } else {
         document.getElementById('advisorLocked').style.display = 'block';
         document.getElementById('advisorChat').style.display = 'none';
@@ -836,134 +820,33 @@
     }
   }
 
-  function initChatListeners() {
-    var input = document.getElementById('chatInput');
-    var send = document.getElementById('chatSend');
-    var attach = document.getElementById('chatAttachBtn');
-    var fi = document.getElementById('chatImgInput');
-    if (input) {
-      input.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); }
-      });
-      input.addEventListener('input', function() {
-        this.style.height = 'auto';
-        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
-      });
-    }
-    if (send) send.addEventListener('click', sendChatMessage);
-    if (attach && fi) {
-      attach.addEventListener('click', function(e) { e.preventDefault(); fi.click(); });
-    }
-    if (fi) fi.addEventListener('change', handleChatImages);
-  }
-
   // ── CHAT
   function handleChatKey(e) {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); }
   }
 
-  function handleChatImages(e) {
-    Array.from(e.target.files).forEach(function(file) {
-      if (!file.type.startsWith('image/') || chatImages.length >= 4) return;
-      var reader = new FileReader();
-      reader.onload = function(ev) {
-        var img2 = new Image();
-        img2.onload = function() {
-          var canvas = document.createElement('canvas');
-          var MAX = 800; var w = img2.width, h = img2.height;
-          if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
-          if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
-          canvas.width = w; canvas.height = h;
-          canvas.getContext('2d').drawImage(img2, 0, 0, w, h);
-          var compressed = canvas.toDataURL('image/jpeg', 0.7);
-          chatImages.push({ data: compressed.split(',')[1], type: 'image/jpeg', preview: compressed });
-          renderChatImgPreview();
-        };
-        img2.src = ev.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
-    e.target.value = '';
-  }
-
-  function renderChatImgPreview() {
-    var preview = document.getElementById('chatImgPreview');
-    if (!preview) return;
-    preview.innerHTML = '';
-    chatImages.forEach(function(ci, i) {
-      var div = document.createElement('div');
-      div.className = 'chat-img-thumb';
-      var imgEl = document.createElement('img');
-      imgEl.src = ci.preview;
-      var btn = document.createElement('button');
-      btn.className = 'remove-chat-img';
-      btn.textContent = 'x';
-      btn.onclick = (function(idx) { return function() { chatImages.splice(idx, 1); renderChatImgPreview(); }; })(i);
-      div.appendChild(imgEl);
-      div.appendChild(btn);
-      preview.appendChild(div);
-    });
-    var hint = document.getElementById('chatHint');
-    if (hint) hint.style.display = chatImages.length > 0 ? 'none' : 'flex';
-  }
-
   function sendChatMessage() {
     var input = document.getElementById('chatInput');
     var msg = input.value.trim();
-    if (!msg && chatImages.length === 0) return;
-    if (!currentUser) return;
+    if (!msg || !currentUser) return;
 
-    var msgToSend = msg || 'Analyse ces photos et donne-moi une estimation de prix.';
     input.value = '';
-    input.style.height = 'auto';
-
-    if (chatImages.length > 0) {
-      var el = document.createElement('div');
-      el.className = 'chat-msg user';
-      var initial = (currentUser && currentUser.email) ? currentUser.email[0].toUpperCase() : 'U';
-      var avatarDiv = document.createElement('div');
-      avatarDiv.className = 'chat-avatar user';
-      avatarDiv.textContent = initial;
-      var bubbleDiv = document.createElement('div');
-      bubbleDiv.className = 'chat-bubble';
-      var imgRow = document.createElement('div');
-      imgRow.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap;' + (msg ? 'margin-bottom:8px' : '');
-      chatImages.forEach(function(ci) {
-        var imgEl = document.createElement('img');
-        imgEl.src = ci.preview;
-        imgEl.style.cssText = 'width:60px;height:60px;object-fit:cover;border-radius:8px';
-        imgRow.appendChild(imgEl);
-      });
-      bubbleDiv.appendChild(imgRow);
-      if (msg) { bubbleDiv.appendChild(document.createTextNode(msg)); }
-      el.appendChild(avatarDiv);
-      el.appendChild(bubbleDiv);
-      document.getElementById('chatMessages').appendChild(el);
-      scrollChat();
-    } else {
-      appendChatMsg('user', msgToSend);
-    }
-
-    chatHistory.push({ role: 'user', content: msgToSend });
-    var imagesToSend = chatImages.slice();
-    chatImages = [];
-    renderChatImgPreview();
+    appendChatMsg('user', msg);
+    chatHistory.push({ role: 'user', content: msg });
 
     var typingEl = document.createElement('div');
     typingEl.className = 'chat-msg ai';
     typingEl.id = 'typingIndicator';
-    typingEl.innerHTML = '<div class="chat-avatar ai">&#129302;</div><div class="chat-bubble"><div class="chat-typing"><span></span><span></span><span></span></div></div>';
+    typingEl.innerHTML = '<div class="chat-avatar ai">AI</div><div class="chat-bubble"><div class="chat-typing"><span></span><span></span><span></span></div></div>';
     document.getElementById('chatMessages').appendChild(typingEl);
     scrollChat();
-    document.getElementById('chatSend').disabled = true;
 
-    var payload = { message: msgToSend, history: chatHistory.slice(-10), userId: currentUser.id };
-    if (imagesToSend.length > 0) { payload.images = imagesToSend; }
+    document.getElementById('chatSend').disabled = true;
 
     fetch('/api/advisor', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ message: msg, history: chatHistory.slice(-10), userId: currentUser.id })
     })
     .then(function(res) { return res.json().then(function(data) { return { ok: res.ok, data: data }; }); })
     .then(function(r) {
