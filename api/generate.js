@@ -1,242 +1,191 @@
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_SECRET = process.env.SUPABASE_SECRET;
+const Anthropic = require("@anthropic-ai/sdk");
 
-async function supabase(method, path, body) {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1${path}`, {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-      'apikey': SUPABASE_SECRET,
-      'Authorization': `Bearer ${SUPABASE_SECRET}`,
-      'Prefer': 'return=representation'
-    },
-    body: body ? JSON.stringify(body) : undefined
-  });
-  return res.json();
+// ── Rate limiting en mémoire (IP + jour Paris) ────────────────────────────────
+const dailyUsage = new Map();
+
+function getClientIP(req) {
+  return (
+    req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
+    req.headers["x-real-ip"] ||
+    req.socket?.remoteAddress ||
+    "unknown"
+  );
 }
 
+function getParisDateString() {
+  return new Date().toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" });
+}
+
+function getMidnightParisTimestamp() {
+  const now = new Date();
+  const parisStr = now.toLocaleString("en-US", { timeZone: "Europe/Paris" });
+  const parisNow = new Date(parisStr);
+  const midnight = new Date(parisNow);
+  midnight.setHours(24, 0, 0, 0);
+  const diffMs = midnight - parisNow;
+  return Date.now() + diffMs;
+}
+
+// ── Handler principal ─────────────────────────────────────────────────────────
 module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  const { category, condition, brand, size, price, keywords, notes, images, userId } = req.body;
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: 'Clé API manquante.' });
+  if (req.method === "OPTIONS") return res.status(200).end();
+  if (req.method !== "POST")
+    return res.status(405).json({ error: "Methode non autorisee" });
 
-  if (!userId) return res.status(401).json({ error: 'Connecte-toi pour générer une annonce.', code: 'NOT_LOGGED_IN' });
+  if (!process.env.ANTHROPIC_API_KEY)
+    return res.status(500).json({ error: "ANTHROPIC_API_KEY manquante" });
 
-  const users = await supabase('GET', `/users?id=eq.${userId}&select=*`);
-  if (!users || users.length === 0) return res.status(401).json({ error: 'Utilisateur introuvable.', code: 'NOT_FOUND' });
+  // ── Vérification limite quotidienne ──────────────────────────────────────
+  const ip = getClientIP(req);
+  const today = getParisDateString();
+  const key = `${ip}__${today}`;
+  const usage = dailyUsage.get(key) || { count: 0 };
 
-  const user = users[0];
-  const today = new Date().toISOString().split('T')[0];
-
-  if (user.last_reset !== today) {
-    await supabase('PATCH', `/users?id=eq.${userId}`, { daily_count: 0, last_reset: today });
-    user.daily_count = 0;
-  }
-
-  if (!user.is_premium && user.daily_count >= 3) {
-    return res.status(403).json({
-      error: 'Tu as atteint ta limite de 3 annonces gratuites aujourd\'hui.',
-      code: 'QUOTA_EXCEEDED',
-      daily_count: user.daily_count,
-      is_premium: false
+  if (usage.count >= 1) {
+    return res.status(429).json({
+      error: "DAILY_LIMIT_REACHED",
+      resetTime: getMidnightParisTimestamp(),
+      message: "Tu as deja genere une annonce aujourd'hui.",
     });
   }
 
-  const isPremium = user.is_premium;
-  const searchTerms = [brand, keywords, category].filter(Boolean).join(' ');
-  const vintedSearchUrl = `https://www.vinted.fr/catalog?search_text=${encodeURIComponent(searchTerms)}`;
+  // Incrémenter AVANT l'appel API (bloque les doubles-clics)
+  dailyUsage.set(key, { count: usage.count + 1 });
 
-  const signatureMap = {
-    'Neuf avec étiquette': '✨Article Neuf Avec Etiquette Jamais Porté✨',
-    'Neuf sans étiquette': '✨Article Neuf Sans Etiquette✨',
-    'Très bon état': '✨Article en Très Bon État✨',
-    'Bon état': '✨Article en Bon État✨',
-    'Satisfaisant': '✨Article en État Satisfaisant✨'
+  // Nettoyage des vieilles clés
+  for (const [k] of dailyUsage) {
+    if (!k.includes(`__${today}`)) dailyUsage.delete(k);
+  }
+
+  // ── Corps de la requête ───────────────────────────────────────────────────
+  const { category, condition, brand, size, price, keywords, notes, images } =
+    req.body || {};
+
+  if (!category || !price) {
+    dailyUsage.set(key, { count: 0 });
+    return res.status(400).json({ error: "Champs manquants : category et price requis" });
+  }
+
+  // ── Préparation images ────────────────────────────────────────────────────
+  const imageContent = [];
+  if (Array.isArray(images) && images.length > 0) {
+    for (const img of images.slice(0, 4)) {
+      if (img?.data && img?.type) {
+        imageContent.push({
+          type: "image",
+          source: { type: "base64", media_type: img.type, data: img.data },
+        });
+      }
+    }
+  }
+
+  // ── Fourchette de prix ────────────────────────────────────────────────────
+  const fourchettes = {
+    "Neuf avec etiquette": [0.45, 0.65],
+    "Neuf sans etiquette": [0.35, 0.5],
+    "Tres bon etat": [0.25, 0.4],
+    "Bon etat": [0.15, 0.25],
+    Satisfaisant: [0.1, 0.15],
   };
-  const firstLine = signatureMap[condition] || '✨Article en Très Bon État✨';
-  const signature = `${firstLine}\n📦Emballage du colis soigné📦\n⌛Envoi du colis en 24H max⌛\n✅Article Authentique✅\n❗La procédure d'envoi du colis sera filmé du début à la fin pour éviter tout type d'arnaque❗`;
+  const conditionKey = (condition || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  const [minR, maxR] = fourchettes[conditionKey] || [0.2, 0.35];
+  const prixNum = parseFloat(price) || 0;
+  const prixMin = Math.round(prixNum * minR);
+  const prixMax = Math.round(prixNum * maxR);
 
-  // ── PROMPT STANDARD (gratuit) ──────────────────────────────────
-  const standardPrompt = `Tu es un vendeur Vinted expert en France. Génère une annonce qui vend vite.
+  // ── Signature ─────────────────────────────────────────────────────────────
+  const signatureMap = {
+    "Neuf avec \u00e9tiquette": "\u2728Article Neuf Avec Etiquette Jamais Port\u00e9\u2728",
+    "Neuf sans \u00e9tiquette": "\u2728Article Neuf Sans Etiquette\u2728",
+    "Tr\u00e8s bon \u00e9tat": "\u2728Article en Tr\u00e8s Bon \u00c9tat\u2728",
+    "Bon \u00e9tat": "\u2728Article en Bon \u00c9tat\u2728",
+    Satisfaisant: "\u2728Article en \u00c9tat Satisfaisant\u2728",
+  };
+  const signature = signatureMap[condition] || "\u2728Article Vinted\u2728";
+  const signatureBlock = `${signature}
+\uD83D\uDCE6Emballage du colis soign\u00e9\uD83D\uDCE6
+\u231BEnvoi du colis en 24H max\u231B
+\u2705Article Authentique\u2705
+\u2757La proc\u00e9dure d'envoi sera film\u00e9e du d\u00e9but \u00e0 la fin\u2757`;
 
-ARTICLE :
-- Catégorie : ${category}
-- État : ${condition}
-${brand ? `- Marque : ${brand}` : '- Marque : inconnue (détecte sur photos)'}
-${size ? `- Taille : ${size}` : '- Taille : non fournie (détecte sur étiquette)'}
-- Prix vendeur : ${price}€
-${keywords ? `- Détails : ${keywords}` : ''}
-${notes ? `- Notes : ${notes}` : ''}
-${images && images.length > 0 ? `- ${images.length} photo(s) — analyse couleur, matière, logo, état.` : ''}
+  // ── Prompt système ────────────────────────────────────────────────────────
+  const systemPrompt = `Tu es un expert en vente sur Vinted. Tu generes des annonces professionnelles, honnetes et percutantes.
 
-━━━ TITRE (50-60 chars) ━━━
-[Marque] [type] [couleur] [taille] — marque premium en PREMIER
-INTERDIT : beau, super, nickel, top, parfait
+MOTS INTERDITS dans la description (hors signature) : superbe, magnifique, beau, nickel, top, parfait, incroyable, n'hesitez pas, envoi soigne, a saisir, pepite, rare
 
-━━━ DESCRIPTION (4 lignes) ━━━
-Ligne 1 : [emoji] description factuelle
-Ligne 2 : 🏷️ état honnête
-Ligne 3 : 💎 valeur ajoutée objective
-Ligne 4 : 📮 infos pratiques envoi
-Max 2 emojis. INTERDIT : superbe, magnifique, n'hésitez pas, à saisir, pépite
+STRUCTURE OBLIGATOIRE de la description :
+Ligne 1 : [emoji categorie] Description factuelle (couleur, matiere, coupe, modele)
+Ligne 2 : 🏷️ Etat honnete (jamais porte / porte X fois / rien a signaler)
+Ligne 3 : 💎 Valeur ajoutee (modele precis, coloris, taille...)
+Ligne 4 : 📮 Pratique (Mondial Relay / Colissimo, echange oui/non, prix ferme/nego)
+[ligne vide]
+${signatureBlock}
 
-Après les 4 lignes, ligne vide puis exactement :
-${signature}
+HASHTAGS : 12 a 15 hashtags en 5 categories :
+1. Marque (2-3) · 2. Categorie precise (3-4) · 3. Style/usage (3-4) · 4. Populaires Vinted (2-3) · 5. Niche (1-2)
 
-━━━ PRIX ━━━
-Neuf étiquette: 45-65% | TBE: 25-40% | BE: 15-25%
-Garde ${price}€ si fourchette ok. Chiffre entier.
+PRIX RECOMMANDE : entre ${prixMin}€ et ${prixMax}€ (base sur l'etat "${condition}")
 
-━━━ HASHTAGS (12-15) ━━━
-2-3 marque | 3-4 catégorie | 3-4 style | 2-3 Vinted | 1-2 niche. Sans #.
+Reponds UNIQUEMENT en JSON valide, sans markdown, sans backticks :
+{
+  "titre": "...",
+  "prix_recommande": "...",
+  "description": "...",
+  "hashtags": ["...", "..."],
+  "vinted_search_url": "https://www.vinted.fr/catalog?search_text=..."
+}`;
 
-JSON strict : {"titre":"...","prix_recommande":"...","description":"...","hashtags":[...],"vinted_search_url":"${vintedSearchUrl}"}`;
+  const userMessage = [
+    ...imageContent,
+    {
+      type: "text",
+      text: `Categorie : ${category}
+Etat : ${condition}
+${brand ? "Marque : " + brand : ""}
+${size ? "Taille : " + size : ""}
+Prix souhaite : ${price}\u20ac
+${keywords ? "Mots-cles : " + keywords : ""}
+${notes ? "Notes : " + notes : ""}
 
-  // ── PROMPT PREMIUM (boosté) ────────────────────────────────────
-  const premiumPrompt = `Tu es un expert en vente Vinted France avec un taux de conversion de 95%. Tu connais parfaitement la psychologie des acheteurs Vinted, les tendances du marché secondaire, et les techniques pour maximiser les ventes. Ton analyse est précise, data-driven et stratégique.
+Genere l'annonce Vinted optimisee.`,
+    },
+  ];
 
-ARTICLE À ANALYSER EN PROFONDEUR :
-- Catégorie : ${category}
-- État : ${condition}
-${brand ? `- Marque : ${brand}` : '- Marque : inconnue — IDENTIFIE-LA sur les photos (logo, étiquette, style)'}
-${size ? `- Taille : ${size}` : '- Taille : non fournie — DÉTECTE sur l\'étiquette visible en photo'}
-- Prix vendeur : ${price}€
-${keywords ? `- Détails : ${keywords}` : ''}
-${notes ? `- Notes vendeur : ${notes}` : ''}
-${images && images.length > 0 ? `- ${images.length} photo(s) — ANALYSE COMPLÈTE : couleur exacte (nuance précise), matière, texture visible, coupe, modèle exact, numéro de série si visible, état réel (micro-défauts éventuels), étiquettes visibles.` : ''}
-
-━━━ TITRE PREMIUM ━━━
-• 50-60 caractères MAXIMUM — compte précisément
-• Format optimal : [Marque] + [modèle exact si connu] + [couleur précise] + [taille] + [état si pertinent]
-• Inclure le nom du modèle exact si identifiable (ex: "Nike Air Force 1" pas juste "Nike")
-• Couleur précise : "bleu marine" pas "bleu", "beige sable" pas "beige"
-• Marques premium TOUJOURS en premier : Nike, Adidas, Supreme, Stone Island, Off-White, Balenciaga, Gucci, Zara, H&M, etc.
-• INTERDIT : beau, super, nickel, top, parfait, rare, pépite, incroyable
-
-━━━ DESCRIPTION PREMIUM ━━━
-4 lignes percutantes qui convertissent :
-
-Ligne 1 : [emoji précis] + description ultra-factuelle (modèle exact, coloris précis, matière, coupe, détails distinctifs visibles sur photos)
-Ligne 2 : 🏷️ + état avec détails concrets et rassurants (jamais porté / porté X fois / lavé X fois à X°C / étiquette encore attachée / 0 défaut visible après inspection minutieuse)
-Ligne 3 : 💎 + argument de vente stratégique basé sur des faits (modèle sold out sur le site officiel, coloris exclusif à cette saison, taille rare dans cet état, rapport qualité/prix imbattable au vu du prix neuf)
-Ligne 4 : 📮 + infos pratiques complètes (Mondial Relay disponible / Colissimo suivi / remise en main propre région X si possible / échange non / offres sérieuses bienvenues OU prix ferme)
-
-Emojis ligne 1 précis selon article :
-👕 t-shirt/polo | 👗 robe/jupe | 🧥 veste/manteau/blouson | 👖 pantalon/jean | 🧢 casquette/bonnet/chapeau | 👟 sneakers/baskets | 👠 escarpins/talons | 👞 derbies/mocassins | 👢 bottes | 👜 sac à main | 🎒 sac à dos | ⌚ montre | 💍 bijou | 📱 smartphone | 💻 ordinateur | 🎮 console/jeu | 🎧 audio | 🏋️ sport/fitness | 🧘 yoga/bien-être | 🏠 déco/maison | 📚 livre
-
-INTERDITS dans ces 4 lignes : superbe, magnifique, beau, nickel, top, parfait, incroyable, n'hésitez pas, à saisir, pépite, rare, coup de cœur, opportunité
-
-Après les 4 lignes, ligne vide puis EXACTEMENT cette signature :
-${signature}
-
-━━━ ANALYSE PRIX MARCHÉ ━━━
-Analyse fine basée sur l'état ET la demande actuelle :
-• Neuf avec étiquette : 45-65% du prix boutique neuf
-• Neuf sans étiquette : 35-55% du prix boutique
-• Très bon état : 28-42% du prix boutique
-• Bon état : 18-28% du prix boutique
-• Satisfaisant : 10-18% du prix boutique
-
-Facteurs qui augmentent le prix : marque premium, modèle discontinued, collab limitée, taille rare, saison en cours
-Facteurs qui baissent le prix : marque générique, modèle classique toujours dispo, taille commune, hors saison
-
-Si le prix vendeur (${price}€) est dans la fourchette optimale → conserve-le.
-Si >20% au-dessus → ajuste pour vendre dans les 48h.
-Si trop bas → conserve (avantage vendeur).
-Retourne UNIQUEMENT le chiffre entier.
-
-━━━ HASHTAGS PREMIUM (14-16) ━━━
-Sélection stratégique pour maximiser la visibilité :
-• 2-3 hashtags de marque (marque + sous-marque/ligne si applicable)
-• 3-4 hashtags de produit précis (type exact + sous-catégorie)
-• 3-4 hashtags de style/univers (streetwear, workwear, casual, luxury, vintage, y2k, gorpcore...)
-• 2-3 hashtags tendance Vinted (vintedmode, secondemain, mode, tendance, bonplan)
-• 1-2 hashtags ultra-ciblés (coloris précis, modèle, collaboration, saison)
-Sans # dans le JSON.
-
-━━━ CONSEILS VENDEUR PREMIUM ━━━
-Ajoute un champ "conseils" avec 2-3 conseils personnalisés pour maximiser les chances de vente de CET article spécifique (ex: meilleure heure pour republier, suggestion de prix négo, conseil photo, timing saisonnier).
-
-JSON strict sans markdown :
-{"titre":"...","prix_recommande":"...","description":"...","hashtags":[...],"vinted_search_url":"${vintedSearchUrl}","conseils":"..."}`;
-
-  const prompt = isPremium ? premiumPrompt : standardPrompt;
-  const maxTokens = isPremium ? 2000 : 1500;
-
-  const content = [];
-  if (images && images.length > 0) {
-    // Premium analyse jusqu'à 6 photos, gratuit 4
-    const maxImages = isPremium ? 6 : 4;
-    images.slice(0, maxImages).forEach(img => {
-      content.push({ type: 'image', source: { type: 'base64', media_type: img.type, data: img.data } });
-    });
-  }
-  content.push({ type: 'text', text: prompt });
-
+  // ── Appel Anthropic ───────────────────────────────────────────────────────
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: maxTokens,
-        messages: [{ role: 'user', content }]
-      })
+    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+    const response = await client.messages.create({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1500,
+      system: systemPrompt,
+      messages: [{ role: "user", content: userMessage }],
     });
 
-    const data = await response.json();
+    const rawText = response.content
+      .filter((b) => b.type === "text")
+      .map((b) => b.text)
+      .join("");
 
-    if (!response.ok) {
-      console.error('Anthropic error:', JSON.stringify(data));
-      return res.status(response.status).json({
-        error: data.error?.message || 'Erreur API Anthropic',
-        code: data.error?.type || 'API_ERROR'
-      });
-    }
-
-    if (!data.content || !data.content[0] || !data.content[0].text) {
-      console.error('Réponse API inattendue:', JSON.stringify(data));
-      return res.status(500).json({ error: 'Réponse vide de l\'IA' });
-    }
-
-    // Extraction robuste du JSON même si l'IA ajoute du texte autour
-    let rawText = data.content[0].text.trim().replace(/```json|```/g, '').trim();
-    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      console.error('Pas de JSON trouvé dans:', rawText.slice(0, 500));
-      return res.status(500).json({ error: 'Format de réponse IA invalide' });
-    }
-
-    let result;
+    let parsed;
     try {
-      result = JSON.parse(jsonMatch[0]);
-    } catch (parseErr) {
-      console.error('Erreur JSON parse:', parseErr.message);
-      return res.status(500).json({ error: 'Impossible de lire la réponse IA' });
+      parsed = JSON.parse(rawText.replace(/```json|```/g, "").trim());
+    } catch {
+      dailyUsage.set(key, { count: 0 });
+      return res.status(500).json({ error: "Reponse IA invalide", raw: rawText });
     }
 
-    if (!result.vinted_search_url) result.vinted_search_url = vintedSearchUrl;
-
-    const newCount = (user.daily_count || 0) + 1;
-    await supabase('PATCH', `/users?id=eq.${userId}`, { daily_count: newCount });
-    result.daily_count = newCount;
-    result.is_premium = isPremium;
-    result.remaining = isPremium ? 999 : Math.max(0, 3 - newCount);
-
-    return res.status(200).json(result);
-
-  } catch (e) {
-    console.error('Erreur generate.js:', e.message, e.stack);
-    return res.status(500).json({ error: 'Erreur serveur : ' + e.message });
+    return res.status(200).json(parsed);
+  } catch (err) {
+    // Rembourser le quota si l'API plante
+    dailyUsage.set(key, { count: 0 });
+    console.error("Anthropic error:", err);
+    return res.status(500).json({ error: err.message || "Erreur serveur" });
   }
 };
