@@ -76,6 +76,17 @@
   .btn-subscribe:disabled{opacity:0.5;cursor:not-allowed;transform:none}
   .paywall-cancel{color:var(--muted);font-size:12px;cursor:pointer;border:none;background:transparent;text-decoration:underline}
 
+  /* LIMIT OVERLAY */
+  .limit-overlay{position:fixed;inset:0;z-index:600;background:rgba(10,10,15,0.96);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;flex-direction:column;gap:20px;text-align:center;padding:32px}
+  .limit-overlay.visible{display:flex;animation:modalIn 0.4s cubic-bezier(0.16,1,0.3,1)}
+  .limit-icon{font-size:56px;line-height:1}
+  .limit-title{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--text)}
+  .limit-subtitle{font-family:'DM Sans',sans-serif;font-weight:400;font-size:15px;color:var(--muted);max-width:320px;line-height:1.6}
+  .limit-countdown-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:8px}
+  .limit-countdown{font-family:'Syne',sans-serif;font-weight:800;font-size:52px;color:var(--accent);letter-spacing:6px;font-variant-numeric:tabular-nums;line-height:1}
+  .limit-countdown-label{font-family:'DM Sans',sans-serif;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:3px}
+  .limit-divider{width:80px;height:1px;background:var(--border)}
+
   /* APP */
   #app{display:none;opacity:0}
   #app.visible{display:block;animation:appIn 0.5s 0.3s ease forwards}
@@ -302,6 +313,18 @@
   </div>
 </div>
 
+<!-- LIMIT OVERLAY (1 annonce/jour) -->
+<div class="limit-overlay" id="limitOverlay">
+  <div class="limit-icon">⏳</div>
+  <div class="limit-title">Limite quotidienne atteinte</div>
+  <div class="limit-subtitle">Tu as déjà généré ton annonce du jour.<br>Reviens demain pour une nouvelle génération !</div>
+  <div class="limit-divider"></div>
+  <div class="limit-countdown-wrap">
+    <div class="limit-countdown" id="limitCountdown">--:--:--</div>
+    <div class="limit-countdown-label">Disponible dans</div>
+  </div>
+</div>
+
 <!-- APP -->
 <div id="app">
   <div class="topbar">
@@ -484,6 +507,7 @@
   var authMode = 'login';
   var pendingVerifyEmail = '';
   var chatHistory = [];
+  var countdownInterval = null;
 
   // ── SPLASH
   document.getElementById('splashBtn').addEventListener('click', function() {
@@ -693,6 +717,32 @@
     });
   }
 
+  // ── LIMIT OVERLAY + COUNTDOWN ─────────────────────────────────────────────
+  function showLimitOverlay(resetTime) {
+    var overlay = document.getElementById('limitOverlay');
+    var display = document.getElementById('limitCountdown');
+    overlay.classList.add('visible');
+
+    if (countdownInterval) clearInterval(countdownInterval);
+
+    function updateCountdown() {
+      var diff = resetTime - Date.now();
+      if (diff <= 0) {
+        clearInterval(countdownInterval);
+        display.textContent = '00:00:00';
+        overlay.classList.remove('visible');
+        return;
+      }
+      var h = Math.floor(diff / 3600000).toString().padStart(2, '0');
+      var m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
+      var s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+      display.textContent = h + ':' + m + ':' + s;
+    }
+
+    updateCountdown();
+    countdownInterval = setInterval(updateCountdown, 1000);
+  }
+
   // ── IMAGES
   var fileInput = document.getElementById('fileInput');
   var uploadZone = document.getElementById('uploadZone');
@@ -747,7 +797,7 @@
 
   function removeImg(i) { uploadedImages.splice(i, 1); renderPreviews(); }
 
-  // ── GENERATE
+  // ── GENERATE ─────────────────────────────────────────────────────────────
   function generateListing() {
     if (!currentUser) { showAuthModal(); return; }
 
@@ -780,11 +830,18 @@
         images: uploadedImages.slice(0, 4).map(function(i) { return { data: i.base64, type: i.type }; })
       })
     })
-    .then(function(res) { return res.json().then(function(data) { return { ok: res.ok, data: data }; }); })
+    .then(function(res) {
+      return res.json().then(function(data) { return { status: res.status, data: data }; });
+    })
     .then(function(r) {
+      // Limite quotidienne atteinte
+      if (r.status === 429 && r.data.error === 'DAILY_LIMIT_REACHED') {
+        showLimitOverlay(r.data.resetTime);
+        return;
+      }
       if (r.data.code === 'QUOTA_EXCEEDED') { showPaywall(); return; }
       if (r.data.code === 'NOT_LOGGED_IN') { showAuthModal(); return; }
-      if (!r.ok) throw new Error(r.data.error || 'Erreur serveur');
+      if (r.status !== 200) throw new Error(r.data.error || 'Erreur serveur');
 
       currentUser.daily_count = r.data.daily_count;
       currentUser.is_premium = r.data.is_premium;
