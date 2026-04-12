@@ -77,15 +77,20 @@
   .paywall-cancel{color:var(--muted);font-size:12px;cursor:pointer;border:none;background:transparent;text-decoration:underline}
 
   /* LIMIT OVERLAY */
-  .limit-overlay{position:fixed;inset:0;z-index:600;background:rgba(10,10,15,0.96);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;flex-direction:column;gap:20px;text-align:center;padding:32px}
+  .limit-overlay{position:fixed;inset:0;z-index:600;background:rgba(10,10,15,0.97);backdrop-filter:blur(20px);display:none;align-items:center;justify-content:center;flex-direction:column;gap:20px;text-align:center;padding:32px}
   .limit-overlay.visible{display:flex;animation:modalIn 0.4s cubic-bezier(0.16,1,0.3,1)}
   .limit-icon{font-size:56px;line-height:1}
-  .limit-title{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--text)}
-  .limit-subtitle{font-family:'DM Sans',sans-serif;font-weight:400;font-size:15px;color:var(--muted);max-width:320px;line-height:1.6}
-  .limit-countdown-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:8px}
+  .limit-title{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:var(--text)}
+  .limit-subtitle{font-family:'DM Sans',sans-serif;font-weight:400;font-size:15px;color:var(--muted);max-width:320px;line-height:1.7}
+  .limit-countdown-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;margin:4px 0}
   .limit-countdown{font-family:'Syne',sans-serif;font-weight:800;font-size:52px;color:var(--accent);letter-spacing:6px;font-variant-numeric:tabular-nums;line-height:1}
   .limit-countdown-label{font-family:'DM Sans',sans-serif;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:3px}
   .limit-divider{width:80px;height:1px;background:var(--border)}
+  .limit-actions{display:flex;flex-direction:column;gap:12px;width:100%;max-width:320px;margin-top:8px}
+  .limit-btn-premium{width:100%;padding:16px;background:linear-gradient(135deg,var(--accent2),#9b7bff);border:none;border-radius:14px;color:white;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.3s}
+  .limit-btn-premium:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(123,94,248,0.4)}
+  .limit-btn-back{width:100%;padding:14px;background:transparent;border:1px solid var(--border);border-radius:14px;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s}
+  .limit-btn-back:hover{border-color:var(--text);color:var(--text)}
 
   /* APP */
   #app{display:none;opacity:0}
@@ -194,15 +199,12 @@
   ::-webkit-scrollbar{width:6px}
   ::-webkit-scrollbar-track{background:var(--bg)}
   ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-  /* NAV TABS */
   .nav-tabs{display:flex;gap:0;background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:4px;margin-bottom:32px}
   .nav-tab{flex:1;padding:10px 16px;border:none;background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-radius:10px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px}
   .nav-tab.active{background:var(--surface);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,0.3)}
   .nav-tab.premium-tab{color:var(--accent2)}
   .nav-tab.premium-tab.active{background:linear-gradient(135deg,rgba(123,94,248,0.2),rgba(9,249,176,0.1));color:var(--accent)}
   .nav-tab .lock-icon{font-size:11px}
-
-  /* ADVISOR */
   #advisorPage{display:none}
   .advisor-locked{background:var(--surface);border:1px solid rgba(123,94,248,0.3);border-radius:20px;padding:48px 32px;text-align:center;margin-top:20px}
   .advisor-locked-icon{font-size:3rem;margin-bottom:16px}
@@ -289,8 +291,8 @@
 <div class="paywall-overlay" id="paywallModal">
   <div class="paywall">
     <div class="paywall-icon">&#9889;</div>
-    <div class="paywall-title">Limite atteinte</div>
-    <div class="paywall-sub">Tu as utilisé tes 3 annonces gratuites aujourd'hui.<br>Passe Premium pour générer sans limite.</div>
+    <div class="paywall-title">Passe Premium</div>
+    <div class="paywall-sub">Génère autant d'annonces que tu veux, chaque jour, sans limite.</div>
     <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.3);border-radius:100px;padding:4px 14px;font-size:11px;font-weight:700;color:#ff9090;margin-bottom:8px">&#128293; -67% de réduction</div>
     <div class="paywall-price" style="flex-direction:column;align-items:center;gap:2px">
       <div style="font-size:13px;color:var(--muted);text-decoration:line-through">15&#8364;/mois</div>
@@ -309,19 +311,23 @@
       <div class="paywall-feature">Estimation de prix en temps réel</div>
     </div>
     <button class="btn-subscribe" id="subscribeBtn" onclick="handleSubscribe()">Passer Premium — 4,99&#8364;/mois</button>
-    <button class="paywall-cancel" onclick="closePaywall()">Revenir demain (3 annonces gratuites)</button>
+    <button class="paywall-cancel" onclick="closePaywall()">&#8592; Retour</button>
   </div>
 </div>
 
-<!-- LIMIT OVERLAY (1 annonce/jour) -->
+<!-- LIMIT OVERLAY -->
 <div class="limit-overlay" id="limitOverlay">
-  <div class="limit-icon">⏳</div>
+  <div class="limit-icon">&#9203;</div>
   <div class="limit-title">Limite quotidienne atteinte</div>
-  <div class="limit-subtitle">Tu as déjà généré ton annonce du jour.<br>Reviens demain pour une nouvelle génération !</div>
+  <div class="limit-subtitle">Tu as déjà généré ton annonce du jour.<br>Reviens demain ou passe Premium pour générer sans limite !</div>
   <div class="limit-divider"></div>
   <div class="limit-countdown-wrap">
     <div class="limit-countdown" id="limitCountdown">--:--:--</div>
     <div class="limit-countdown-label">Disponible dans</div>
+  </div>
+  <div class="limit-actions">
+    <button class="limit-btn-premium" onclick="hideLimitOverlay(); showPaywall();">&#9889; Passer Premium — illimité</button>
+    <button class="limit-btn-back" onclick="hideLimitOverlay()">&#8592; Retour à l'application</button>
   </div>
 </div>
 
@@ -344,7 +350,6 @@
       <button class="nav-tab premium-tab" onclick="switchPage('advisor')" id="tabAdvisor">&#129302; Conseiller IA <span class="lock-icon" id="advisorLock">&#11088;</span></button>
     </div>
 
-    <!-- PAGE GÉNÉRATEUR -->
     <div id="generatorPage">
       <div class="steps">
         <div class="step active" id="step1"><span class="step-num">1</span> Photos</div>
@@ -436,7 +441,6 @@
             <div class="conseils-title">&#11088; Conseils de vente personnalisés</div>
             <div class="conseils-body" id="conseilsBody"></div>
           </div>
-
           <div class="divider"></div>
           <div class="result-field">
             <div class="result-field-header"><span class="result-field-label">&#9989; Checklist</span><span class="result-field-label" id="checkProgress">0/10</span></div>
@@ -475,7 +479,6 @@
       </div>
     </div>
 
-    <!-- PAGE CONSEILLER IA -->
     <div id="advisorPage">
       <div class="advisor-locked" id="advisorLocked">
         <div class="advisor-locked-icon">&#129302;</div>
@@ -487,7 +490,7 @@
         <div class="chat-messages" id="chatMessages">
           <div class="chat-msg ai">
             <div class="chat-avatar ai">AI</div>
-            <div class="chat-bubble">Salut ! Je suis ton conseiller Vinted personnel &#128075; Je connais le marché de la mode seconde main sur le bout des doigts. Pose-moi toutes tes questions : prix, photos, stratégie, négociation... Je suis là pour maximiser tes ventes !</div>
+            <div class="chat-bubble">Salut ! Je suis ton conseiller Vinted personnel &#128075; Pose-moi toutes tes questions : prix, photos, stratégie, négociation...</div>
           </div>
         </div>
         <div class="chat-input-area">
@@ -496,7 +499,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -508,11 +510,28 @@
   var pendingVerifyEmail = '';
   var chatHistory = [];
   var countdownInterval = null;
+  // Quota local : 1 annonce/jour, géré par IP côté serveur
+  // On stocke localement si on a déjà généré aujourd'hui pour l'affichage
+  var LOCAL_QUOTA_KEY = 'vintedai_used_today';
+
+  function getTodayStr() {
+    return new Date().toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' });
+  }
+
+  function hasUsedTodayLocal() {
+    try {
+      var data = JSON.parse(localStorage.getItem(LOCAL_QUOTA_KEY) || 'null');
+      if (!data) return false;
+      return data.date === getTodayStr();
+    } catch(e) { return false; }
+  }
+
+  function markUsedTodayLocal() {
+    localStorage.setItem(LOCAL_QUOTA_KEY, JSON.stringify({ date: getTodayStr() }));
+  }
 
   // ── SPLASH
-  document.getElementById('splashBtn').addEventListener('click', function() {
-    enterApp();
-  });
+  document.getElementById('splashBtn').addEventListener('click', function() { enterApp(); });
 
   function enterApp() {
     var splash = document.getElementById('splash');
@@ -548,12 +567,14 @@
   function updateTopbar() {
     var el = document.getElementById('topbarRight');
     if (!currentUser) { el.innerHTML = ''; return; }
-    var remaining = currentUser.is_premium ? '&infin;' : Math.max(0, 3 - (currentUser.daily_count || 0));
     var html = '';
     if (currentUser.is_premium) {
       html += '<span class="premium-badge">&#11088; Premium</span>';
     } else {
-      html += '<span class="quota-badge"><span>' + remaining + '</span> annonces restantes</span>';
+      // Quota réel : 1 annonce/jour côté serveur
+      // On affiche 0 si déjà utilisé aujourd'hui, 1 sinon
+      var remaining = hasUsedTodayLocal() ? 0 : 1;
+      html += '<span class="quota-badge"><span>' + remaining + '</span> annonce restante</span>';
       html += '<button class="btn-upgrade" onclick="showPaywall()">Premium — 4,99&#8364;</button>';
     }
     html += '<button class="btn-logout" onclick="logout()">Déconnexion</button>';
@@ -573,10 +594,7 @@
     document.getElementById('authScreen').style.display = 'block';
     document.getElementById('verifyScreen').style.display = 'none';
   }
-
-  function hideAuthModal() {
-    document.getElementById('authModal').classList.remove('visible');
-  }
+  function hideAuthModal() { document.getElementById('authModal').classList.remove('visible'); }
 
   function switchTab(mode) {
     authMode = mode;
@@ -584,7 +602,7 @@
     document.getElementById('tabRegister').classList.toggle('active', mode === 'register');
     document.getElementById('authBtn').textContent = mode === 'login' ? 'Se connecter' : 'Créer mon compte';
     document.getElementById('authTitle').textContent = mode === 'login' ? 'Bienvenue' : 'Créer un compte';
-    document.getElementById('authSub').textContent = mode === 'login' ? 'Connecte-toi pour générer tes annonces' : '3 annonces gratuites par jour';
+    document.getElementById('authSub').textContent = mode === 'login' ? 'Connecte-toi pour générer tes annonces' : '1 annonce gratuite par jour';
     document.getElementById('authError').classList.remove('visible');
   }
 
@@ -602,17 +620,12 @@
     var password = document.getElementById('authPassword').value;
     var btn = document.getElementById('authBtn');
     var errorEl = document.getElementById('authError');
-
     if (!email || !password) { showAuthError('Remplis tous les champs.'); return; }
     if (password.length < 6) { showAuthError('Mot de passe trop court (6 caractères min).'); return; }
-
-    btn.disabled = true;
-    btn.textContent = '...';
+    btn.disabled = true; btn.textContent = '...';
     errorEl.classList.remove('visible');
-
     fetch('/api/auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: authMode, email: email, password: password })
     })
     .then(function(res) { return res.json().then(function(data) { return { ok: res.ok, data: data }; }); })
@@ -621,8 +634,7 @@
       if (r.data.action === 'verify_required') { showVerifyScreen(r.data.email); return; }
       currentUser = r.data.user;
       localStorage.setItem('vintedai_user', JSON.stringify(currentUser));
-      hideAuthModal();
-      updateTopbar();
+      hideAuthModal(); updateTopbar();
       showToast(authMode === 'login' ? 'Bienvenue !' : 'Compte créé !');
     })
     .catch(function(e) { showAuthError(e.message); })
@@ -636,20 +648,11 @@
     var code = document.getElementById('verifyCode').value.trim();
     var btn = document.getElementById('verifyBtn');
     var errorEl = document.getElementById('verifyError');
-
-    if (!code || code.length !== 6) {
-      errorEl.textContent = 'Entre le code à 6 chiffres.';
-      errorEl.classList.add('visible');
-      return;
-    }
-
-    btn.disabled = true;
-    btn.textContent = 'Vérification...';
+    if (!code || code.length !== 6) { errorEl.textContent = 'Entre le code à 6 chiffres.'; errorEl.classList.add('visible'); return; }
+    btn.disabled = true; btn.textContent = 'Vérification...';
     errorEl.classList.remove('visible');
-
     fetch('/api/auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'verify_email', email: pendingVerifyEmail, code: code })
     })
     .then(function(res) { return res.json().then(function(data) { return { ok: res.ok, data: data }; }); })
@@ -657,52 +660,36 @@
       if (!r.ok) throw new Error(r.data.error);
       currentUser = r.data.user;
       localStorage.setItem('vintedai_user', JSON.stringify(currentUser));
-      hideAuthModal();
-      updateTopbar();
+      hideAuthModal(); updateTopbar();
       showToast('Email vérifié ! Bienvenue');
     })
-    .catch(function(e) {
-      errorEl.textContent = e.message;
-      errorEl.classList.add('visible');
-    })
-    .finally(function() {
-      btn.disabled = false;
-      btn.textContent = 'Vérifier';
-    });
+    .catch(function(e) { errorEl.textContent = e.message; errorEl.classList.add('visible'); })
+    .finally(function() { btn.disabled = false; btn.textContent = 'Vérifier'; });
   }
 
   function resendCode() {
     if (!pendingVerifyEmail) return;
     fetch('/api/auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'resend_code', email: pendingVerifyEmail })
     }).then(function() { showToast('Code renvoyé !'); }).catch(function() {});
   }
 
   function showAuthError(msg) {
     var el = document.getElementById('authError');
-    el.textContent = msg;
-    el.classList.add('visible');
+    el.textContent = msg; el.classList.add('visible');
   }
 
   // ── PAYWALL
-  function showPaywall() {
-    document.getElementById('paywallModal').classList.add('visible');
-  }
-
-  function closePaywall() {
-    document.getElementById('paywallModal').classList.remove('visible');
-  }
+  function showPaywall() { document.getElementById('paywallModal').classList.add('visible'); }
+  function closePaywall() { document.getElementById('paywallModal').classList.remove('visible'); }
 
   function handleSubscribe() {
     if (!currentUser) { showAuthModal(); return; }
     var btn = document.getElementById('subscribeBtn');
-    btn.disabled = true;
-    btn.textContent = 'Redirection...';
+    btn.disabled = true; btn.textContent = 'Redirection...';
     fetch('/api/subscribe', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId: currentUser.id, email: currentUser.email })
     })
     .then(function(res) { return res.json(); })
@@ -711,26 +698,26 @@
       else throw new Error(data.error || 'Erreur');
     })
     .catch(function(e) {
-      btn.disabled = false;
-      btn.textContent = 'Passer Premium — 4,99€/mois';
+      btn.disabled = false; btn.textContent = 'Passer Premium — 4,99€/mois';
       showToast('Erreur : ' + e.message);
     });
   }
 
-  // ── LIMIT OVERLAY + COUNTDOWN ─────────────────────────────────────────────
+  // ── LIMIT OVERLAY
   function showLimitOverlay(resetTime) {
     var overlay = document.getElementById('limitOverlay');
     var display = document.getElementById('limitCountdown');
     overlay.classList.add('visible');
-
     if (countdownInterval) clearInterval(countdownInterval);
-
     function updateCountdown() {
       var diff = resetTime - Date.now();
       if (diff <= 0) {
         clearInterval(countdownInterval);
         display.textContent = '00:00:00';
         overlay.classList.remove('visible');
+        // Réinitialiser le quota local
+        localStorage.removeItem(LOCAL_QUOTA_KEY);
+        updateTopbar();
         return;
       }
       var h = Math.floor(diff / 3600000).toString().padStart(2, '0');
@@ -738,21 +725,23 @@
       var s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
       display.textContent = h + ':' + m + ':' + s;
     }
-
     updateCountdown();
     countdownInterval = setInterval(updateCountdown, 1000);
+  }
+
+  function hideLimitOverlay() {
+    document.getElementById('limitOverlay').classList.remove('visible');
+    if (countdownInterval) clearInterval(countdownInterval);
   }
 
   // ── IMAGES
   var fileInput = document.getElementById('fileInput');
   var uploadZone = document.getElementById('uploadZone');
-
   fileInput.addEventListener('change', handleFiles);
   uploadZone.addEventListener('dragover', function(e) { e.preventDefault(); uploadZone.classList.add('dragover'); });
   uploadZone.addEventListener('dragleave', function() { uploadZone.classList.remove('dragover'); });
   uploadZone.addEventListener('drop', function(e) {
-    e.preventDefault();
-    uploadZone.classList.remove('dragover');
+    e.preventDefault(); uploadZone.classList.remove('dragover');
     handleFiles({ target: { files: e.dataTransfer.files } });
   });
 
@@ -764,8 +753,7 @@
         var img = new Image();
         img.onload = function() {
           var canvas = document.createElement('canvas');
-          var MAX = 800;
-          var w = img.width, h = img.height;
+          var MAX = 800; var w = img.width, h = img.height;
           if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
           if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
           canvas.width = w; canvas.height = h;
@@ -797,15 +785,12 @@
 
   function removeImg(i) { uploadedImages.splice(i, 1); renderPreviews(); }
 
-  // ── GENERATE ─────────────────────────────────────────────────────────────
+  // ── GENERATE
   function generateListing() {
     if (!currentUser) { showAuthModal(); return; }
-
     var category = document.getElementById('category').value;
     var price = document.getElementById('price').value.trim();
-    var errorMsg = document.getElementById('errorMsg');
-    errorMsg.classList.remove('visible');
-
+    document.getElementById('errorMsg').classList.remove('visible');
     if (!category) { showError('Sélectionne une catégorie.'); return; }
     if (!price) { showError('Entre un prix souhaité.'); return; }
 
@@ -816,8 +801,7 @@
     document.getElementById('step3').classList.add('active');
 
     fetch('/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         userId: currentUser.id,
         category: category,
@@ -834,8 +818,9 @@
       return res.json().then(function(data) { return { status: res.status, data: data }; });
     })
     .then(function(r) {
-      // Limite quotidienne atteinte
       if (r.status === 429 && r.data.error === 'DAILY_LIMIT_REACHED') {
+        markUsedTodayLocal();
+        updateTopbar();
         showLimitOverlay(r.data.resetTime);
         return;
       }
@@ -843,9 +828,8 @@
       if (r.data.code === 'NOT_LOGGED_IN') { showAuthModal(); return; }
       if (r.status !== 200) throw new Error(r.data.error || 'Erreur serveur');
 
-      currentUser.daily_count = r.data.daily_count;
-      currentUser.is_premium = r.data.is_premium;
-      localStorage.setItem('vintedai_user', JSON.stringify(currentUser));
+      // Succès : marquer comme utilisé
+      markUsedTodayLocal();
       updateTopbar();
 
       displayResult(r.data, price);
@@ -865,7 +849,6 @@
     document.getElementById('advisorPage').style.display = page === 'advisor' ? 'block' : 'none';
     document.getElementById('tabGenerator').classList.toggle('active', page === 'generator');
     document.getElementById('tabAdvisor').classList.toggle('active', page === 'advisor');
-
     if (page === 'advisor') {
       if (currentUser && currentUser.is_premium) {
         document.getElementById('advisorLocked').style.display = 'none';
@@ -886,42 +869,32 @@
     var input = document.getElementById('chatInput');
     var msg = input.value.trim();
     if (!msg || !currentUser) return;
-
     input.value = '';
     appendChatMsg('user', msg);
     chatHistory.push({ role: 'user', content: msg });
-
     var typingEl = document.createElement('div');
-    typingEl.className = 'chat-msg ai';
-    typingEl.id = 'typingIndicator';
+    typingEl.className = 'chat-msg ai'; typingEl.id = 'typingIndicator';
     typingEl.innerHTML = '<div class="chat-avatar ai">AI</div><div class="chat-bubble"><div class="chat-typing"><span></span><span></span><span></span></div></div>';
     document.getElementById('chatMessages').appendChild(typingEl);
     scrollChat();
-
     document.getElementById('chatSend').disabled = true;
-
     fetch('/api/advisor', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: msg, history: chatHistory.slice(-10), userId: currentUser.id })
     })
     .then(function(res) { return res.json().then(function(data) { return { ok: res.ok, data: data }; }); })
     .then(function(r) {
-      var indicator = document.getElementById('typingIndicator');
-      if (indicator) indicator.remove();
+      var ind = document.getElementById('typingIndicator'); if (ind) ind.remove();
       if (r.data.code === 'NOT_PREMIUM') { showPaywall(); return; }
       if (!r.ok) throw new Error(r.data.error);
       chatHistory.push({ role: 'assistant', content: r.data.reply });
       appendChatMsg('ai', r.data.reply);
     })
     .catch(function(e) {
-      var indicator = document.getElementById('typingIndicator');
-      if (indicator) indicator.remove();
+      var ind = document.getElementById('typingIndicator'); if (ind) ind.remove();
       appendChatMsg('ai', 'Erreur : ' + e.message);
     })
-    .finally(function() {
-      document.getElementById('chatSend').disabled = false;
-    });
+    .finally(function() { document.getElementById('chatSend').disabled = false; });
   }
 
   function appendChatMsg(role, text) {
@@ -933,10 +906,7 @@
     scrollChat();
   }
 
-  function scrollChat() {
-    var msgs = document.getElementById('chatMessages');
-    if (msgs) msgs.scrollTop = msgs.scrollHeight;
-  }
+  function scrollChat() { var m = document.getElementById('chatMessages'); if (m) m.scrollTop = m.scrollHeight; }
 
   function displayResult(r, userPrice) {
     document.getElementById('titleResult').textContent = r.titre || '';
@@ -944,47 +914,31 @@
     var diff = parseFloat(priceVal) - parseFloat(userPrice);
     var diffHtml = Math.abs(diff) > 0.5 ? '<span style="font-size:12px;color:' + (diff > 0 ? 'var(--accent)' : 'var(--accent3)') + ';margin-left:12px">' + (diff > 0 ? '+' : '') + diff.toFixed(0) + '€ vs ton prix</span>' : '';
     document.getElementById('priceResult').innerHTML = '<div class="price-badge">&#128182; ' + priceVal + '€</div>' + diffHtml;
-
-    if (r.vinted_search_url) {
-      document.getElementById('vintedSearchLink').href = r.vinted_search_url;
-      document.getElementById('vintedCompare').style.display = 'flex';
-    }
-
+    if (r.vinted_search_url) { document.getElementById('vintedSearchLink').href = r.vinted_search_url; document.getElementById('vintedCompare').style.display = 'flex'; }
     document.getElementById('descResult').textContent = r.description || '';
-    var tagsContainer = document.getElementById('tagsResult');
-    tagsContainer.innerHTML = '';
+    var tagsContainer = document.getElementById('tagsResult'); tagsContainer.innerHTML = '';
     (r.hashtags || []).forEach(function(t) {
-      var s = document.createElement('span');
-      s.className = 'tag';
-      s.textContent = t.startsWith('#') ? t : ('#' + t);
-      tagsContainer.appendChild(s);
+      var s = document.createElement('span'); s.className = 'tag';
+      s.textContent = t.startsWith('#') ? t : ('#' + t); tagsContainer.appendChild(s);
     });
     document.getElementById('tagsText').textContent = (r.hashtags || []).map(function(t) { return t.startsWith('#') ? t : ('#' + t); }).join(' ');
-
     var conseilsEl = document.getElementById('conseilsPremium');
-    if (r.conseils && currentUser && currentUser.is_premium) {
-      conseilsEl.style.display = 'block';
-      document.getElementById('conseilsBody').textContent = r.conseils;
-    } else {
-      conseilsEl.style.display = 'none';
-    }
-
+    if (r.conseils && currentUser && currentUser.is_premium) { conseilsEl.style.display = 'block'; document.getElementById('conseilsBody').textContent = r.conseils; }
+    else { conseilsEl.style.display = 'none'; }
     document.getElementById('resultCard').classList.add('visible');
     document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function copyField(id, btn) {
     navigator.clipboard.writeText(document.getElementById(id).textContent).then(function() {
-      btn.textContent = 'Copié !';
-      btn.classList.add('copied');
+      btn.textContent = 'Copié !'; btn.classList.add('copied');
       setTimeout(function() { btn.textContent = 'Copier'; btn.classList.remove('copied'); }, 2000);
     });
   }
 
   function copyTags(btn) {
     navigator.clipboard.writeText(document.getElementById('tagsText').textContent).then(function() {
-      btn.textContent = 'Copié !';
-      btn.classList.add('copied');
+      btn.textContent = 'Copié !'; btn.classList.add('copied');
       setTimeout(function() { btn.textContent = 'Copier'; btn.classList.remove('copied'); }, 2000);
     });
   }
@@ -1000,23 +954,17 @@
     document.getElementById('checkProgress').textContent = checked + '/' + total;
   }
 
-  function showError(msg) {
-    var el = document.getElementById('errorMsg');
-    el.textContent = msg;
-    el.classList.add('visible');
-  }
+  function showError(msg) { var el = document.getElementById('errorMsg'); el.textContent = msg; el.classList.add('visible'); }
 
   function showToast(msg) {
     var t = document.createElement('div');
     t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 20px;font-size:13px;z-index:9999;animation:slideUp 0.3s ease';
-    t.textContent = msg;
-    document.body.appendChild(t);
+    t.textContent = msg; document.body.appendChild(t);
     setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 3000);
   }
 
   function resetForm() {
-    uploadedImages = [];
-    renderPreviews();
+    uploadedImages = []; renderPreviews();
     ['brand','size','price','keywords','notes'].forEach(function(id) { document.getElementById(id).value = ''; });
     document.getElementById('resultCard').classList.remove('visible');
     document.getElementById('errorMsg').classList.remove('visible');
@@ -1026,11 +974,8 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Enter sur les champs auth
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && document.getElementById('authModal').classList.contains('visible')) {
-      handleAuth();
-    }
+    if (e.key === 'Enter' && document.getElementById('authModal').classList.contains('visible')) handleAuth();
   });
 </script>
 </body>
