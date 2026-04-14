@@ -92,6 +92,21 @@
   .limit-btn-back{width:100%;padding:14px;background:transparent;border:1px solid var(--border);border-radius:14px;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s}
   .limit-btn-back:hover{border-color:var(--text);color:var(--text)}
 
+  /* CONFIRM MODAL */
+  .confirm-overlay{position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s}
+  .confirm-overlay.visible{opacity:1;pointer-events:all}
+  .confirm-modal{background:var(--surface);border:1px solid rgba(123,94,248,0.3);border-radius:24px;padding:36px;width:100%;max-width:420px;margin:20px;animation:modalIn 0.3s cubic-bezier(0.16,1,0.3,1);text-align:center}
+  .confirm-icon{font-size:2.5rem;margin-bottom:16px}
+  .confirm-title{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:8px}
+  .confirm-sub{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:24px}
+  .confirm-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s;margin-bottom:20px}
+  .confirm-input:focus{border-color:var(--accent2)}
+  .confirm-actions{display:flex;gap:10px}
+  .confirm-btn-ok{flex:1;padding:13px;background:linear-gradient(135deg,var(--accent2),#9b7bff);border:none;border-radius:12px;color:white;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s}
+  .confirm-btn-ok:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(123,94,248,0.3)}
+  .confirm-btn-cancel{flex:1;padding:13px;background:transparent;border:1px solid var(--border);border-radius:12px;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;transition:all 0.2s}
+  .confirm-btn-cancel:hover{border-color:var(--text);color:var(--text)}
+
   /* APP */
   #app{display:none;opacity:0}
   #app.visible{display:block;animation:appIn 0.5s 0.3s ease forwards}
@@ -199,12 +214,17 @@
   ::-webkit-scrollbar{width:6px}
   ::-webkit-scrollbar-track{background:var(--bg)}
   ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+  /* NAV TABS — 3 onglets */
   .nav-tabs{display:flex;gap:0;background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:4px;margin-bottom:32px}
-  .nav-tab{flex:1;padding:10px 16px;border:none;background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-radius:10px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px}
+  .nav-tab{flex:1;padding:10px 8px;border:none;background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:12px;font-weight:600;cursor:pointer;border-radius:10px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}
   .nav-tab.active{background:var(--surface);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,0.3)}
   .nav-tab.premium-tab{color:var(--accent2)}
   .nav-tab.premium-tab.active{background:linear-gradient(135deg,rgba(123,94,248,0.2),rgba(9,249,176,0.1));color:var(--accent)}
   .nav-tab .lock-icon{font-size:11px}
+  @media(max-width:480px){.nav-tab{font-size:11px;padding:9px 5px;gap:3px}}
+
+  /* CHAT */
   #advisorPage{display:none}
   .advisor-locked{background:var(--surface);border:1px solid rgba(123,94,248,0.3);border-radius:20px;padding:48px 32px;text-align:center;margin-top:20px}
   .advisor-locked-icon{font-size:3rem;margin-bottom:16px}
@@ -234,6 +254,69 @@
   .conseils-premium{background:linear-gradient(135deg,rgba(123,94,248,0.08),rgba(9,249,176,0.05));border:1px solid rgba(123,94,248,0.25);border-radius:14px;padding:20px;margin-bottom:24px}
   .conseils-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:8px}
   .conseils-body{font-size:13px;color:var(--text);line-height:1.7;white-space:pre-wrap}
+
+  /* ── PHOTO ENHANCE PAGE ── */
+  #photoPage{display:none}
+  .photo-locked{background:var(--surface);border:1px solid rgba(123,94,248,0.3);border-radius:20px;padding:48px 32px;text-align:center;margin-top:20px}
+  .photo-locked-icon{font-size:3rem;margin-bottom:16px}
+  .photo-locked-title{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:8px}
+  .photo-locked-sub{color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:28px}
+
+  .photo-upload-zone{border:2px dashed var(--border);border-radius:14px;padding:48px 24px;text-align:center;cursor:pointer;transition:all 0.3s;background:var(--surface2);position:relative;overflow:hidden;margin-bottom:20px}
+  .photo-upload-zone:hover,.photo-upload-zone.dragover{border-color:var(--accent2);background:rgba(123,94,248,0.04)}
+  .photo-upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+  .photo-upload-icon{font-size:3rem;margin-bottom:12px;display:block}
+  .photo-preview-wrap{margin-bottom:24px;display:none}
+  .photo-preview-img{width:100%;max-height:360px;object-fit:contain;border-radius:14px;border:1px solid var(--border);background:var(--surface2);display:block}
+  .photo-preview-actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+
+  .photo-mode-tabs{display:flex;gap:0;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:24px}
+  .photo-mode-tab{flex:1;padding:11px 8px;border:none;background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border-radius:9px;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px}
+  .photo-mode-tab.active{background:var(--surface);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,0.3)}
+
+  .enhance-info{background:linear-gradient(135deg,rgba(9,249,176,0.06),rgba(123,94,248,0.04));border:1px solid rgba(9,249,176,0.2);border-radius:14px;padding:18px 20px;margin-bottom:20px}
+  .enhance-info-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+  .enhance-info-list{display:flex;flex-direction:column;gap:6px}
+  .enhance-info-item{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .enhance-info-item::before{content:'✓';color:var(--accent);font-weight:700;flex-shrink:0}
+  .enhance-info-item.forbidden{color:rgba(255,107,107,0.7)}
+  .enhance-info-item.forbidden::before{content:'✗';color:var(--accent3)}
+
+  .btn-enhance{width:100%;padding:16px 24px;background:linear-gradient(135deg,var(--accent2),#9b7bff);border:none;border-radius:12px;color:white;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:10px;letter-spacing:0.02em}
+  .btn-enhance:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(123,94,248,0.3)}
+  .btn-enhance:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none}
+
+  .enhance-result{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-top:24px;display:none}
+  .enhance-result.visible{display:block;animation:slideUp 0.4s ease}
+  .enhance-result-header{padding:18px 24px;background:linear-gradient(135deg,rgba(123,94,248,0.1),rgba(9,249,176,0.06));border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+  .enhance-result-header h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700}
+  .enhance-result-body{padding:24px}
+
+  .score-row{display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+  .score-box{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 20px;text-align:center;flex:1;min-width:100px}
+  .score-box-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px}
+  .score-box-val{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800}
+  .score-box-val.before{color:var(--accent3)}
+  .score-box-val.after{color:var(--accent)}
+  .score-arrow{font-size:1.5rem;color:var(--muted)}
+
+  .ameliorations-list{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+  .amelioration-item{display:flex;align-items:flex-start;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--text);line-height:1.5}
+  .amelioration-item::before{content:'✦';color:var(--accent2);font-size:12px;flex-shrink:0;margin-top:1px}
+
+  .prompt-retouche-box{background:var(--surface2);border:1px solid rgba(123,94,248,0.3);border-radius:12px;padding:16px;font-size:12px;color:var(--muted);font-family:monospace;line-height:1.6;word-break:break-word;margin-bottom:16px;position:relative}
+  .prompt-copy-btn{position:absolute;top:10px;right:10px;background:rgba(123,94,248,0.15);border:1px solid rgba(123,94,248,0.4);border-radius:6px;padding:4px 10px;color:var(--accent2);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s}
+  .prompt-copy-btn:hover{background:rgba(123,94,248,0.3)}
+
+  .conseils-photo-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+  .conseil-photo-item{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--muted);line-height:1.5}
+  .conseil-photo-item::before{content:'💡';font-size:12px;flex-shrink:0}
+
+  .bg-compat{background:linear-gradient(135deg,rgba(9,249,176,0.06),rgba(9,249,176,0.02));border:1px solid rgba(9,249,176,0.2);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--text);line-height:1.5;margin-bottom:16px}
+  .bg-compat-label{font-size:11px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px}
+
+  .enhance-error{background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.25);border-radius:10px;padding:14px 18px;color:#ff9090;font-size:13px;margin-top:12px;display:none}
+  .enhance-error.visible{display:block}
 </style>
 </head>
 <body>
@@ -305,10 +388,10 @@
     <div class="paywall-features">
       <div class="paywall-feature">Annonces illimitées chaque jour</div>
       <div class="paywall-feature">Analyse visuelle des photos par l'IA</div>
+      <div class="paywall-feature">Retouche & amélioration photos IA</div>
+      <div class="paywall-feature">Changement de fond automatique</div>
       <div class="paywall-feature">Titres, prix et hashtags optimisés</div>
-      <div class="paywall-feature">Comparaison avec le marché Vinted</div>
       <div class="paywall-feature">Conseiller IA expert Vinted</div>
-      <div class="paywall-feature">Estimation de prix en temps réel</div>
     </div>
     <button class="btn-subscribe" id="subscribeBtn" onclick="handleSubscribe()">Passer Premium — 4,99&#8364;/mois</button>
     <button class="paywall-cancel" onclick="closePaywall()">&#8592; Retour</button>
@@ -331,6 +414,23 @@
   </div>
 </div>
 
+<!-- CONFIRM MODAL (changement de fond) -->
+<div class="confirm-overlay" id="confirmModal">
+  <div class="confirm-modal">
+    <div class="confirm-icon">&#127758;</div>
+    <div class="confirm-title">Changer l'arrière-plan</div>
+    <div class="confirm-sub">Décris le fond que tu veux.<br><span style="color:var(--accent);font-weight:600">L'article restera identique</span>, seul le décor changera.</div>
+    <input type="text" class="confirm-input" id="bgInput" placeholder="ex: fond blanc épuré, mur de briques, herbe verte..." />
+    <div style="font-size:11px;color:var(--muted);margin-bottom:16px;text-align:left">
+      Exemples : <span style="color:var(--text)">fond blanc uni</span> · <span style="color:var(--text)">parquet bois naturel</span> · <span style="color:var(--text)">fond gris béton</span> · <span style="color:var(--text)">table en marbre blanc</span>
+    </div>
+    <div class="confirm-actions">
+      <button class="confirm-btn-cancel" onclick="closeConfirmModal()">Annuler</button>
+      <button class="confirm-btn-ok" onclick="confirmBackground()">Analyser &#8594;</button>
+    </div>
+  </div>
+</div>
+
 <!-- APP -->
 <div id="app">
   <div class="topbar">
@@ -345,11 +445,14 @@
       <p>Upload tes photos, donne le prix, l'IA crée le titre et la description parfaite.</p>
     </header>
 
+    <!-- 3 onglets -->
     <div class="nav-tabs">
       <button class="nav-tab active" onclick="switchPage('generator')" id="tabGenerator">✦ Générateur</button>
+      <button class="nav-tab premium-tab" onclick="switchPage('photo')" id="tabPhoto">✨ Retouche Photo <span class="lock-icon" id="photoLock">⭐</span></button>
       <button class="nav-tab premium-tab" onclick="switchPage('advisor')" id="tabAdvisor">&#129302; Conseiller IA <span class="lock-icon" id="advisorLock">&#11088;</span></button>
     </div>
 
+    <!-- ── GÉNÉRATEUR ── -->
     <div id="generatorPage">
       <div class="steps">
         <div class="step active" id="step1"><span class="step-num">1</span> Photos</div>
@@ -479,6 +582,75 @@
       </div>
     </div>
 
+    <!-- ── RETOUCHE PHOTO ── -->
+    <div id="photoPage">
+      <!-- Locked (non-premium) -->
+      <div class="photo-locked" id="photoLocked">
+        <div class="photo-locked-icon">✨</div>
+        <div class="photo-locked-title">Retouche Photo IA — Premium</div>
+        <div class="photo-locked-sub">L'IA analyse tes photos et génère les instructions pour les retoucher : suppression des plis, amélioration de la lumière, changement de fond...<br><br>Rends tes photos plus vendeuses sans modifier l'article.</div>
+        <button class="btn-subscribe" style="max-width:300px;margin:0 auto" onclick="showPaywall()">Débloquer — 4,99&#8364;/mois</button>
+      </div>
+
+      <!-- Content (premium) -->
+      <div id="photoContent" style="display:none">
+
+        <!-- Upload photo -->
+        <div class="card">
+          <div class="card-title"><span class="icon">📸</span>Upload ta photo</div>
+          <div class="photo-upload-zone" id="photoUploadZone">
+            <input type="file" id="photoFileInput" accept="image/*" />
+            <span class="photo-upload-icon">🖼️</span>
+            <p><strong>Clique ou glisse ta photo ici</strong><br>JPG, PNG, WEBP — 1 photo à la fois</p>
+          </div>
+          <!-- Prévisualisation -->
+          <div class="photo-preview-wrap" id="photoPreviewWrap">
+            <img src="" alt="Aperçu" class="photo-preview-img" id="photoPreviewImg" />
+            <div class="photo-preview-actions">
+              <button class="btn-secondary" onclick="resetPhotoUpload()">🗑 Changer de photo</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mode tabs -->
+        <div class="photo-mode-tabs" id="photoModeTabs" style="display:none">
+          <button class="photo-mode-tab active" onclick="switchPhotoMode('enhance')" id="modeEnhance">✨ Améliorer la photo</button>
+          <button class="photo-mode-tab" onclick="switchPhotoMode('background')" id="modeBg">🌄 Changer le fond</button>
+        </div>
+
+        <!-- Mode enhance info -->
+        <div class="enhance-info" id="enhanceInfoBox" style="display:none">
+          <div class="enhance-info-title">✦ Ce que l'IA va analyser et améliorer</div>
+          <div class="enhance-info-list">
+            <div class="enhance-info-item">Suppression ou lissage des plis</div>
+            <div class="enhance-info-item">Amélioration luminosité & contraste</div>
+            <div class="enhance-info-item">Correction balance des blancs</div>
+            <div class="enhance-info-item">Suppression peluches & défauts visuels</div>
+            <div class="enhance-info-item">Netteté et recadrage si nécessaire</div>
+            <div class="enhance-info-item forbidden">Ne modifie pas la couleur de l'article</div>
+            <div class="enhance-info-item forbidden">Ne change pas le décor / fond</div>
+          </div>
+        </div>
+
+        <!-- Bouton analyse -->
+        <button class="btn-enhance" id="enhanceBtn" style="display:none" onclick="launchEnhance()">
+          <span id="enhanceBtnText">✨ Analyser & améliorer la photo</span>
+        </button>
+        <div class="enhance-error" id="enhanceError"></div>
+
+        <!-- Résultat -->
+        <div class="enhance-result" id="enhanceResult">
+          <div class="enhance-result-header">
+            <span style="font-size:1.2rem">✨</span>
+            <h3 id="enhanceResultTitle">Analyse terminée</h3>
+          </div>
+          <div class="enhance-result-body" id="enhanceResultBody"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── CONSEILLER IA ── -->
     <div id="advisorPage">
       <div class="advisor-locked" id="advisorLocked">
         <div class="advisor-locked-icon">&#129302;</div>
@@ -494,30 +666,32 @@
           </div>
         </div>
         <div class="chat-input-area">
-          <textarea class="chat-input" id="chatInput" placeholder="Pose ta question..." rows="1" onkeydown="handleChatKey(event)"></textarea>
-          <button class="chat-send" id="chatSend" onclick="sendChatMessage()">&#9654;</button>
+          <textarea class="chat-input" id="chatInput" placeholder="Pose ta question..." rows="1"></textarea>
+          <button class="chat-send" id="chatSend">&#9654;</button>
         </div>
       </div>
     </div>
+
   </div>
 </div>
 
 <script>
-  // ── STATE
+  // ── STATE ────────────────────────────────────────────────────────────────
   var currentUser = null;
   var uploadedImages = [];
   var authMode = 'login';
   var pendingVerifyEmail = '';
   var chatHistory = [];
   var countdownInterval = null;
-  // Quota local : 1 annonce/jour, géré par IP côté serveur
-  // On stocke localement si on a déjà généré aujourd'hui pour l'affichage
+  var photoImage = null; // { base64, type, preview }
+  var currentPhotoMode = 'enhance';
+  var pendingBgDesc = '';
+  var chatListenersInit = false;
   var LOCAL_QUOTA_KEY = 'vintedai_used_today';
 
   function getTodayStr() {
     return new Date().toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' });
   }
-
   function hasUsedTodayLocal() {
     try {
       var data = JSON.parse(localStorage.getItem(LOCAL_QUOTA_KEY) || 'null');
@@ -525,12 +699,11 @@
       return data.date === getTodayStr();
     } catch(e) { return false; }
   }
-
   function markUsedTodayLocal() {
     localStorage.setItem(LOCAL_QUOTA_KEY, JSON.stringify({ date: getTodayStr() }));
   }
 
-  // ── SPLASH
+  // ── SPLASH ───────────────────────────────────────────────────────────────
   document.getElementById('splashBtn').addEventListener('click', function() { enterApp(); });
 
   function enterApp() {
@@ -543,7 +716,7 @@
     }, 600);
   }
 
-  // ── SESSION
+  // ── SESSION ──────────────────────────────────────────────────────────────
   function checkSession() {
     var saved = localStorage.getItem('vintedai_user');
     if (saved) {
@@ -571,8 +744,6 @@
     if (currentUser.is_premium) {
       html += '<span class="premium-badge">&#11088; Premium</span>';
     } else {
-      // Quota réel : 1 annonce/jour côté serveur
-      // On affiche 0 si déjà utilisé aujourd'hui, 1 sinon
       var remaining = hasUsedTodayLocal() ? 0 : 1;
       html += '<span class="quota-badge"><span>' + remaining + '</span> annonce restante</span>';
       html += '<button class="btn-upgrade" onclick="showPaywall()">Premium — 4,99&#8364;</button>';
@@ -588,7 +759,7 @@
     showAuthModal();
   }
 
-  // ── AUTH
+  // ── AUTH ─────────────────────────────────────────────────────────────────
   function showAuthModal() {
     document.getElementById('authModal').classList.add('visible');
     document.getElementById('authScreen').style.display = 'block';
@@ -680,7 +851,7 @@
     el.textContent = msg; el.classList.add('visible');
   }
 
-  // ── PAYWALL
+  // ── PAYWALL ──────────────────────────────────────────────────────────────
   function showPaywall() { document.getElementById('paywallModal').classList.add('visible'); }
   function closePaywall() { document.getElementById('paywallModal').classList.remove('visible'); }
 
@@ -703,7 +874,7 @@
     });
   }
 
-  // ── LIMIT OVERLAY
+  // ── LIMIT OVERLAY ────────────────────────────────────────────────────────
   function showLimitOverlay(resetTime) {
     var overlay = document.getElementById('limitOverlay');
     var display = document.getElementById('limitCountdown');
@@ -715,7 +886,6 @@
         clearInterval(countdownInterval);
         display.textContent = '00:00:00';
         overlay.classList.remove('visible');
-        // Réinitialiser le quota local
         localStorage.removeItem(LOCAL_QUOTA_KEY);
         updateTopbar();
         return;
@@ -734,7 +904,293 @@
     if (countdownInterval) clearInterval(countdownInterval);
   }
 
-  // ── IMAGES
+  // ── CONFIRM MODAL (fond) ─────────────────────────────────────────────────
+  function showConfirmModal() {
+    document.getElementById('bgInput').value = '';
+    document.getElementById('confirmModal').classList.add('visible');
+    setTimeout(function() { document.getElementById('bgInput').focus(); }, 100);
+  }
+  function closeConfirmModal() {
+    document.getElementById('confirmModal').classList.remove('visible');
+  }
+  function confirmBackground() {
+    var val = document.getElementById('bgInput').value.trim();
+    if (!val) { document.getElementById('bgInput').focus(); return; }
+    pendingBgDesc = val;
+    closeConfirmModal();
+    launchEnhance();
+  }
+
+  // ── PAGE SWITCHING ───────────────────────────────────────────────────────
+  function switchPage(page) {
+    document.getElementById('generatorPage').style.display = page === 'generator' ? 'block' : 'none';
+    document.getElementById('photoPage').style.display = page === 'photo' ? 'block' : 'none';
+    document.getElementById('advisorPage').style.display = page === 'advisor' ? 'block' : 'none';
+    document.getElementById('tabGenerator').classList.toggle('active', page === 'generator');
+    document.getElementById('tabPhoto').classList.toggle('active', page === 'photo');
+    document.getElementById('tabAdvisor').classList.toggle('active', page === 'advisor');
+
+    if (page === 'photo') {
+      if (currentUser && currentUser.is_premium) {
+        document.getElementById('photoLocked').style.display = 'none';
+        document.getElementById('photoContent').style.display = 'block';
+      } else {
+        document.getElementById('photoLocked').style.display = 'block';
+        document.getElementById('photoContent').style.display = 'none';
+      }
+    }
+
+    if (page === 'advisor') {
+      if (currentUser && currentUser.is_premium) {
+        document.getElementById('advisorLocked').style.display = 'none';
+        document.getElementById('advisorChat').style.display = 'flex';
+        if (!chatListenersInit) initChatListeners();
+      } else {
+        document.getElementById('advisorLocked').style.display = 'block';
+        document.getElementById('advisorChat').style.display = 'none';
+      }
+    }
+  }
+
+  // ── PHOTO PAGE ───────────────────────────────────────────────────────────
+  var photoFileInput = document.getElementById('photoFileInput');
+  var photoUploadZone = document.getElementById('photoUploadZone');
+
+  photoFileInput.addEventListener('change', handlePhotoFile);
+  photoUploadZone.addEventListener('dragover', function(e) { e.preventDefault(); photoUploadZone.classList.add('dragover'); });
+  photoUploadZone.addEventListener('dragleave', function() { photoUploadZone.classList.remove('dragover'); });
+  photoUploadZone.addEventListener('drop', function(e) {
+    e.preventDefault(); photoUploadZone.classList.remove('dragover');
+    if (e.dataTransfer.files.length > 0) {
+      handlePhotoFile({ target: { files: e.dataTransfer.files } });
+    }
+  });
+
+  function handlePhotoFile(e) {
+    var file = e.target.files[0];
+    if (!file || !file.type.startsWith('image/')) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var img = new Image();
+      img.onload = function() {
+        var canvas = document.createElement('canvas');
+        var MAX = 800; var w = img.width, h = img.height;
+        if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+        if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        var compressed = canvas.toDataURL('image/jpeg', 0.7);
+        photoImage = { base64: compressed.split(',')[1], type: 'image/jpeg', preview: compressed };
+        showPhotoPreview();
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function showPhotoPreview() {
+    document.getElementById('photoUploadZone').style.display = 'none';
+    var wrap = document.getElementById('photoPreviewWrap');
+    wrap.style.display = 'block';
+    document.getElementById('photoPreviewImg').src = photoImage.preview;
+    document.getElementById('photoModeTabs').style.display = 'flex';
+    document.getElementById('enhanceInfoBox').style.display = 'block';
+    document.getElementById('enhanceBtn').style.display = 'flex';
+    document.getElementById('enhanceResult').classList.remove('visible');
+    document.getElementById('enhanceError').classList.remove('visible');
+    updateEnhanceBtn();
+  }
+
+  function resetPhotoUpload() {
+    photoImage = null;
+    pendingBgDesc = '';
+    document.getElementById('photoUploadZone').style.display = 'block';
+    document.getElementById('photoPreviewWrap').style.display = 'none';
+    document.getElementById('photoModeTabs').style.display = 'none';
+    document.getElementById('enhanceInfoBox').style.display = 'none';
+    document.getElementById('enhanceBtn').style.display = 'none';
+    document.getElementById('enhanceResult').classList.remove('visible');
+    document.getElementById('enhanceError').classList.remove('visible');
+    document.getElementById('photoFileInput').value = '';
+    currentPhotoMode = 'enhance';
+    document.getElementById('modeEnhance').classList.add('active');
+    document.getElementById('modeBg').classList.remove('active');
+  }
+
+  function switchPhotoMode(mode) {
+    currentPhotoMode = mode;
+    document.getElementById('modeEnhance').classList.toggle('active', mode === 'enhance');
+    document.getElementById('modeBg').classList.toggle('active', mode === 'background');
+    document.getElementById('enhanceInfoBox').style.display = mode === 'enhance' ? 'block' : 'none';
+    document.getElementById('enhanceResult').classList.remove('visible');
+    document.getElementById('enhanceError').classList.remove('visible');
+    pendingBgDesc = '';
+    updateEnhanceBtn();
+  }
+
+  function updateEnhanceBtn() {
+    var btn = document.getElementById('enhanceBtnText');
+    if (currentPhotoMode === 'enhance') {
+      btn.textContent = '✨ Analyser & améliorer la photo';
+    } else {
+      btn.textContent = '🌄 Choisir un nouveau fond';
+    }
+  }
+
+  function launchEnhance() {
+    if (!currentUser) { showAuthModal(); return; }
+    if (!currentUser.is_premium) { showPaywall(); return; }
+    if (!photoImage) { showEnhanceError('Upload une photo d\'abord.'); return; }
+
+    // Mode background : demander confirmation si pas encore de fond choisi
+    if (currentPhotoMode === 'background' && !pendingBgDesc) {
+      showConfirmModal();
+      return;
+    }
+
+    var btn = document.getElementById('enhanceBtn');
+    btn.disabled = true;
+    document.getElementById('enhanceBtnText').innerHTML = '<div class="spinner" style="border-color:rgba(255,255,255,0.3);border-top-color:white"></div> Analyse en cours...';
+    document.getElementById('enhanceError').classList.remove('visible');
+    document.getElementById('enhanceResult').classList.remove('visible');
+
+    fetch('/api/photo-enhance', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: currentUser.id,
+        image: { data: photoImage.base64, type: photoImage.type },
+        mode: currentPhotoMode,
+        backgroundDesc: pendingBgDesc
+      })
+    })
+    .then(function(res) { return res.json().then(function(data) { return { status: res.status, data: data }; }); })
+    .then(function(r) {
+      if (r.data.code === 'NOT_PREMIUM') { showPaywall(); return; }
+      if (r.status !== 200) throw new Error(r.data.error || 'Erreur serveur');
+      renderEnhanceResult(r.data);
+      pendingBgDesc = '';
+    })
+    .catch(function(e) { showEnhanceError('Erreur : ' + e.message); })
+    .finally(function() {
+      btn.disabled = false;
+      updateEnhanceBtn();
+    });
+  }
+
+  function renderEnhanceResult(data) {
+    var r = data.result;
+    var mode = data.mode;
+    var body = document.getElementById('enhanceResultBody');
+    var title = document.getElementById('enhanceResultTitle');
+    body.innerHTML = '';
+
+    if (mode === 'enhance') {
+      title.textContent = 'Analyse & retouche terminée';
+
+      // Score avant/après
+      if (r.score_avant !== undefined && r.score_apres_estime !== undefined) {
+        var scoreHtml = '<div class="score-row">'
+          + '<div class="score-box"><div class="score-box-label">Score actuel</div><div class="score-box-val before">' + r.score_avant + '/10</div></div>'
+          + '<div class="score-arrow">→</div>'
+          + '<div class="score-box"><div class="score-box-label">Score estimé</div><div class="score-box-val after">' + r.score_apres_estime + '/10</div></div>'
+          + '</div>';
+        body.innerHTML += scoreHtml;
+      }
+
+      // Analyse
+      if (r.analyse) {
+        body.innerHTML += '<div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">' + escHtml(r.analyse) + '</div>';
+      }
+
+      // Améliorations
+      if (r.ameliorations && r.ameliorations.length > 0) {
+        body.innerHTML += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:10px">Améliorations à appliquer</div>';
+        var listHtml = '<div class="ameliorations-list">';
+        r.ameliorations.forEach(function(item) {
+          listHtml += '<div class="amelioration-item">' + escHtml(item) + '</div>';
+        });
+        listHtml += '</div>';
+        body.innerHTML += listHtml;
+      }
+
+      // Prompt retouche
+      if (r.prompt_retouche) {
+        body.innerHTML += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px">Prompt pour outil IA (Canva, Adobe Firefly, Stable Diffusion...)</div>'
+          + '<div class="prompt-retouche-box" id="promptBox">' + escHtml(r.prompt_retouche)
+          + '<button class="prompt-copy-btn" onclick="copyPrompt()">Copier</button></div>';
+      }
+
+      // Conseils photo
+      if (r.conseils_photo && r.conseils_photo.length > 0) {
+        body.innerHTML += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px;margin-top:4px">Conseils pour tes prochaines photos</div>';
+        var conseilsHtml = '<div class="conseils-photo-list">';
+        r.conseils_photo.forEach(function(c) {
+          conseilsHtml += '<div class="conseil-photo-item">' + escHtml(c) + '</div>';
+        });
+        conseilsHtml += '</div>';
+        body.innerHTML += conseilsHtml;
+      }
+
+    } else {
+      // mode background
+      title.textContent = 'Changement de fond — Instructions générées';
+
+      // Analyse article
+      if (r.analyse) {
+        body.innerHTML += '<div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">' + escHtml(r.analyse) + '</div>';
+      }
+
+      // Compatibilité
+      if (r.compatibilite) {
+        body.innerHTML += '<div class="bg-compat"><div class="bg-compat-label">✦ Compatibilité</div>' + escHtml(r.compatibilite) + '</div>';
+      }
+
+      // Prompt
+      if (r.prompt_retouche) {
+        body.innerHTML += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px">Prompt pour changer le fond (Canva, Adobe Firefly, Remove.bg...)</div>'
+          + '<div class="prompt-retouche-box" id="promptBox">' + escHtml(r.prompt_retouche)
+          + '<button class="prompt-copy-btn" onclick="copyPrompt()">Copier</button></div>';
+      }
+
+      // Conseils
+      if (r.conseils && r.conseils.length > 0) {
+        body.innerHTML += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px">Conseils</div>';
+        var cHtml = '<div class="conseils-photo-list">';
+        r.conseils.forEach(function(c) {
+          cHtml += '<div class="conseil-photo-item">' + escHtml(c) + '</div>';
+        });
+        cHtml += '</div>';
+        body.innerHTML += cHtml;
+      }
+    }
+
+    // Bouton recommencer
+    body.innerHTML += '<div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">'
+      + '<button class="btn-secondary" onclick="resetPhotoUpload()">📷 Nouvelle photo</button>'
+      + '</div>';
+
+    document.getElementById('enhanceResult').classList.add('visible');
+    document.getElementById('enhanceResult').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function copyPrompt() {
+    var box = document.getElementById('promptBox');
+    var text = box ? box.innerText.replace('Copier', '').trim() : '';
+    navigator.clipboard.writeText(text).then(function() {
+      showToast('Prompt copié !');
+    });
+  }
+
+  function showEnhanceError(msg) {
+    var el = document.getElementById('enhanceError');
+    el.textContent = msg; el.classList.add('visible');
+  }
+
+  function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── IMAGES (générateur) ──────────────────────────────────────────────────
   var fileInput = document.getElementById('fileInput');
   var uploadZone = document.getElementById('uploadZone');
   fileInput.addEventListener('change', handleFiles);
@@ -785,7 +1241,7 @@
 
   function removeImg(i) { uploadedImages.splice(i, 1); renderPreviews(); }
 
-  // ── GENERATE
+  // ── GENERATE ─────────────────────────────────────────────────────────────
   function generateListing() {
     if (!currentUser) { showAuthModal(); return; }
     var category = document.getElementById('category').value;
@@ -819,19 +1275,14 @@
     })
     .then(function(r) {
       if (r.status === 429 && r.data.error === 'DAILY_LIMIT_REACHED') {
-        markUsedTodayLocal();
-        updateTopbar();
+        markUsedTodayLocal(); updateTopbar();
         showLimitOverlay(r.data.resetTime);
         return;
       }
       if (r.data.code === 'QUOTA_EXCEEDED') { showPaywall(); return; }
       if (r.data.code === 'NOT_LOGGED_IN') { showAuthModal(); return; }
       if (r.status !== 200) throw new Error(r.data.error || 'Erreur serveur');
-
-      // Succès : marquer comme utilisé
-      markUsedTodayLocal();
-      updateTopbar();
-
+      markUsedTodayLocal(); updateTopbar();
       displayResult(r.data, price);
       document.getElementById('step3').classList.add('done');
       document.getElementById('step4').classList.add('active');
@@ -843,26 +1294,16 @@
     });
   }
 
-  // ── PAGE SWITCHING
-  function switchPage(page) {
-    document.getElementById('generatorPage').style.display = page === 'generator' ? 'block' : 'none';
-    document.getElementById('advisorPage').style.display = page === 'advisor' ? 'block' : 'none';
-    document.getElementById('tabGenerator').classList.toggle('active', page === 'generator');
-    document.getElementById('tabAdvisor').classList.toggle('active', page === 'advisor');
-    if (page === 'advisor') {
-      if (currentUser && currentUser.is_premium) {
-        document.getElementById('advisorLocked').style.display = 'none';
-        document.getElementById('advisorChat').style.display = 'flex';
-      } else {
-        document.getElementById('advisorLocked').style.display = 'block';
-        document.getElementById('advisorChat').style.display = 'none';
-      }
-    }
-  }
-
-  // ── CHAT
-  function handleChatKey(e) {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); }
+  // ── CHAT ─────────────────────────────────────────────────────────────────
+  function initChatListeners() {
+    if (chatListenersInit) return;
+    chatListenersInit = true;
+    var sendBtn = document.getElementById('chatSend');
+    var input = document.getElementById('chatInput');
+    sendBtn.addEventListener('click', sendChatMessage);
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChatMessage(); }
+    });
   }
 
   function sendChatMessage() {
@@ -908,6 +1349,7 @@
 
   function scrollChat() { var m = document.getElementById('chatMessages'); if (m) m.scrollTop = m.scrollHeight; }
 
+  // ── DISPLAY RESULT ───────────────────────────────────────────────────────
   function displayResult(r, userPrice) {
     document.getElementById('titleResult').textContent = r.titre || '';
     var priceVal = r.prix_recommande || userPrice;
