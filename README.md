@@ -1,62 +1,38 @@
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+# vinted-ai
 
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+Site Vercel pour generer des annonces Vinted et debloquer des fonctions premium.
 
-  const { category, condition, brand, size, price, keywords, notes, images } = req.body;
+## Ce qui a change
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: 'Clé API manquante côté serveur.' });
+Le mode premium `Changer le fond` de `api/photo-enhance.js` ne renvoie plus seulement un prompt.
+Il appelle maintenant l'API Images OpenAI cote serveur et renvoie directement l'image modifiee a l'utilisateur.
 
-  const prompt = `Tu es un expert en vente sur Vinted en France. Tu dois créer une annonce ultra-optimisée pour maximiser les ventes.
+Le mode `Ameliorer la photo` reste sur une analyse guidee via Anthropic.
 
-Informations de l'article :
-- Catégorie : ${category}
-- État : ${condition}
-${brand ? `- Marque : ${brand}` : ''}
-${size ? `- Taille : ${size}` : ''}
-- Prix souhaité par le vendeur : ${price}€
-${keywords ? `- Mots-clés / détails : ${keywords}` : ''}
-${notes ? `- Notes : ${notes}` : ''}
-${images?.length > 0 ? `- ${images.length} photo(s) fournie(s).` : ''}
+## Variables d'environnement
 
-Génère une annonce Vinted complète. Réponds UNIQUEMENT en JSON valide, sans balises markdown, avec exactement cette structure :
-{
-  "titre": "Titre accrocheur max 60 caractères, avec marque si connue, état, élément clé",
-  "prix_recommande": "prix en chiffre seul",
-  "description": "Description de 5-8 lignes avec emojis. 1) Description article 2) Points forts/état 3) Dimensions/taille 4) Infos envoi. Ton chaleureux et vendeur.",
-  "hashtags": ["tag1","tag2","tag3","tag4","tag5","tag6","tag7","tag8"]
-}`;
+### Requises pour le changement de fond IA
 
-  const content = [];
-  if (images?.length > 0) {
-    images.slice(0, 4).forEach(img => {
-      content.push({ type: 'image', source: { type: 'base64', media_type: img.type, data: img.data } });
-    });
-  }
-  content.push({ type: 'text', text: prompt });
+- `OPENAI_API_KEY`
+- `OPENAI_IMAGE_MODEL=gpt-image-1` (optionnel, par defaut `gpt-image-1`)
 
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: [{ role: 'user', content }] })
-    });
+### Requises pour les autres fonctions IA deja presentes
 
-    const data = await response.json();
-    if (!response.ok) return res.status(response.status).json({ error: data.error?.message || 'Erreur API' });
+- `ANTHROPIC_API_KEY`
 
-    const text = data.content[0].text.trim().replace(/```json|```/g, '').trim();
-    const result = JSON.parse(text);
-    res.status(200).json(result);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-}
+### Utilisees par le premium / auth / billing
+
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_KEY`
+- `SUPABASE_SECRET`
+- `STRIPE_SECRET`
+- `STRIPE_PRICE_ID`
+- `STRIPE_WEBHOOK_SECRET`
+- `GMAIL_USER`
+- `GMAIL_PASS`
+- `APP_URL`
+
+## Important
+
+Un abonnement ChatGPT Business ne fournit pas directement une cle API pour ton site.
+Pour cette integration, il faut creer une cle cote plateforme OpenAI (`platform.openai.com`) et la stocker seulement sur le serveur.
