@@ -126,7 +126,6 @@ async function replaceBackgroundWithOpenAI(image, backgroundDesc) {
   form.append("size", "auto");
   form.append("output_format", "png");
   form.append("background", "opaque");
-  form.append("user", String(userId));
 
   const response = await fetch("https://api.openai.com/v1/images/edits", {
     method: "POST",
