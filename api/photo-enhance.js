@@ -91,7 +91,8 @@ function getFileExtension(mimeType) {
 function buildBackgroundEditPrompt(backgroundDesc) {
   return [
     "Edit this marketplace product photo.",
-    "Replace only the background with:", backgroundDesc + ".",
+    "Replace only the background with:",
+    backgroundDesc + ".",
     "Keep the product exactly the same.",
     "Do not change the item shape, color, texture, logo, labels, stitching, proportions, or framing.",
     "Preserve the original pose and camera angle.",
@@ -113,7 +114,7 @@ async function replaceBackgroundWithOpenAI(image, backgroundDesc) {
   const bytes = Buffer.from(image.data, "base64");
   const form = new FormData();
 
-  form.append("model", process.env.OPENAI_IMAGE_MODEL || "gpt-image-1.5");
+  form.append("model", process.env.OPENAI_IMAGE_MODEL || "gpt-image-1");
   form.append("prompt", buildBackgroundEditPrompt(backgroundDesc));
   form.append("image", new Blob([bytes], { type: mimeType }), "product." + extension);
   form.append("quality", "medium");
@@ -146,8 +147,7 @@ async function replaceBackgroundWithOpenAI(image, backgroundDesc) {
   return {
     edited_image: "data:image/png;base64," + editedImage,
     nouveau_fond: backgroundDesc,
-    note:
-      "Fond remplace cote serveur via OpenAI. Le prompt interne n'est pas affiche a l'utilisateur.",
+    note: "Fond remplace cote serveur via OpenAI. Le prompt interne n'est pas affiche a l'utilisateur.",
     provider: "openai"
   };
 }
