@@ -255,7 +255,7 @@
   .conseils-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:8px}
   .conseils-body{font-size:13px;color:var(--text);line-height:1.7;white-space:pre-wrap}
 
-  /* ── PHOTO ENHANCE PAGE ── */
+  /* PHOTO ENHANCE PAGE */
   #photoPage{display:none}
   .photo-locked{background:var(--surface);border:1px solid rgba(123,94,248,0.3);border-radius:20px;padding:48px 32px;text-align:center;margin-top:20px}
   .photo-locked-icon{font-size:3rem;margin-bottom:16px}
@@ -314,6 +314,11 @@
 
   .bg-compat{background:linear-gradient(135deg,rgba(9,249,176,0.06),rgba(9,249,176,0.02));border:1px solid rgba(9,249,176,0.2);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--text);line-height:1.5;margin-bottom:16px}
   .bg-compat-label{font-size:11px;color:var(--accent);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px}
+  .result-chip{display:inline-flex;align-items:center;gap:8px;background:rgba(9,249,176,0.08);border:1px solid rgba(9,249,176,0.22);border-radius:999px;padding:8px 14px;font-size:12px;font-weight:600;color:var(--accent);margin-bottom:16px}
+  .edited-photo-card{background:var(--surface2);border:1px solid rgba(9,249,176,0.18);border-radius:16px;padding:16px;margin-bottom:18px}
+  .edited-photo-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:12px}
+  .edited-photo-img{width:100%;display:block;max-height:520px;object-fit:contain;border-radius:12px;border:1px solid var(--border);background:#ffffff}
+  .enhance-inline-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
 
   .enhance-error{background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.25);border-radius:10px;padding:14px 18px;color:#ff9090;font-size:13px;margin-top:12px;display:none}
   .enhance-error.visible{display:block}
@@ -321,7 +326,6 @@
 </head>
 <body>
 
-<!-- SPLASH -->
 <div id="splash">
   <div class="splash-orb splash-orb-1"></div>
   <div class="splash-orb splash-orb-2"></div>
@@ -333,7 +337,6 @@
   </div>
 </div>
 
-<!-- AUTH MODAL -->
 <div class="modal-overlay" id="authModal">
   <div class="modal">
     <div id="authScreen">
@@ -370,7 +373,6 @@
   </div>
 </div>
 
-<!-- PAYWALL -->
 <div class="paywall-overlay" id="paywallModal">
   <div class="paywall">
     <div class="paywall-icon">&#9889;</div>
@@ -398,7 +400,6 @@
   </div>
 </div>
 
-<!-- LIMIT OVERLAY -->
 <div class="limit-overlay" id="limitOverlay">
   <div class="limit-icon">&#9203;</div>
   <div class="limit-title">Limite quotidienne atteinte</div>
@@ -414,7 +415,6 @@
   </div>
 </div>
 
-<!-- CONFIRM MODAL (changement de fond) -->
 <div class="confirm-overlay" id="confirmModal">
   <div class="confirm-modal">
     <div class="confirm-icon">&#127758;</div>
@@ -431,7 +431,6 @@
   </div>
 </div>
 
-<!-- APP -->
 <div id="app">
   <div class="topbar">
     <div class="topbar-logo">Vinted × AI</div>
@@ -445,14 +444,12 @@
       <p>Upload tes photos, donne le prix, l'IA crée le titre et la description parfaite.</p>
     </header>
 
-    <!-- 3 onglets -->
     <div class="nav-tabs">
       <button class="nav-tab active" onclick="switchPage('generator')" id="tabGenerator">✦ Générateur</button>
       <button class="nav-tab premium-tab" onclick="switchPage('photo')" id="tabPhoto">✨ Retouche Photo <span class="lock-icon" id="photoLock">⭐</span></button>
       <button class="nav-tab premium-tab" onclick="switchPage('advisor')" id="tabAdvisor">&#129302; Conseiller IA <span class="lock-icon" id="advisorLock">&#11088;</span></button>
     </div>
 
-    <!-- ── GÉNÉRATEUR ── -->
     <div id="generatorPage">
       <div class="steps">
         <div class="step active" id="step1"><span class="step-num">1</span> Photos</div>
@@ -582,20 +579,15 @@
       </div>
     </div>
 
-    <!-- ── RETOUCHE PHOTO ── -->
     <div id="photoPage">
-      <!-- Locked (non-premium) -->
       <div class="photo-locked" id="photoLocked">
         <div class="photo-locked-icon">✨</div>
         <div class="photo-locked-title">Retouche Photo IA — Premium</div>
-        <div class="photo-locked-sub">L'IA analyse tes photos et génère les instructions pour les retoucher : suppression des plis, amélioration de la lumière, changement de fond...<br><br>Rends tes photos plus vendeuses sans modifier l'article.</div>
+        <div class="photo-locked-sub">L'IA analyse tes photos, propose des retouches utiles et peut maintenant changer automatiquement le fond pour tes visuels premium.<br><br>Le produit reste au centre, le prompt reste côté serveur, et l'utilisateur récupère directement l'image finale.</div>
         <button class="btn-subscribe" style="max-width:300px;margin:0 auto" onclick="showPaywall()">Débloquer — 4,99&#8364;/mois</button>
       </div>
 
-      <!-- Content (premium) -->
       <div id="photoContent" style="display:none">
-
-        <!-- Upload photo -->
         <div class="card">
           <div class="card-title"><span class="icon">📸</span>Upload ta photo</div>
           <div class="photo-upload-zone" id="photoUploadZone">
@@ -603,7 +595,6 @@
             <span class="photo-upload-icon">🖼️</span>
             <p><strong>Clique ou glisse ta photo ici</strong><br>JPG, PNG, WEBP — 1 photo à la fois</p>
           </div>
-          <!-- Prévisualisation -->
           <div class="photo-preview-wrap" id="photoPreviewWrap">
             <img src="" alt="Aperçu" class="photo-preview-img" id="photoPreviewImg" />
             <div class="photo-preview-actions">
@@ -612,13 +603,11 @@
           </div>
         </div>
 
-        <!-- Mode tabs -->
         <div class="photo-mode-tabs" id="photoModeTabs" style="display:none">
           <button class="photo-mode-tab active" onclick="switchPhotoMode('enhance')" id="modeEnhance">✨ Améliorer la photo</button>
           <button class="photo-mode-tab" onclick="switchPhotoMode('background')" id="modeBg">🌄 Changer le fond</button>
         </div>
 
-        <!-- Mode enhance info -->
         <div class="enhance-info" id="enhanceInfoBox" style="display:none">
           <div class="enhance-info-title">✦ Ce que l'IA va analyser et améliorer</div>
           <div class="enhance-info-list">
@@ -632,13 +621,11 @@
           </div>
         </div>
 
-        <!-- Bouton analyse -->
         <button class="btn-enhance" id="enhanceBtn" style="display:none" onclick="launchEnhance()">
           <span id="enhanceBtnText">✨ Analyser & améliorer la photo</span>
         </button>
         <div class="enhance-error" id="enhanceError"></div>
 
-        <!-- Résultat -->
         <div class="enhance-result" id="enhanceResult">
           <div class="enhance-result-header">
             <span style="font-size:1.2rem">✨</span>
@@ -646,11 +633,9 @@
           </div>
           <div class="enhance-result-body" id="enhanceResultBody"></div>
         </div>
-
       </div>
     </div>
 
-    <!-- ── CONSEILLER IA ── -->
     <div id="advisorPage">
       <div class="advisor-locked" id="advisorLocked">
         <div class="advisor-locked-icon">&#129302;</div>
@@ -671,19 +656,17 @@
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
 <script>
-  // ── STATE ────────────────────────────────────────────────────────────────
   var currentUser = null;
   var uploadedImages = [];
   var authMode = 'login';
   var pendingVerifyEmail = '';
   var chatHistory = [];
   var countdownInterval = null;
-  var photoImage = null; // { base64, type, preview }
+  var photoImage = null;
   var currentPhotoMode = 'enhance';
   var pendingBgDesc = '';
   var chatListenersInit = false;
@@ -703,7 +686,6 @@
     localStorage.setItem(LOCAL_QUOTA_KEY, JSON.stringify({ date: getTodayStr() }));
   }
 
-  // ── SPLASH ───────────────────────────────────────────────────────────────
   document.getElementById('splashBtn').addEventListener('click', function() { enterApp(); });
 
   function enterApp() {
@@ -716,7 +698,6 @@
     }, 600);
   }
 
-  // ── SESSION ──────────────────────────────────────────────────────────────
   function checkSession() {
     var saved = localStorage.getItem('vintedai_user');
     if (saved) {
@@ -759,7 +740,6 @@
     showAuthModal();
   }
 
-  // ── AUTH ─────────────────────────────────────────────────────────────────
   function showAuthModal() {
     document.getElementById('authModal').classList.add('visible');
     document.getElementById('authScreen').style.display = 'block';
@@ -851,7 +831,6 @@
     el.textContent = msg; el.classList.add('visible');
   }
 
-  // ── PAYWALL ──────────────────────────────────────────────────────────────
   function showPaywall() { document.getElementById('paywallModal').classList.add('visible'); }
   function closePaywall() { document.getElementById('paywallModal').classList.remove('visible'); }
 
@@ -874,7 +853,6 @@
     });
   }
 
-  // ── LIMIT OVERLAY ────────────────────────────────────────────────────────
   function showLimitOverlay(resetTime) {
     var overlay = document.getElementById('limitOverlay');
     var display = document.getElementById('limitCountdown');
@@ -904,7 +882,6 @@
     if (countdownInterval) clearInterval(countdownInterval);
   }
 
-  // ── CONFIRM MODAL (fond) ─────────────────────────────────────────────────
   function showConfirmModal() {
     document.getElementById('bgInput').value = '';
     document.getElementById('confirmModal').classList.add('visible');
@@ -921,7 +898,6 @@
     launchEnhance();
   }
 
-  // ── PAGE SWITCHING ───────────────────────────────────────────────────────
   function switchPage(page) {
     document.getElementById('generatorPage').style.display = page === 'generator' ? 'block' : 'none';
     document.getElementById('photoPage').style.display = page === 'photo' ? 'block' : 'none';
@@ -952,7 +928,6 @@
     }
   }
 
-  // ── PHOTO PAGE ───────────────────────────────────────────────────────────
   var photoFileInput = document.getElementById('photoFileInput');
   var photoUploadZone = document.getElementById('photoUploadZone');
 
@@ -1033,7 +1008,7 @@
     if (currentPhotoMode === 'enhance') {
       btn.textContent = '✨ Analyser & améliorer la photo';
     } else {
-      btn.textContent = '🌄 Choisir un nouveau fond';
+      btn.textContent = '🌄 Générer un nouveau fond';
     }
   }
 
@@ -1042,7 +1017,6 @@
     if (!currentUser.is_premium) { showPaywall(); return; }
     if (!photoImage) { showEnhanceError('Upload une photo d\'abord.'); return; }
 
-    // Mode background : demander confirmation si pas encore de fond choisi
     if (currentPhotoMode === 'background' && !pendingBgDesc) {
       showConfirmModal();
       return;
@@ -1050,7 +1024,9 @@
 
     var btn = document.getElementById('enhanceBtn');
     btn.disabled = true;
-    document.getElementById('enhanceBtnText').innerHTML = '<div class="spinner" style="border-color:rgba(255,255,255,0.3);border-top-color:white"></div> Analyse en cours...';
+    document.getElementById('enhanceBtnText').innerHTML = currentPhotoMode === 'background'
+      ? '<div class="spinner" style="border-color:rgba(255,255,255,0.3);border-top-color:white"></div> Génération du nouveau fond...'
+      : '<div class="spinner" style="border-color:rgba(255,255,255,0.3);border-top-color:white"></div> Analyse en cours...';
     document.getElementById('enhanceError').classList.remove('visible');
     document.getElementById('enhanceResult').classList.remove('visible');
 
@@ -1087,7 +1063,6 @@
     if (mode === 'enhance') {
       title.textContent = 'Analyse & retouche terminée';
 
-      // Score avant/après
       if (r.score_avant !== undefined && r.score_apres_estime !== undefined) {
         var scoreHtml = '<div class="score-row">'
           + '<div class="score-box"><div class="score-box-label">Score actuel</div><div class="score-box-val before">' + r.score_avant + '/10</div></div>'
@@ -1097,12 +1072,10 @@
         body.innerHTML += scoreHtml;
       }
 
-      // Analyse
       if (r.analyse) {
         body.innerHTML += '<div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">' + escHtml(r.analyse) + '</div>';
       }
 
-      // Améliorations
       if (r.ameliorations && r.ameliorations.length > 0) {
         body.innerHTML += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:10px">Améliorations à appliquer</div>';
         var listHtml = '<div class="ameliorations-list">';
@@ -1113,14 +1086,12 @@
         body.innerHTML += listHtml;
       }
 
-      // Prompt retouche
       if (r.prompt_retouche) {
         body.innerHTML += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px">Prompt pour outil IA (Canva, Adobe Firefly, Stable Diffusion...)</div>'
           + '<div class="prompt-retouche-box" id="promptBox">' + escHtml(r.prompt_retouche)
           + '<button class="prompt-copy-btn" onclick="copyPrompt()">Copier</button></div>';
       }
 
-      // Conseils photo
       if (r.conseils_photo && r.conseils_photo.length > 0) {
         body.innerHTML += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px;margin-top:4px">Conseils pour tes prochaines photos</div>';
         var conseilsHtml = '<div class="conseils-photo-list">';
@@ -1132,39 +1103,28 @@
       }
 
     } else {
-      // mode background
-      title.textContent = 'Changement de fond — Instructions générées';
+      title.textContent = 'Nouveau fond généré';
 
-      // Analyse article
-      if (r.analyse) {
-        body.innerHTML += '<div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">' + escHtml(r.analyse) + '</div>';
+      if (r.nouveau_fond) {
+        body.innerHTML += '<div class="result-chip">🌄 Fond appliqué : ' + escHtml(r.nouveau_fond) + '</div>';
       }
 
-      // Compatibilité
-      if (r.compatibilite) {
-        body.innerHTML += '<div class="bg-compat"><div class="bg-compat-label">✦ Compatibilité</div>' + escHtml(r.compatibilite) + '</div>';
+      if (r.note) {
+        body.innerHTML += '<div class="bg-compat"><div class="bg-compat-label">✦ Traitement</div>' + escHtml(r.note) + '</div>';
       }
 
-      // Prompt
-      if (r.prompt_retouche) {
-        body.innerHTML += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px">Prompt pour changer le fond (Canva, Adobe Firefly, Remove.bg...)</div>'
-          + '<div class="prompt-retouche-box" id="promptBox">' + escHtml(r.prompt_retouche)
-          + '<button class="prompt-copy-btn" onclick="copyPrompt()">Copier</button></div>';
-      }
-
-      // Conseils
-      if (r.conseils && r.conseils.length > 0) {
-        body.innerHTML += '<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px">Conseils</div>';
-        var cHtml = '<div class="conseils-photo-list">';
-        r.conseils.forEach(function(c) {
-          cHtml += '<div class="conseil-photo-item">' + escHtml(c) + '</div>';
-        });
-        cHtml += '</div>';
-        body.innerHTML += cHtml;
+      if (r.edited_image) {
+        body.innerHTML += '<div class="edited-photo-card">'
+          + '<div class="edited-photo-label">Image retouchée côté serveur</div>'
+          + '<img src="' + r.edited_image + '" alt="Image avec nouveau fond" class="edited-photo-img" id="editedBackgroundPreview">'
+          + '</div>';
+        body.innerHTML += '<div class="enhance-inline-actions">'
+          + '<button class="btn-secondary" onclick="downloadEditedImage()">⬇ Télécharger l\'image</button>'
+          + '<button class="btn-secondary" onclick="showConfirmModal()">🎨 Tester un autre fond</button>'
+          + '</div>';
       }
     }
 
-    // Bouton recommencer
     body.innerHTML += '<div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">'
       + '<button class="btn-secondary" onclick="resetPhotoUpload()">📷 Nouvelle photo</button>'
       + '</div>';
@@ -1181,6 +1141,17 @@
     });
   }
 
+  function downloadEditedImage() {
+    var img = document.getElementById('editedBackgroundPreview');
+    if (!img || !img.src) return;
+    var link = document.createElement('a');
+    link.href = img.src;
+    link.download = 'vinted-background.png';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
+
   function showEnhanceError(msg) {
     var el = document.getElementById('enhanceError');
     el.textContent = msg; el.classList.add('visible');
@@ -1190,7 +1161,6 @@
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  // ── IMAGES (générateur) ──────────────────────────────────────────────────
   var fileInput = document.getElementById('fileInput');
   var uploadZone = document.getElementById('uploadZone');
   fileInput.addEventListener('change', handleFiles);
@@ -1241,7 +1211,6 @@
 
   function removeImg(i) { uploadedImages.splice(i, 1); renderPreviews(); }
 
-  // ── GENERATE ─────────────────────────────────────────────────────────────
   function generateListing() {
     if (!currentUser) { showAuthModal(); return; }
     var category = document.getElementById('category').value;
@@ -1294,7 +1263,6 @@
     });
   }
 
-  // ── CHAT ─────────────────────────────────────────────────────────────────
   function initChatListeners() {
     if (chatListenersInit) return;
     chatListenersInit = true;
@@ -1349,7 +1317,6 @@
 
   function scrollChat() { var m = document.getElementById('chatMessages'); if (m) m.scrollTop = m.scrollHeight; }
 
-  // ── DISPLAY RESULT ───────────────────────────────────────────────────────
   function displayResult(r, userPrice) {
     document.getElementById('titleResult').textContent = r.titre || '';
     var priceVal = r.prix_recommande || userPrice;
