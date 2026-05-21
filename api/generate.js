@@ -11,9 +11,9 @@ export default async function handler(req, res) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'Clé API manquante côté serveur.' });
 
-  const prompt = `Tu es un expert en vente sur Vinted en France. Tu dois créer une annonce ultra-optimisée pour maximiser les ventes.
+  const prompt = `Tu es un vendeur Vinted expérimenté en France. Tu écris des annonces qui se vendent parce qu'elles sonnent vraies : un ton humain, posé, rassurant — comme quelqu'un qui connaît son article et prend le temps de bien le décrire. Jamais robotique, jamais sur-vendeur, jamais une suite de bullet points sans âme.
 
-Informations de l'article :
+━━━ INFOS DE L'ARTICLE ━━━
 - Catégorie : ${category}
 - État : ${condition}
 ${brand ? `- Marque : ${brand}` : ''}
@@ -21,13 +21,44 @@ ${size ? `- Taille : ${size}` : ''}
 - Prix souhaité par le vendeur : ${price}€
 ${keywords ? `- Mots-clés / détails : ${keywords}` : ''}
 ${notes ? `- Notes : ${notes}` : ''}
-${images?.length > 0 ? `- ${images.length} photo(s) fournie(s).` : ''}
+${images?.length > 0 ? `- ${images.length} photo(s) fournie(s) — analyse-les pour repérer matière, couleur, coupe, défauts éventuels.` : ''}
 
-Génère une annonce Vinted complète. Réponds UNIQUEMENT en JSON valide, sans balises markdown, avec exactement cette structure :
+━━━ RÈGLES DE RÉDACTION ━━━
+
+**TITRE (max 60 caractères)**
+• Marque + modèle/type + élément distinctif (couleur, coupe, taille si pertinente)
+• Pas de majuscules criardes, pas de "★", "✨", pas de "PROMO", "URGENT", "RARE !!"
+• Exemples du bon ton : "Veste Carhartt Detroit marron taille M" / "Jean Levi's 501 brut taille 32"
+
+**DESCRIPTION (5 à 8 lignes, ton pro & rassurant)**
+Structure narrative — pas une liste, un mini-paragraphe qui guide l'acheteur :
+
+1. **Ouverture (1 phrase)** : présente l'article avec un détail concret qui donne envie (la matière, la coupe, ce qui le rend agréable à porter ou à utiliser).
+2. **État réel (1-2 phrases)** : sois honnête et précis. Si TBE, explique pourquoi (peu porté, bien entretenu). S'il y a un défaut, mentionne-le sans le minimiser ni le dramatiser — la transparence rassure et évite les retours.
+3. **Détails utiles (1-2 phrases)** : taille/coupe réelle, matière, dimensions si pertinentes, ce qui aide l'acheteur à se projeter (avec quoi le porter, contexte d'usage).
+4. **Logistique (1 phrase)** : envoi soigné sous 24-48h, possibilité de remise en main propre si pertinent, ouvert aux questions.
+
+**TON À RESPECTER**
+• Phrases courtes à moyennes, fluides. On lit comme quelqu'un qui parle calmement.
+• Pas de superlatifs creux ("incroyable", "magnifique", "à ne pas manquer", "exceptionnel").
+• Pas de tournures vendeuses agressives ("foncez", "dépêchez-vous", "stock limité").
+• Pas de formules toutes faites du type "n'hésitez pas à me contacter pour toute question" — préférer "je réponds rapidement aux questions" ou "je suis dispo si tu veux plus de photos".
+• Tutoiement naturel (style Vinted). Pas de "Bonjour à tous".
+• **Emojis : 1 à 2 maximum sur toute la description, discrets et justifiés** (ex : 📦 pour l'envoi, ✨ jamais, ❤️ jamais). Si aucun n'apporte de valeur, n'en mets pas.
+
+**HASHTAGS (exactement 8)**
+• Mots-clés réellement recherchés sur Vinted, en minuscules, sans #
+• Mix : marque, type d'article, style/esthétique, matière, couleur, occasion
+• Pas de hashtags génériques inutiles ("vinted", "vente", "occasion")
+
+━━━ FORMAT DE SORTIE ━━━
+
+Réponds UNIQUEMENT en JSON valide, sans balises markdown, sans texte avant ou après. Structure exacte :
+
 {
-  "titre": "Titre accrocheur max 60 caractères, avec marque si connue, état, élément clé",
-  "prix_recommande": "prix en chiffre seul",
-  "description": "Description de 5-8 lignes avec emojis. 1) Description article 2) Points forts/état 3) Dimensions/taille 4) Infos envoi. Ton chaleureux et vendeur.",
+  "titre": "...",
+  "prix_recommande": "nombre seul",
+  "description": "Texte complet avec retours à la ligne \\n entre les parties si utile",
   "hashtags": ["tag1","tag2","tag3","tag4","tag5","tag6","tag7","tag8"]
 }`;
 
@@ -56,7 +87,7 @@ Génère une annonce Vinted complète. Réponds UNIQUEMENT en JSON valide, sans 
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
+        max_tokens: 1200,
         messages: [{ role: 'user', content }]
       })
     });
