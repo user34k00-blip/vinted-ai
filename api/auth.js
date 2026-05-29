@@ -98,7 +98,7 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { action, email, password, code, token } = req.body;
+  const { action, email, password, code, token, userId } = req.body;
 
   // ── INSCRIPTION ────────────────────────────────────────────────
   if (action === 'register') {
@@ -204,6 +204,24 @@ module.exports = async function handler(req, res) {
     const newHash = hashPassword(password);
     await supabase('PATCH', `/users?id=eq.${user.id}`, { password_hash: newHash, reset_token: null, reset_expires: null, is_verified: true });
     return res.status(200).json({ success: true, user: { id: user.id, email: user.email, is_premium: user.is_premium, daily_count: user.daily_count || 0 } });
+  }
+
+  // -- REFRESH STATUT (verifie le vrai is_premium cote serveur) -----
+  // Appelee au retour de Stripe et au chargement : la source de verite est
+  // Supabase, jamais le client. is_premium n'est mis a true que par le
+  // webhook Stripe signe.
+  if (action === 'refresh') {
+    if (!userId) return res.status(400).json({ error: 'userId requis' });
+    const users = await supabase('GET', `/users?id=eq.${userId}&select=id,email,is_premium,daily_count,last_reset`);
+    if (!users || users.length === 0) return res.status(404).json({ error: 'Compte introuvable' });
+
+    const user = users[0];
+    const today = new Date().toISOString().split('T')[0];
+    if (user.last_reset !== today) {
+      await supabase('PATCH', `/users?id=eq.${user.id}`, { daily_count: 0, last_reset: today });
+      user.daily_count = 0;
+    }
+    return res.status(200).json({ success: true, user: { id: user.id, email: user.email, is_premium: !!user.is_premium, daily_count: user.daily_count || 0 } });
   }
 
   return res.status(400).json({ error: 'Action invalide' });
