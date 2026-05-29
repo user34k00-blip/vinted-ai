@@ -1850,16 +1850,54 @@ header p{
         updateTopbar();
         var params = new URLSearchParams(window.location.search);
         if (params.get('payment') === 'success') {
-          currentUser.is_premium = true;
-          localStorage.setItem('vintedai_user', JSON.stringify(currentUser));
-          updateTopbar();
           window.history.replaceState({}, '', '/');
-          showToast('Abonnement activé');
+          // Le client ne s'octroie JAMAIS le premium. On sonde le serveur :
+          // is_premium ne passe a true qu'apres reception du webhook Stripe
+          // signe (validation asynchrone confirmee par le processeur).
+          refreshPremiumStatus({ poll: true, notify: true });
+        } else {
+          // Refresh silencieux : le localStorage ne doit jamais primer sur la DB.
+          refreshPremiumStatus({ poll: false, notify: false });
         }
         return;
       }
     }
     showAuthModal();
+  }
+
+  /* Verifie le vrai statut premium aupres du serveur (source de verite = DB).
+     Utilise au retour de Stripe (avec polling, le temps que le webhook arrive)
+     et a chaque chargement (silencieux) pour ne jamais faire confiance a un
+     is_premium stocke en local. */
+  function refreshPremiumStatus(opts) {
+    opts = opts || {};
+    var attempt = opts.attempt || 0;
+    if (!currentUser || !currentUser.id) return;
+    fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'refresh', userId: currentUser.id })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (!data || !data.user) return;
+      var wasPremium = currentUser.is_premium;
+      currentUser = data.user;
+      localStorage.setItem('vintedai_user', JSON.stringify(currentUser));
+      updateTopbar();
+      if (opts.poll && !currentUser.is_premium && attempt < 6) {
+        // Le webhook Stripe peut arriver quelques secondes apres le retour.
+        setTimeout(function() {
+          refreshPremiumStatus({ poll: true, notify: opts.notify, attempt: attempt + 1 });
+        }, 2000);
+        return;
+      }
+      if (opts.notify) {
+        if (currentUser.is_premium && !wasPremium) showToast('Abonnement activé');
+        else if (opts.poll && !currentUser.is_premium) showToast('Paiement reçu — activation en cours, recharge dans un instant.');
+      }
+    })
+    .catch(function() { /* silencieux : on conserve l'etat courant */ });
   }
 
   function updateTopbar() {
